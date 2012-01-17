@@ -68,7 +68,19 @@ void testApp::setupDummyPresets(){
 	temp.getUserParam(0).setType = PSET_MAP;
 	presets.push_back(temp);
 	
-
+	temp.setName("elec");
+	temp.setEnvType(ENV_AR);
+	temp.setDrawType(BT_ELEC_CURRENT);
+	temp.getAttackSecs().abs_value = 0.01;
+	temp.getDecaySecs().abs_value = 1;
+	temp.getLength().setType = PSET_USERA;
+	
+	temp.getUserParam(0).setType = PSET_USERB;
+	
+	temp.getUserParam(1).setType = PSET_FIXED;
+	temp.getUserParam(1).abs_value = 1;
+	
+	presets.push_back(temp);
 
 }
 

@@ -140,7 +140,7 @@ void reader::move(){
 void reader::draw(ofRectangle vp){
 	
 	glPushMatrix();
-	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 1);
+	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 3);
 	glPushMatrix();
 	glTranslatef(-vp.x, -vp.y,0); //centred coordinates
 	

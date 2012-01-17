@@ -47,7 +47,7 @@ void objectRenderer::drawTracks(){
 void objectRenderer::drawTrack(segment * t){
 	
 	glPushMatrix();
-	glTranslatef(0, 0, -1);
+	glTranslatef(0, 0, -2);
 	
 	ofVec2f sp(t->getStartPos());
 	ofVec2f lp;
@@ -161,7 +161,7 @@ void objectRenderer::drawNodes(){
 void objectRenderer::drawBlips(){
 
 	glPushMatrix();
-	glTranslatef(0, 0, -2);
+	glTranslatef(0, 0, -1);
 	
 	for(vector<blip>::iterator it = blips->begin(); it != blips->end(); it++){
 		
