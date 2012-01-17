@@ -37,6 +37,8 @@ void testApp::setup(){
 	currentLayer.getSM()->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
 	currentLayer.getSM()->endTrack();
 	
+	glEnable(GL_DEPTH_TEST);
+	
 }
 
 void testApp::setupDummyPresets(){
@@ -60,7 +62,7 @@ void testApp::setupDummyPresets(){
 	temp.setName("ar");
 	temp.setEnvType(ENV_AR);
 	temp.getAttackSecs().abs_value = 0.01;
-	temp.getDecaySecs().abs_value = 0.2;
+	temp.getDecaySecs().abs_value = 1;
 	temp.getLength().setType = PSET_FIXED;
 	temp.getLength().abs_value = 20;
 	temp.getUserParam(0).setType = PSET_MAP;
@@ -77,8 +79,24 @@ void testApp::update(){
 	currentLayer.update();
 	
 	if(!isFixed && !pauseFollow){
+		
 		viewPort.x = thisReader.getPos().x + trans.x;
 		viewPort.y = thisReader.getPos().y + trans.y;
+		
+		//position averaging ... needs more work due to wrapping
+		/*ofVec2f t;  
+		t.x = thisReader.getPos().x + trans.x;
+		t.y = thisReader.getPos().y + trans.y;
+		vpHist.push_back(t);
+		if(vpHist.size() > 10){vpHist.erase(vpHist.begin());}
+		ofVec2f avPos(0,0);
+		for(int i = 0; i < vpHist.size(); i ++){
+			avPos += vpHist[i];
+		}
+		avPos /= vpHist.size();
+		
+		viewPort.x = avPos.x;
+		viewPort.y = avPos.y;*/
 	}
 	
 	moduloViewPort();
@@ -193,24 +211,30 @@ void testApp::moduloViewPort(){
 		mouse_offset.y += viewPort.y;	
 		viewPort.y += t_dims.y; 
 		mouse_offset.y -= viewPort.y;
+	//	vpHist.clear();
 	}else if(viewPort.y > t_dims.y/2 + viewPort.height/2 ){
 		mouse_offset.y += viewPort.y;	
 		viewPort.y -= t_dims.y; 
 		mouse_offset.y -= viewPort.y;
+	//	vpHist.clear();
 	}
 	
 	if(viewPort.x < -t_dims.x/2 -viewPort.width/2 ){
 		mouse_offset.x += viewPort.x;	
 		viewPort.x += t_dims.x; 
 		mouse_offset.x -= viewPort.x;
+		//vpHist.clear();
 	}else if(viewPort.x > t_dims.x/2 + viewPort.width/2 ){
 		mouse_offset.x += viewPort.x;	
 		viewPort.x -= t_dims.x; 
 		mouse_offset.x -= viewPort.x;
+		//vpHist.clear();
 	}
 	
 	
 }
+
+
 
 ofVec2f testApp::getWorldCoordinate(ofVec2f t_point){
 	
@@ -249,6 +273,18 @@ ofVec2f testApp::getWorldCoordinate(ofVec2f t_point){
 	
 }
 
+void testApp::prepPauseFollow(){
+	
+	if(!isFixed){
+		pauseFollow = true;
+		trans += thisReader.getPos();
+		moduloViewPort();
+		viewPort.x = trans.x;
+		viewPort.y = trans.y;
+	}
+
+}
+
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
 	
@@ -259,6 +295,9 @@ void testApp::keyPressed  (int key){
 	}
 	
 	if(key == ' '){
+		
+		vpHist.clear();
+		
 		if(isFixed){
 			trans -= thisReader.getPos();
 		}else{
@@ -303,25 +342,23 @@ void testApp::mousePressed(int x, int y, int button){
 	mouse_a.set(x,y);
 	
 	if(mouseMode == MODE_DRAG){
-		if(!isFixed){
-			pauseFollow = true;
-			trans += thisReader.getPos();
-			moduloViewPort();
-			viewPort.x = trans.x;
-			viewPort.y = trans.y;
-		}
+		
+		prepPauseFollow();
 		
 		mouse_offset.x = -x - viewPort.x;
 		mouse_offset.y = -y - viewPort.y;
 		
 	}else if(mouseMode == MODE_ADD_TRACK){
 		
+		prepPauseFollow();
+		
 		if(!isFixed)pauseFollow = true;
 		currentLayer.getSM()->beginTrack(getWorldCoordinate(ofVec2f(x,y)));
 		
 	}else if(mouseMode == MODE_ADD_BLIP){
 		
-		if(!isFixed)pauseFollow = true;
+		prepPauseFollow();
+		
 		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(x,y)), presets[selectedPreset]);
 		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(x,y)), ofVec2f(10,10)); //replace the dummy vec with a value stored in the preset itself
 	}
@@ -369,13 +406,19 @@ void testApp::mouseReleased(int x, int y, int button){
 	}else if(mouseMode == MODE_ADD_TRACK){
 		
 		isPreview = false;
-		if(!isFixed)pauseFollow = false;
+		if(!isFixed){
+			pauseFollow = false;
+			trans -= thisReader.getPos();
+		}
 		currentLayer.getSM()->endTrack();
 	
 	}else if(mouseMode == MODE_ADD_BLIP){
 		
 		isPreview = false;
-		if(!isFixed)pauseFollow = false;
+		if(!isFixed){
+			pauseFollow = false;
+			trans -= thisReader.getPos();
+		}
 		currentLayer.getSM()->endBlip();
 		
 	}

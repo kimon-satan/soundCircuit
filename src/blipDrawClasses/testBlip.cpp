@@ -32,11 +32,14 @@ void testBlip::draw(bool isWrapped){
 	glRotatef(angle, 0, 0, 1);
 	
 	if(isActive){
+		glPushMatrix();
+		glTranslatef(0, 0, -1);
 		ofFill();
 		ofEnableAlphaBlending();
 		ofSetColor(c);
 		ofRect(testRect);
 		ofDisableAlphaBlending();
+		glPopMatrix();
 	}
 	
 	ofSetColor(0);

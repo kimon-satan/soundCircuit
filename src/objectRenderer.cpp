@@ -46,6 +46,9 @@ void objectRenderer::drawTracks(){
 
 void objectRenderer::drawTrack(segment * t){
 	
+	glPushMatrix();
+	glTranslatef(0, 0, -1);
+	
 	ofVec2f sp(t->getStartPos());
 	ofVec2f lp;
 	
@@ -100,6 +103,8 @@ void objectRenderer::drawTrack(segment * t){
 			ofRect(t->getWrapTestArea());
 		}
 	}
+	
+	glPopMatrix();
 
 
 }
@@ -155,6 +160,9 @@ void objectRenderer::drawNodes(){
 
 void objectRenderer::drawBlips(){
 
+	glPushMatrix();
+	glTranslatef(0, 0, -2);
+	
 	for(vector<blip>::iterator it = blips->begin(); it != blips->end(); it++){
 		
 		if(isBlipData){
@@ -201,6 +209,8 @@ void objectRenderer::drawBlips(){
 
 		
 	}
+	
+	glPopMatrix();
 
 }
 

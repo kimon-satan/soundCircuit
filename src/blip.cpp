@@ -106,7 +106,7 @@ bool blip::react(){
 
 void blip::createDrawer(){
 	
-	drawer = new testBlip();
+	if(preset.getDrawType() == BT_TESTBLIP){drawer = new testBlip();}
 	
 	updateDrawer();
 	

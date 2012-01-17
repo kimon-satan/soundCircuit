@@ -11,8 +11,7 @@
 #define blipPreset_h
 
 #include "ofMain.h"
-
-
+#include "blipIncludes.h"
 
 enum e_envType {
 	ENV_ASR,
@@ -58,6 +57,10 @@ public:
 	string getName()const;
 	void setEnvType(e_envType t_env);
 	e_envType getEnvType()const;
+	void setSynthDef(string t_def);
+	string getSynthDef();
+	blipDrawType getDrawType();
+	void setDrawType(blipDrawType t);
 	
 	paramAttributes& getUserParam(int p);
 	paramAttributes& getAttackSecs();
@@ -70,8 +73,11 @@ public:
 private:
 	
 	string name;
+	string synthDef;
+	blipDrawType drawType;
+	
 	e_envType envType;
-	paramAttributes attack_secs, decay_secs, length; //length may not be included ?
+	paramAttributes attack_secs, decay_secs, length;
 	vector<paramAttributes> userParams;
 	
 

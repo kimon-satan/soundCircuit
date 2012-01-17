@@ -103,7 +103,7 @@ void reader::move(){
 				
 				m.setAddress("/blipOn");
 				m.addIntArg(it->getIndex());
-				m.addStringArg(p.getName());
+				m.addStringArg(p.getSynthDef());
 				m.addIntArg(p.getEnvType());
 				m.addFloatArg(p.getAttackSecs().abs_value);
 				m.addFloatArg(p.getDecaySecs().abs_value);
@@ -126,7 +126,6 @@ void reader::move(){
 					
 					m.setAddress("/blipOff");
 					m.addIntArg(it->getIndex());
-					m.addStringArg(p.getName());
 					
 					sender.sendMessage(m);
 				}
@@ -141,7 +140,7 @@ void reader::move(){
 void reader::draw(ofRectangle vp){
 	
 	glPushMatrix();
-	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 0);
+	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 1);
 	glPushMatrix();
 	glTranslatef(-vp.x, -vp.y,0); //centred coordinates
 	

@@ -41,6 +41,7 @@ private:
 	ofVec2f getWorldCoordinate(ofVec2f point);
 	void drawVp(ofRectangle& vp, bool isDummy = false);
 	void moduloViewPort();
+	void prepPauseFollow();
 
 	enum e_mouseMode {
 		MODE_NONE,
@@ -57,11 +58,11 @@ private:
 	ofVec2f world_dims;
 	ofVec2f mouse_a, mouse_b;
 	
+	vector<ofVec2f> vpHist;
 	vector<ofRectangle> dummy_views;
-	
 	vector<blipPreset> presets;
-	int selectedPreset;
 	
+	int selectedPreset;
 	
 	ofxOscSender sender;
 	reader thisReader;

@@ -13,4 +13,11 @@
 #include "testBlip.h"
 
 
+enum blipDrawType{
+
+	BT_TESTBLIP
+
+
+};
+
 #endif
