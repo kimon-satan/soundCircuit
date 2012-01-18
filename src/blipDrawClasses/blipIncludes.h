@@ -12,11 +12,13 @@
 
 #include "testBlip.h"
 #include "elecCurrent.h"
+#include "straw.h"
 
 enum blipDrawType{
 
 	BT_TESTBLIP,
-	BT_ELEC_CURRENT
+	BT_ELEC_CURRENT,
+	BT_STRAW
 
 };
 

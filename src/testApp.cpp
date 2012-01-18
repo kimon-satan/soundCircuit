@@ -37,7 +37,7 @@ void testApp::setup(){
 	currentLayer.getSM()->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
 	currentLayer.getSM()->endTrack();
 	
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST); // this method causes problems ...needs a rethink
 	
 }
 
@@ -69,16 +69,35 @@ void testApp::setupDummyPresets(){
 	presets.push_back(temp);
 	
 	temp.setName("elec");
-	temp.setEnvType(ENV_AR);
+	temp.setSynthDef("clip");
+	temp.setEnvType(ENV_ASR);
 	temp.setDrawType(BT_ELEC_CURRENT);
 	temp.getAttackSecs().abs_value = 0.01;
-	temp.getDecaySecs().abs_value = 1;
-	temp.getLength().setType = PSET_USERA;
+	temp.getDecaySecs().abs_value = 0.2;
 	
+	temp.getLength().setType = PSET_USERA;
 	temp.getUserParam(0).setType = PSET_USERB;
 	
 	temp.getUserParam(1).setType = PSET_FIXED;
-	temp.getUserParam(1).abs_value = 1;
+	temp.getUserParam(1).abs_value = 0.2;
+	
+	presets.push_back(temp);
+	
+	//
+	
+	temp.setName("straw");
+	temp.setSynthDef("clip");
+	temp.setDrawType(BT_STRAW);
+	temp.setEnvType(ENV_AR);
+	
+	temp.getLength().setType = PSET_FIXED;
+	temp.getLength().abs_value = 10;
+	
+	temp.getAttackSecs().abs_value = 0.01;
+	temp.getDecaySecs().abs_value = 0.2;
+	
+	temp.getUserParam(0).setType = PSET_USERB;
+	temp.getUserParam(1).setType = PSET_USERA;
 	
 	presets.push_back(temp);
 

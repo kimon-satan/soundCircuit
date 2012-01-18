@@ -34,7 +34,7 @@ void layer::draw(ofRectangle &vp, bool isDummy){
 	//for wrapping debugging 
 	if(isScreenData){
 		glPushMatrix();
-		glTranslatef(0, 0, -3);
+		//glTranslatef(0, 0, -3);
 		ofEnableAlphaBlending();
 		(isDummy)?ofSetColor(255,0,0,100) : ofSetColor(0, 255, 0, 100);
 		ofFill();

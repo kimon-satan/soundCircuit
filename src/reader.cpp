@@ -96,7 +96,7 @@ void reader::move(){
 	
 		if(it->getInside(ofVec2f(body.x,body.y))){
 			if(it->react()){
-				
+
 				blipPreset p = it->getPreset();
 				
 				ofxOscMessage m;
@@ -140,7 +140,7 @@ void reader::move(){
 void reader::draw(ofRectangle vp){
 	
 	glPushMatrix();
-	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 3);
+	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 0);
 	glPushMatrix();
 	glTranslatef(-vp.x, -vp.y,0); //centred coordinates
 	

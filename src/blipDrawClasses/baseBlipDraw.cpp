@@ -34,3 +34,4 @@ void baseBlipDraw::setPresetParams( vector<float> t_params){
 	params = t_params;
 	
 }
+

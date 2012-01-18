@@ -47,7 +47,7 @@ void objectRenderer::drawTracks(){
 void objectRenderer::drawTrack(segment * t){
 	
 	glPushMatrix();
-	glTranslatef(0, 0, -2);
+	//glTranslatef(0, 0, -2);
 	
 	ofVec2f sp(t->getStartPos());
 	ofVec2f lp;
@@ -161,7 +161,6 @@ void objectRenderer::drawNodes(){
 void objectRenderer::drawBlips(){
 
 	glPushMatrix();
-	glTranslatef(0, 0, -1);
 	
 	for(vector<blip>::iterator it = blips->begin(); it != blips->end(); it++){
 		
@@ -184,8 +183,12 @@ void objectRenderer::drawBlips(){
 				ofVec2f wap = world_dims/2 * it->getDirection() + it->getStartPos() * i_dir;
 				ofVec2f wbp = -world_dims/2 * it->getDirection() + it->getStartPos() * i_dir;
 				
-				if(checkIsVisible(it->getStartPos(), wap, it->getDirection()))it->draw();
-				if(checkIsVisible(wbp, it->getStartPos(), it->getDirection()))it->draw(true);
+				if(checkIsVisible(it->getStartPos(), wap, it->getDirection())){
+					it->draw();
+				}
+				if(checkIsVisible(wbp, it->getEndPos(), it->getDirection())){
+					it->draw(true);
+				}
 			}
 		}
 	}

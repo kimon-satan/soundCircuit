@@ -15,11 +15,15 @@
 class testBlip : public baseBlipDraw {
 	
 public:
-
+	
+	void update();
 	void draw(bool isWrapped = false);
 	
 private:
 	
+	float alpha;
+	ofColor c;
+	ofRectangle testRect;
 
 	
 };

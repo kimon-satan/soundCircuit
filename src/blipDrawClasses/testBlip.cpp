@@ -11,24 +11,32 @@
 #include "blipPreset.h"
 #include "blip.h"
 
-void testBlip::draw(bool isWrapped){
-	
-	//test change
-	
+
+void testBlip::update(){
+
 	ofVec2f l_dir(length, length);
 	l_dir *= direction;
-	ofVec2f centre = (isWrapped) ? endPos - l_dir/2: startPos + l_dir/2;
-	float angle = (direction.y > 0) ? 90 : 0;
-	float alpha = 255.0f * envVal;
-	ofColor c;
-	c.setHsb(params[0] * 255,255,255, alpha);
 	
-	ofRectangle testRect;
+	centre = startPos + l_dir/2;
+	wrapCentre = endPos - l_dir/2;
+	angle = (direction.y > 0) ? 90 : 0;
+	alpha = 255.0f * envVal;
+	c.setHsb(params[0] * 255,255,255, alpha);
 	testRect.setFromCenter(0, 0, length, 18);
+
+}
+
+void testBlip::draw(bool isWrapped){
+	
 	
 	glPushMatrix();
 	
-	glTranslatef(centre.x, centre.y, 0);
+	if(isWrapped){
+		glTranslatef(wrapCentre.x, wrapCentre.y, 0);
+	}else{
+		glTranslatef(centre.x, centre.y, 0); 
+	}
+	
 	glRotatef(angle, 0, 0, 1);
 	
 	if(isActive){
@@ -41,12 +49,11 @@ void testBlip::draw(bool isWrapped){
 		
 	}
 	
-	glPushMatrix();
-	glTranslatef(0, 0, 1);
+
 	ofSetColor(0);
 	ofNoFill();
 	ofRect(testRect);
-	glPopMatrix();
+
 	
 	glPopMatrix();
 	

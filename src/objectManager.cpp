@@ -216,7 +216,6 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 void objectManager::endBlip(){
 	
 	if(previewBlip.getIsValid()){
-		
 		blips->push_back(previewBlip);
 		blips->back().createDrawer();
 		blips->back().aquireIndex();

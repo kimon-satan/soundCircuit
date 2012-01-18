@@ -11,34 +11,60 @@
 #include "blipPreset.h"
 #include "blip.h"
 
-void elecCurrent::draw(bool isWrapped){
-	
+
+void elecCurrent::update(){
+
 	//0 = wave height
 	//1 = density
 	
 	ofVec2f l_dir(length, length);
 	l_dir *= direction;
-	ofVec2f centre = (isWrapped) ? endPos - l_dir/2: startPos + l_dir/2;
+	centre = startPos + l_dir/2;
+	wrapCentre = endPos - l_dir/2;
+	angle = (direction.y > 0) ? 90 : 0;
+	waveHeight = params[0] * 100 * envVal;
+	waveHeight = max(1.0f, waveHeight);
+	density = params[1];
 	
-	float angle = (direction.y > 0) ? 90 : 0;
-	float waveHeight = params[0] * 100 * envVal;
-	waveHeight = max(5.0f, waveHeight);
-	float density = params[1];
-	
-	ofRectangle blankRect;
 	blankRect.setFromCenter(0, 0, length, 18);
+	
+	int numPeaks = (float)length * density;
+	numPeaks = max(1, numPeaks);
+	peaks.clear();
+	
+	peaks.push_back(ofVec2f(-length/2, 0));
+	
+	
+	float a = -length/2;
+	float b = a + length/numPeaks;
+	
+	for(int i = 0; i < numPeaks; i ++){
+		peaks.push_back(ofVec2f(ofRandom(a,b), ofRandom(-waveHeight,waveHeight)));
+		a = b;
+		b = a + (float)length/numPeaks;
+	}
+
+	peaks.push_back(ofVec2f(length/2, 0));
+
+}
+
+void elecCurrent::draw(bool isWrapped){
+	
+
 	
 	glPushMatrix();
 	
-		glTranslatef(centre.x, centre.y, 0);
+		if(isWrapped){
+			glTranslatef(wrapCentre.x, wrapCentre.y, 0);
+		}else{
+			glTranslatef(centre.x, centre.y, 0); 
+		}
 		glRotatef(angle, 0, 0, 1);
+		
+		ofSetColor(100);
+		ofLine(blankRect.x, blankRect.y, blankRect.x, blankRect.y + blankRect.height);
+		ofLine(blankRect.x + blankRect.width, blankRect.y, blankRect.x + blankRect.width, blankRect.y + blankRect.height);
 
-		glPushMatrix();
-			glTranslatef(0, 0, 1);
-			ofSetColor(100);
-			ofLine(blankRect.x, blankRect.y, blankRect.x, blankRect.y + blankRect.height);
-			ofLine(blankRect.x + blankRect.width, blankRect.y, blankRect.x + blankRect.width, blankRect.y + blankRect.height);
-		glPopMatrix();
 	
 		if(isActive){
 			
@@ -46,28 +72,15 @@ void elecCurrent::draw(bool isWrapped){
 			ofFill();
 			ofRect(blankRect);
 			
-			glPushMatrix();
-				ofNoFill();
-				glTranslatef(0, 0, 1);
-				ofSetColor(0);
+			ofNoFill();
+			ofSetColor(0);
 				
-				ofBeginShape();
-				ofVertex(-length/2, 0);
+			ofBeginShape();
 				
-				int numPeaks = (float)length * density;
-				numPeaks = max(1, numPeaks);
-			
-				float a = -length/2;
-				float b = a + length/numPeaks;
-			
-				for(int i = 0; i < numPeaks; i ++){
-					ofVertex(ofRandom(a,b), ofRandom(-waveHeight,waveHeight));
-					a = b;
-					b = a + (float)length/numPeaks;
-				}
-				ofVertex(length/2, 0);
-				ofEndShape(false);
-			glPopMatrix();
+			for(int i = 0; i < peaks.size(); i ++)ofVertex(peaks[i].x, peaks[i].y);
+		
+			ofEndShape(false);
+		
 		}
 	
 

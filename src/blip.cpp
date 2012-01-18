@@ -108,9 +108,9 @@ void blip::createDrawer(){
 	
 	if(preset.getDrawType() == BT_TESTBLIP){drawer = new testBlip();}
 	if(preset.getDrawType() == BT_ELEC_CURRENT){drawer = new elecCurrent();}
+	if(preset.getDrawType() == BT_STRAW){drawer = new straw();}
 	
 	updateDrawer();
-	
 	
 }
 
@@ -130,6 +130,8 @@ void blip::updateDrawer(){
 		drawer->setPresetParams(t_params);
 		
 		drawer->setTimeParams(isActive, envVal);
+		
+		drawer->update();
 	
 	}
 

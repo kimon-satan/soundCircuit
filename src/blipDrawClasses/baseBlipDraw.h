@@ -28,9 +28,9 @@ public:
 	
 protected:
 	
-
+	ofVec2f centre, wrapCentre;
 	ofVec2f direction, startPos, endPos;
-	float length;
+	float length, angle;
 	vector<float> params;
 	float envVal;
 	bool isActive;
