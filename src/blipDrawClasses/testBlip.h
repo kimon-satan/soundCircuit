@@ -16,6 +16,7 @@ class testBlip : public baseBlipDraw {
 	
 public:
 	
+	testBlip();
 	void update();
 	void draw(bool isWrapped = false);
 	

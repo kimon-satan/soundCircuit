@@ -11,6 +11,10 @@
 #include "blipPreset.h"
 #include "blip.h"
 
+elecCurrent::elecCurrent(){
+	
+
+}
 
 void elecCurrent::update(){
 
@@ -22,7 +26,8 @@ void elecCurrent::update(){
 	centre = startPos + l_dir/2;
 	wrapCentre = endPos - l_dir/2;
 	angle = (direction.y > 0) ? 90 : 0;
-	waveHeight = params[0] * 100 * envVal;
+	max_waveHeight = params[0];
+	waveHeight = params[0] * envVal;
 	waveHeight = max(1.0f, waveHeight);
 	density = params[1];
 	
@@ -50,8 +55,6 @@ void elecCurrent::update(){
 
 void elecCurrent::draw(bool isWrapped){
 	
-
-	
 	glPushMatrix();
 	
 		if(isWrapped){
@@ -61,16 +64,17 @@ void elecCurrent::draw(bool isWrapped){
 		}
 		glRotatef(angle, 0, 0, 1);
 		
+	
+		ofSetColor(255);
+		ofFill();
+		ofRect(blankRect);
+	
 		ofSetColor(100);
-		ofLine(blankRect.x, blankRect.y, blankRect.x, blankRect.y + blankRect.height);
-		ofLine(blankRect.x + blankRect.width, blankRect.y, blankRect.x + blankRect.width, blankRect.y + blankRect.height);
+		ofLine(blankRect.x, -max_waveHeight, blankRect.x, max_waveHeight);
+		ofLine(blankRect.x + blankRect.width, -max_waveHeight, blankRect.x + blankRect.width, max_waveHeight);
 
 	
 		if(isActive){
-			
-			ofSetColor(255);
-			ofFill();
-			ofRect(blankRect);
 			
 			ofNoFill();
 			ofSetColor(0);

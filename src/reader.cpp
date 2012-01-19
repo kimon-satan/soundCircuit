@@ -108,8 +108,8 @@ void reader::move(){
 				m.addFloatArg(p.getAttackSecs().abs_value);
 				m.addFloatArg(p.getDecaySecs().abs_value);
 				
-				for(int i = 0; i < p.getUserParams().size(); i++){
-					m.addFloatArg(p.getUserParam(i).abs_value);
+				for(int i = 0; i < p.getSoundParams().size(); i++){
+					m.addFloatArg(p.getSoundParam(i).abs_value);
 				}
 				
 				sender.sendMessage(m);

@@ -15,15 +15,17 @@
 class elecCurrent : public baseBlipDraw {
 	
 public:
+	
+	elecCurrent();
 	void update();
 	void draw(bool isWrapped = false);
 	
 private:
 	
 	ofRectangle blankRect;
-	float waveHeight, density;
-	
+	float waveHeight, max_waveHeight, density;
 	vector<ofVec2f> peaks;
+	
 };
 
 

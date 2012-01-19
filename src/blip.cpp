@@ -120,12 +120,12 @@ void blip::updateDrawer(){
 		drawer->setBlipParams(direction, startPos, endPos,length);
 		
 		vector<float> t_params;
-		for(int i =0; i < preset.getUserParams().size(); i++){
+		
+		for(int i =0; i < preset.getVisualParams().size(); i++){
 			
-			t_params.push_back(preset.getUserParam(i).abs_value);
+			t_params.push_back(preset.getVisualParam(i).abs_value);
 		
 		}
-		
 		
 		drawer->setPresetParams(t_params);
 		

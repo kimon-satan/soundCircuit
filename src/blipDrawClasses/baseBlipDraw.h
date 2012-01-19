@@ -12,6 +12,32 @@
 
 #include "ofMain.h"
 
+enum e_setType{
+	
+	PSET_FIXED,
+	PSET_USERA,
+	PSET_USERB,
+	PSET_MAP,
+	PSET_RANDOM
+	
+};
+
+struct paramAttributes{
+	
+	paramAttributes(){
+		name = "emptyAttribute";
+		abs_value = 0;
+		min_val = 0;
+		max_val = 1;
+		setType = PSET_FIXED;
+	}
+	
+	string name;
+	float abs_value, min_val, max_val;
+	e_setType setType;
+};
+
+
 
 class baseBlipDraw{
 
@@ -25,6 +51,7 @@ public:
 	void setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l);
 	void setPresetParams(vector<float> t_params);
 	void setTimeParams(bool & t_active, float & t_envVal);
+	
 	
 protected:
 	

@@ -11,6 +11,12 @@
 #include "blipPreset.h"
 #include "blip.h"
 
+testBlip::testBlip(){
+	
+
+	
+
+}
 
 void testBlip::update(){
 
@@ -21,7 +27,7 @@ void testBlip::update(){
 	wrapCentre = endPos - l_dir/2;
 	angle = (direction.y > 0) ? 90 : 0;
 	alpha = 255.0f * envVal;
-	c.setHsb(params[0] * 255,255,255, alpha);
+	c.setHsb(params[0],255,255, alpha);
 	testRect.setFromCenter(0, 0, length, 18);
 
 }

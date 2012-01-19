@@ -5,6 +5,7 @@ bool testApp::drawData =false;
 //--------------------------------------------------------------
 void testApp::setup(){
 
+	ofSetVerticalSync(true);
 	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
 	mouse_offset.set(0,0);
 	currentLayer.setDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenHeight() * 1));
@@ -43,63 +44,88 @@ void testApp::setup(){
 
 void testApp::setupDummyPresets(){
 
-	blipPreset temp;
-	temp.setName("asrHard");
-	temp.setEnvType(ENV_ASR);
-	temp.getAttackSecs().abs_value = 0.01;
-	temp.getDecaySecs().abs_value = 0.05;
-	temp.getLength().setType = PSET_USERA;
-	temp.getUserParam(0).setType = PSET_USERB;
-	presets.push_back(temp);
+	blipPreset asrHard;
+	asrHard.setName("asrHard");
+	asrHard.setSynthDef("basic");
+	asrHard.setDrawType(BT_TESTBLIP);
+	asrHard.setEnvType(ENV_ASR);
+	asrHard.getAttackSecs().abs_value = 0.01;
+	asrHard.getDecaySecs().abs_value = 0.05;
+	asrHard.getLength().setType = PSET_USERA;
+	asrHard.getSoundParam("freq").setType = PSET_USERB;
+	asrHard.getVisualParam("hue").setType = PSET_USERB;
+
+	presets.push_back(asrHard);
 	
-	temp.setName("asrSoft");
-	temp.getAttackSecs().abs_value = 0.2;
-	temp.getDecaySecs().abs_value = 0.5;
-	temp.getLength().setType = PSET_USERA;
-	temp.getUserParam(0).setType = PSET_USERB;
-	presets.push_back(temp);
+	blipPreset asrSoft;
+	asrSoft.setName("asrSoft");
+	asrSoft.setSynthDef("basic");
+	asrSoft.setDrawType(BT_TESTBLIP);
+	asrSoft.setEnvType(ENV_ASR);
+	asrSoft.getAttackSecs().abs_value = 0.4;
+	asrSoft.getDecaySecs().abs_value = 0.01;
+	asrSoft.getLength().setType = PSET_USERA;
+	asrSoft.getSoundParam("freq").setType = PSET_USERB;
+	asrSoft.getVisualParam(0).setType = PSET_USERB;
+	presets.push_back(asrSoft);
 	
-	temp.setName("ar");
-	temp.setEnvType(ENV_AR);
-	temp.getAttackSecs().abs_value = 0.01;
-	temp.getDecaySecs().abs_value = 1;
-	temp.getLength().setType = PSET_FIXED;
-	temp.getLength().abs_value = 20;
-	temp.getUserParam(0).setType = PSET_MAP;
-	presets.push_back(temp);
+	blipPreset ar;
+	ar.setName("ar");
+	ar.setEnvType(ENV_AR);
+	ar.setSynthDef("basic");
+	ar.setDrawType(BT_TESTBLIP);
+	ar.getAttackSecs().abs_value = 0.01;
+	ar.getDecaySecs().abs_value = 1;
+	ar.getLength().setType = PSET_FIXED;
+	ar.getLength().abs_value = 20;
+	ar.getSoundParam("freq").setType = PSET_MAP;
+	ar.getVisualParam(0).setType = PSET_MAP;
+	presets.push_back(ar);
 	
-	temp.setName("elec");
-	temp.setSynthDef("clip");
-	temp.setEnvType(ENV_ASR);
-	temp.setDrawType(BT_ELEC_CURRENT);
-	temp.getAttackSecs().abs_value = 0.01;
-	temp.getDecaySecs().abs_value = 0.2;
+	blipPreset elecClip;
+	elecClip.setName("elecClip");
+	elecClip.setSynthDef("clip");
+	elecClip.setEnvType(ENV_ASR);
+	elecClip.setDrawType(BT_ELEC_CURRENT);
+	elecClip.getAttackSecs().abs_value = 0.01;
+	elecClip.getDecaySecs().abs_value = 0.2;
 	
-	temp.getLength().setType = PSET_USERA;
-	temp.getUserParam(0).setType = PSET_USERB;
+	elecClip.getLength().setType = PSET_FIXED;
+	elecClip.getLength().abs_value = 50;
+	elecClip.getSoundParam("amp").setType = PSET_USERB;
+	elecClip.getVisualParam(0).setType = PSET_USERB;
 	
-	temp.getUserParam(1).setType = PSET_FIXED;
-	temp.getUserParam(1).abs_value = 0.2;
+	elecClip.getSoundParam("freq").setType = PSET_USERA;
+	elecClip.getVisualParam(1).setType = PSET_USERA;
 	
-	presets.push_back(temp);
+	elecClip.getSoundParam("clip").setType = PSET_FIXED;
+	elecClip.getSoundParam(1).abs_value = 0.5;
+	
+	presets.push_back(elecClip);
 	
 	//
 	
-	temp.setName("straw");
-	temp.setSynthDef("clip");
-	temp.setDrawType(BT_STRAW);
-	temp.setEnvType(ENV_AR);
+	blipPreset strawClip;
+	strawClip.setName("strawClip");
+	strawClip.setSynthDef("clip");
+	strawClip.setDrawType(BT_STRAW);
+	strawClip.setEnvType(ENV_AR);
 	
-	temp.getLength().setType = PSET_FIXED;
-	temp.getLength().abs_value = 10;
+	strawClip.getLength().setType = PSET_FIXED;
+	strawClip.getLength().abs_value = 10;
 	
-	temp.getAttackSecs().abs_value = 0.01;
-	temp.getDecaySecs().abs_value = 0.2;
+	strawClip.getAttackSecs().abs_value = 0.01;
+	strawClip.getDecaySecs().abs_value = 1;
 	
-	temp.getUserParam(0).setType = PSET_USERB;
-	temp.getUserParam(1).setType = PSET_USERA;
+	strawClip.getSoundParam("freq").setType = PSET_USERB;
+	strawClip.getSoundParam("amp").setType = PSET_USERA;
+	strawClip.getSoundParam("clip").setType = PSET_FIXED;
+	strawClip.getSoundParam("clip").abs_value = 0;
 	
-	presets.push_back(temp);
+	strawClip.getVisualParam(0).setType = PSET_USERB;
+	strawClip.getVisualParam(1).setType = PSET_USERA;
+	
+	presets.push_back(strawClip);
 
 }
 
@@ -113,6 +139,20 @@ void testApp::update(){
 		
 		viewPort.x = thisReader.getPos().x + trans.x;
 		viewPort.y = thisReader.getPos().y + trans.y;
+		
+		
+		if(abs(trans.x) > 0.5){ //needs some solution for wrapping //but leave for now
+			trans.x *= 0.98;
+		}else{
+			trans.x = 0;
+		}
+		
+		if(abs(trans.y) > 0.5){
+			trans.y *= 0.98;
+		}else{
+			trans.y = 0;
+		}
+		
 		
 		//position averaging ... needs more work due to wrapping
 		/*ofVec2f t;  

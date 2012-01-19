@@ -22,4 +22,37 @@ enum blipDrawType{
 
 };
 
+class drawDictionary{
+	
+public:
+	
+	drawDictionary();
+	vector<paramAttributes> getDefinition(blipDrawType drawDef);
+	
+private:
+	
+	paramAttributes hue;
+	paramAttributes rotation;
+	paramAttributes pivot;
+	paramAttributes density;
+	paramAttributes height;
+	
+};
+
+class synthDictionary{
+	
+public:
+	
+	synthDictionary();
+	vector<paramAttributes> getDefinition(string synthDef);
+	
+private:
+	
+	paramAttributes freq;
+	paramAttributes amp;
+	paramAttributes clip;
+	
+
+};
+
 #endif

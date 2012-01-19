@@ -141,41 +141,58 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 
 	float userA = t_dir.length();
 	float userB = t_dir.angle(ofVec2f(0,1));
+	userB = abs(userB);
 	
 	blipPreset & p = previewBlip.getPresetRef();
 	
-	if(p.getLength().setType == PSET_USERA){
-		p.getLength().abs_value = max(p.getLength().min_val,userA);
-		p.getLength().abs_value = min(p.getLength().max_val, userA);
-	}else{
-		float m_val = ofVec2f(ofGetScreenWidth(), ofGetScreenHeight()).length();
-		userA = ofMap(userA, 0, m_val, 0, 1);
+	float m_val = ofVec2f(ofGetScreenWidth()/2, ofGetScreenHeight()/2).length();
+
+	
+	for(int j = 0; j < 3; j++){
+		
+		paramAttributes * param;
+		
+		switch(j){
+		 	case 0:param = &p.getLength();break;
+			case 1:param = &p.getAttackSecs();break;
+			case 2:param = &p.getDecaySecs();break;
+		}
+		
+		if(param->setType == PSET_USERA){param->abs_value = ofMap(userA, 0, m_val, param->min_val, param->max_val);}
+		if(param->setType == PSET_USERB){param->abs_value = ofMap(userB, 0, 180, param->min_val, param->max_val);}
+	
 	}
 	
-	userB = ofMap(userB, -180, 180, 0, 1);
+
 	
-	for(int i = 0; i < p.getUserParams().size(); i++){
-		if(p.getUserParam(i).setType == PSET_USERA){
+	
+	for(int j = 0; j < 2; j++){
 		
-			p.getUserParam(i).abs_value = userA;
-			
-		}else if(p.getUserParam(i).setType == PSET_USERB){
+		vector<paramAttributes> & params = (j == 0) ? p.getSoundParams() : p.getVisualParams();
 		
-			p.getUserParam(i).abs_value = userB;
-			
-		}else if(p.getUserParam(i).setType == PSET_MAP){
-		
-			float mapValue = 0;
-			//map to world position
-			if(s_tracks[0]->getDirection().x > 0){
-				mapValue = ofMap(s_pos[0].x, -world_dims.x/2, world_dims.x/2, 
-								 p.getUserParam(i).min_val, p.getUserParam(i).max_val);
-			}else{
-				mapValue = ofMap(s_pos[0].y, -world_dims.y/2, world_dims.y/2, 
-								 p.getUserParam(i).min_val, p.getUserParam(i).max_val);
+		for(int i = 0; i < params.size(); i++){
+			if(params[i].setType == PSET_USERA){
+				
+				params[i].abs_value = ofMap(userA, 0, m_val, params[i].min_val, params[i].max_val);
+				
+			}else if(params[i].setType == PSET_USERB){
+				
+				params[i].abs_value = ofMap(userB, 0, 180, params[i].min_val, params[i].max_val);
+				
+			}else if(params[i].setType == PSET_MAP){
+				
+				float mapValue = 0;
+				//map to world position
+				if(s_tracks[0]->getDirection().x > 0){
+					mapValue = ofMap(s_pos[0].x, -world_dims.x/2, world_dims.x/2, 
+									 params[i].min_val, params[i].max_val);
+				}else{
+					mapValue = ofMap(s_pos[0].y, -world_dims.y/2, world_dims.y/2, 
+									 params[i].min_val, params[i].max_val);
+				}
+				
+				params[i].abs_value = mapValue;
 			}
-			
-			p.getUserParam(i).abs_value = mapValue;
 		}
 	}
 	

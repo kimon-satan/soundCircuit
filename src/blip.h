@@ -27,6 +27,7 @@ public:
 	bool react();
 	
 	void createDrawer();
+	void createDrawer(vector<paramAttributes> p);
 	void destroyDrawer();
 	void updateDrawer();
 	
@@ -38,7 +39,7 @@ public:
 	void setPreset(blipPreset t);
 	blipPreset& getPresetRef();
 	blipPreset getPreset();
-
+	baseBlipDraw * getDrawer();
 
 	
 private:
