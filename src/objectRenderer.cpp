@@ -128,6 +128,26 @@ bool objectRenderer::checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir){
 	return false;
 }
 
+
+bool objectRenderer::checkIsVisible(ofRectangle t){
+
+	vector<ofVec2f> points;
+	points.push_back(ofVec2f(t.x,t.y));
+	points.push_back(ofVec2f(t.x + t.width,t.y));
+	points.push_back(ofVec2f(t.x + t.width,t.y + t.height));
+	points.push_back(ofVec2f(t.x,t.y + t.height));
+	
+	for(int i = 0; i < points.size(); i++){
+		points[i].x = min(points[i].x, world_dims.x/2);
+		points[i].x = max(points[i].x, -world_dims.x/2);
+		points[i].y = min(points[i].y, world_dims.y/2);
+		points[i].y = max(points[i].y, -world_dims.y/2);
+		if(viewPort.inside(points[i]))return true;
+	}
+	
+	return false;
+}
+
 void objectRenderer::drawNodes(){
 	
 	for(vector<node>::iterator it = nodes->begin(); it != nodes->end(); it++){
@@ -176,17 +196,16 @@ void objectRenderer::drawBlips(){
 				ofRect(it->getWrapTestArea());
 			}
 		}else{
-			if(!it->getIsWrapped()){
-				if(checkIsVisible(it->getStartPos(), it->getEndPos(), it->getDirection()))it->draw();
+			//this still isn't quite correct as doesn't handle wrap in both directions (needs a wrapXDraw and WrapYDraw) and corresponding methods
+			
+			if(!it->getDrawer()->getIsDrawWrap()){
+				if(checkIsVisible(it->getDrawer()->getDrawRect()))it->draw();
 			}else{
-				ofVec2f i_dir(it->getDirection().y , it->getDirection().x);
-				ofVec2f wap = world_dims/2 * it->getDirection() + it->getStartPos() * i_dir;
-				ofVec2f wbp = -world_dims/2 * it->getDirection() + it->getStartPos() * i_dir;
 				
-				if(checkIsVisible(it->getStartPos(), wap, it->getDirection())){
+				if(checkIsVisible(it->getDrawer()->getDrawRect())){
 					it->draw();
 				}
-				if(checkIsVisible(wbp, it->getEndPos(), it->getDirection())){
+				if(checkIsVisible(it->getDrawer()->getWrapDrawRect())){
 					it->draw(true);
 				}
 			}
@@ -216,6 +235,7 @@ void objectRenderer::drawBlips(){
 	glPopMatrix();
 
 }
+
 
 
 //getters and setters

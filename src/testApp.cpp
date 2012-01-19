@@ -91,15 +91,15 @@ void testApp::setupDummyPresets(){
 	elecClip.getDecaySecs().abs_value = 0.2;
 	
 	elecClip.getLength().setType = PSET_FIXED;
-	elecClip.getLength().abs_value = 50;
-	elecClip.getSoundParam("amp").setType = PSET_USERB;
-	elecClip.getVisualParam(0).setType = PSET_USERB;
+	elecClip.getLength().abs_value = 100;
+	elecClip.getSoundParam("amp").setType = PSET_USERA;
+	elecClip.getVisualParam("height").setType = PSET_USERA;
 	
-	elecClip.getSoundParam("freq").setType = PSET_USERA;
-	elecClip.getVisualParam(1).setType = PSET_USERA;
+	elecClip.getSoundParam("freq").setType = PSET_USERB;
+	elecClip.getVisualParam("density").setType = PSET_USERB;
 	
 	elecClip.getSoundParam("clip").setType = PSET_FIXED;
-	elecClip.getSoundParam(1).abs_value = 0.5;
+	elecClip.getSoundParam("clip").abs_value = 0.2;
 	
 	presets.push_back(elecClip);
 	
@@ -122,8 +122,8 @@ void testApp::setupDummyPresets(){
 	strawClip.getSoundParam("clip").setType = PSET_FIXED;
 	strawClip.getSoundParam("clip").abs_value = 0;
 	
-	strawClip.getVisualParam(0).setType = PSET_USERB;
-	strawClip.getVisualParam(1).setType = PSET_USERA;
+	strawClip.getVisualParam("rotate").setType = PSET_USERB;
+	strawClip.getVisualParam("height").setType = PSET_USERA;
 	
 	presets.push_back(strawClip);
 
@@ -182,20 +182,12 @@ void testApp::update(){
 		
 	}
 	
+	updateDummyViews();
+	
 }
 
-//--------------------------------------------------------------
-void testApp::draw(){
+void testApp::updateDummyViews(){
 	
-	ofBackground(255);
-	
-	ofSetColor(0);
-	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 1000,20);
-	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
-	ofDrawBitmapString("blipPreset: " + presets[selectedPreset].getName(), 400,20);
-	
-	currentLayer.draw(viewPort);
-	thisReader.draw(viewPort);
 	ofVec2f t_dims = currentLayer.getDims();
 	
 	float y_over = viewPort.y + viewPort.height/2.0f - t_dims.y/2.0f;
@@ -208,13 +200,9 @@ void testApp::draw(){
 	
 	if( y_over > 0 ){ // viewport goes over top edge
 		dummy_view.y = -t_dims.y/2 + y_over - viewPort.height/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
 	}else if( y_under > 0 ){ // viewport goes over top edge
 		dummy_view.y = t_dims.y/2 - y_under + viewPort.height/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
 	}
 	
@@ -222,40 +210,61 @@ void testApp::draw(){
 	
 	if( x_over > 0 ){ 
 		dummy_view.x = -t_dims.x/2 + x_over - viewPort.width/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
 	}else if( x_under > 0 ){ 
 		dummy_view.x = t_dims.x/2 - x_under + viewPort.width/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
 	}
 	
 	if( x_over > 0 && y_over > 0){
 		dummy_view.y = -t_dims.y/2 + y_over - viewPort.height/2;
 		dummy_view.x = -t_dims.x/2 + x_over - viewPort.width/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
 	}else if( x_over > 0 && y_under > 0){
 		dummy_view.x = -t_dims.x/2 + x_over - viewPort.width/2;
 		dummy_view.y = t_dims.y/2 - y_under + viewPort.height/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
 	}else if( x_under > 0 && y_under > 0){
 		dummy_view.y = t_dims.y/2 - y_under + viewPort.height/2;
 		dummy_view.x = t_dims.x/2 - x_under + viewPort.width/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
 	}else if( x_under > 0 && y_over > 0){
 		dummy_view.x = t_dims.x/2 - x_under + viewPort.width/2;
 		dummy_view.y = -t_dims.y/2 + y_over - viewPort.height/2;
-		currentLayer.draw(dummy_view,true);
-		thisReader.draw(dummy_view);
 		dummy_views.push_back(dummy_view);
+	}
+	
+
+}
+
+//--------------------------------------------------------------
+void testApp::draw(){
+	
+	ofBackground(255);
+	
+	currentLayer.draw(viewPort);
+	for(int i = 0; i < dummy_views.size(); i ++){currentLayer.draw(dummy_views[i], true);}
+	
+	thisReader.draw(viewPort);
+	for(int i = 0; i < dummy_views.size(); i ++){thisReader.draw(dummy_views[i]);}
+		
+	ofSetColor(0);
+	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 1000,20);
+	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
+	ofDrawBitmapString("blipPreset: " + presets[selectedPreset].getName(), 400,20);
+	ofEnableAlphaBlending();
+	ofSetColor(0, 20);
+	ofFill();
+	ofRect(0,0,ofGetScreenWidth(),30);
+	ofDisableAlphaBlending();
+	
+	ofSetColor(0);
+	
+	if(mouseDown && mouseMode == MODE_ADD_BLIP){
+		ofLine(mouse_a,mouse_b);
+		ofVec2f dir(mouse_b - mouse_a);
+		dir.normalize();
+		ofDrawBitmapString(currentLayer.getSM()->getPreviewParams(), mouse_b + dir * 20);
 	}
 	
 }
@@ -411,6 +420,7 @@ void testApp::mousePressed(int x, int y, int button){
 	
 	mouseDown = true;
 	mouse_a.set(x,y);
+	mouse_b.set(mouse_a);
 	
 	if(mouseMode == MODE_DRAG){
 		
@@ -431,7 +441,6 @@ void testApp::mousePressed(int x, int y, int button){
 		prepPauseFollow();
 		
 		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(x,y)), presets[selectedPreset]);
-		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(x,y)), ofVec2f(10,10)); //replace the dummy vec with a value stored in the preset itself
 	}
 }
 
@@ -457,6 +466,9 @@ void testApp::mouseDragged(int x, int y, int button){
 	}else if(mouseMode == MODE_ADD_BLIP){
 	
 		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(x,y)),dir);
+		if(dir.length() > 1){
+			presets[selectedPreset].setUserVals(dir.length(), abs(dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
+		}
 	
 	}
 }
@@ -493,6 +505,9 @@ void testApp::mouseReleased(int x, int y, int button){
 		currentLayer.getSM()->endBlip();
 		
 	}
+	
+	mouse_a.set(0,0);
+	mouse_b.set(0,0);
 }
 
 

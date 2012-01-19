@@ -30,9 +30,10 @@ public:
 	void calcBlip(ofVec2f w_pos, ofVec2f dir);
 	void endBlip();
 	
+	string getPreviewParams();
+	
 	//getters and setters
 	
-
 	void setTracks(vector<segment> * t_ref);
 	void setNodes(vector<node> * t_ref);
 	void setBlips(vector<blip> * t_ref);

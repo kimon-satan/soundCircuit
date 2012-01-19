@@ -11,7 +11,7 @@
 #include "blipPreset.h"
 #include "blip.h"
 
-elecCurrent::elecCurrent(){
+elecCurrent::elecCurrent():baseBlipDraw(){
 	
 
 }
@@ -40,20 +40,35 @@ void elecCurrent::update(){
 	peaks.push_back(ofVec2f(-length/2, 0));
 	
 	
-	float a = -length/2;
-	float b = a + length/numPeaks;
+	float pa = -length/2;
+	float pb = pa + length/numPeaks;
 	
 	for(int i = 0; i < numPeaks; i ++){
-		peaks.push_back(ofVec2f(ofRandom(a,b), ofRandom(-waveHeight,waveHeight)));
-		a = b;
-		b = a + (float)length/numPeaks;
+		peaks.push_back(ofVec2f(ofRandom(pa,pb), ofRandom(-waveHeight,waveHeight)));
+		pa = pb;
+		pb = pa + (float)length/numPeaks;
 	}
 
 	peaks.push_back(ofVec2f(length/2, 0));
-
+	
+	ofVec2f a = startPos - ofVec2f(0,max_waveHeight);
+	ofVec2f b = a + ofVec2f(length, max_waveHeight *2);
+	a.rotate(angle, centre);
+	b.rotate(angle, centre);
+	
+	ofVec2f wa = endPos - ofVec2f(length,max_waveHeight);
+	ofVec2f wb = endPos + ofVec2f(0,max_waveHeight);
+	
+	wa.rotate(angle, wrapCentre);
+	wb.rotate(angle, wrapCentre);
+	
+	setTestingRects(a,b,wa,wb);
+	
 }
 
 void elecCurrent::draw(bool isWrapped){
+	
+	
 	
 	glPushMatrix();
 	
@@ -89,5 +104,7 @@ void elecCurrent::draw(bool isWrapped){
 	
 
 	glPopMatrix();
+	
+	
 	
 }

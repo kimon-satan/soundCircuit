@@ -157,4 +157,4 @@ void blip::setPreset(blipPreset t){preset = t;}
 blipPreset & blip::getPresetRef(){return preset;}
 blipPreset blip::getPreset(){return preset;}
 
-
+baseBlipDraw * blip::getDrawer(){return drawer;}

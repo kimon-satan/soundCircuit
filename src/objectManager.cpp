@@ -126,6 +126,7 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 		s_pos[0] = s_tracks[0]->getSelectPos();
 		previewBlip.setPreset(bp);
 		previewBlip.createDrawer();
+		calcBlip(s_pos[0], ofVec2f(0,0));
 	}
 	
 	
@@ -137,11 +138,17 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 		previewBlip.setIsValid(false);
 		return;
 	}
+	
 	//preset parameter sorting
 
 	float userA = t_dir.length();
 	float userB = t_dir.angle(ofVec2f(0,1));
 	userB = abs(userB);
+	
+	if(userA == 0){
+		userA = previewBlip.getPreset().getUserVals().at(0);
+		userB = previewBlip.getPreset().getUserVals().at(1);
+	}
 	
 	blipPreset & p = previewBlip.getPresetRef();
 	
@@ -671,6 +678,22 @@ segment * objectManager::selectBlip(ofVec2f t_pos){
 }
 
 
+string objectManager::getPreviewParams(){
+	
+	string paramString = "";
+	blipPreset p = previewBlip.getPreset();
+	
+	for(int i = 0; i < p.getSoundParams().size(); i++){
+		
+		if(p.getSoundParam(i).setType == PSET_USERA || p.getSoundParam(i).setType == PSET_USERB){
+			paramString = paramString + p.getSoundParams().at(i).name;
+			paramString +=  " : " + ofToString(p.getSoundParams().at(i).abs_value, 2);
+			paramString += "\n";
+		}
+	}
+	
+	return paramString;
+}
 
 
 //getters and setters

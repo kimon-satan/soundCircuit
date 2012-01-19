@@ -38,6 +38,8 @@ private:
 	
 	layer currentLayer;
 	
+	
+	void updateDummyViews();
 	ofVec2f getWorldCoordinate(ofVec2f point);
 	void drawVp(ofRectangle& vp, bool isDummy = false);
 	void moduloViewPort();

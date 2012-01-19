@@ -27,13 +27,8 @@ blipPreset::blipPreset(){
 	
 	envType = ENV_ASR;
 	
-	for(int i = 0; i < 5; i++){
-		paramAttributes t;
-		t.setType = PSET_FIXED;
-		t.abs_value = 0;
-		soundParams.push_back(t);
-		visualParams.push_back(t);
-	}
+	userVals.push_back(0);
+	userVals.push_back(0);
 	
 	
 }
@@ -87,3 +82,5 @@ paramAttributes& blipPreset::getLength(){return length;}
 vector<paramAttributes>& blipPreset::getSoundParams(){return soundParams;}
 vector<paramAttributes>& blipPreset::getVisualParams(){return visualParams;}
 
+void blipPreset::setUserVals(float a, float b){userVals[0] = a; userVals[1] = b;}
+vector<float> blipPreset::getUserVals(){return userVals;}

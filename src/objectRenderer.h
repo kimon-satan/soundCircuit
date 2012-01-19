@@ -32,6 +32,7 @@ public:
 private:
 	
 	bool checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir);
+	bool checkIsVisible(ofRectangle t);
 	void drawTrack(segment * t);
 	
 	ofRectangle viewPort;

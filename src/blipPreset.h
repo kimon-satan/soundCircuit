@@ -49,6 +49,10 @@ public:
 	paramAttributes& getVisualParam(string s);
 	vector<paramAttributes>& getVisualParams();
 	
+	void setUserVals(float a, float b);
+	vector<float> getUserVals();
+	
+	
 	static synthDictionary thisSynthDef;
 	static drawDictionary thisDrawDef;
 	
@@ -57,6 +61,8 @@ private:
 	string name;
 	string synthDef;
 	blipDrawType drawType;
+	
+	vector<float> userVals;
 	
 	e_envType envType;
 	paramAttributes attack_secs, decay_secs, length;

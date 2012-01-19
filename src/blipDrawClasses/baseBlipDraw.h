@@ -43,6 +43,8 @@ class baseBlipDraw{
 
 public:
 	
+	baseBlipDraw();
+	
 	virtual void draw(bool isWrapped = false){};
 	virtual void update(){};
 	virtual void drawPreview(){};
@@ -51,16 +53,22 @@ public:
 	void setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l);
 	void setPresetParams(vector<float> t_params);
 	void setTimeParams(bool & t_active, float & t_envVal);
-	
+
+	ofRectangle getDrawRect();
+	ofRectangle getWrapDrawRect();
+	void setTestingRects(ofVec2f a, ofVec2f b, ofVec2f wa, ofVec2f wb);
+	bool getIsDrawWrap();
 	
 protected:
 	
 	ofVec2f centre, wrapCentre;
 	ofVec2f direction, startPos, endPos;
 	float length, angle;
+	ofRectangle drawRect, wrapDrawRect;
 	vector<float> params;
 	float envVal;
 	bool isActive;
+	bool isDrawWrap;
 
 };
 
