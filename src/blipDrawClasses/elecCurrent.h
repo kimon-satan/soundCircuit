@@ -18,7 +18,7 @@ public:
 	
 	elecCurrent();
 	void update();
-	void draw(bool isWrapped = false);
+	void draw(int t_wrap = 0);
 	
 private:
 	

@@ -83,7 +83,7 @@ void blip::update(){
 	
 }
 
-void blip::draw(bool t_wrap){
+void blip::draw(int t_wrap){
 	
 	if(drawer)drawer->draw(t_wrap);
 
@@ -104,19 +104,28 @@ bool blip::react(){
 	return false;
 }
 
-void blip::createDrawer(){
+void blip::createDrawer(ofVec2f t_dims){
 	
 	if(preset.getDrawType() == BT_TESTBLIP){drawer = new testBlip();}
 	if(preset.getDrawType() == BT_ELEC_CURRENT){drawer = new elecCurrent();}
 	if(preset.getDrawType() == BT_STRAW){drawer = new straw();}
 	
+	drawer->setBlipParams(direction, startPos, endPos,length);
+	drawer->setup(t_dims);
 	updateDrawer();
+	
+}
+
+void blip::updateDrawerPosition(ofVec2f t_dims){
+
+	if(drawer)drawer->setup(t_dims);
 	
 }
 
 void blip::updateDrawer(){
 
 	if(drawer){
+		
 		drawer->setBlipParams(direction, startPos, endPos,length);
 		
 		vector<float> t_params;

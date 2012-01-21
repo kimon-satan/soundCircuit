@@ -45,30 +45,36 @@ public:
 	
 	baseBlipDraw();
 	
-	virtual void draw(bool isWrapped = false){};
+	virtual void setup(ofVec2f t_dims);
+	virtual void draw(int t_wrap = 0){};
 	virtual void update(){};
 	virtual void drawPreview(){};
+	
+	void setCorners(vector<ofVec2f> & t_corners, ofVec2f t_centre, ofVec2f t_dims, float t_angle);
+	void setWrapData(ofVec2f t_dims, float t_angle);
 	
 	//getters and setters
 	void setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l);
 	void setPresetParams(vector<float> t_params);
 	void setTimeParams(bool & t_active, float & t_envVal);
-
-	ofRectangle getDrawRect();
-	ofRectangle getWrapDrawRect();
-	void setTestingRects(ofVec2f a, ofVec2f b, ofVec2f wa, ofVec2f wb);
-	bool getIsDrawWrap();
+	
+	vector<ofVec2f>getCorners();
+	vector<ofVec2f>getWrapXCorners();
+	vector<ofVec2f>getWrapYCorners();
+	
+	bool getIsXWrapped();
+	bool getIsYWrapped();
 	
 protected:
 	
-	ofVec2f centre, wrapCentre;
+	ofVec2f world_dims, centre, wrapCoords;
+	vector<ofVec2f> corners, wrapXcorners, wrapYcorners;
+	ofVec2f wrapXCentre, wrapYCentre;
 	ofVec2f direction, startPos, endPos;
 	float length, angle;
-	ofRectangle drawRect, wrapDrawRect;
 	vector<float> params;
 	float envVal;
-	bool isActive;
-	bool isDrawWrap;
+	bool isActive, isXWrapped, isYWrapped;
 
 };
 

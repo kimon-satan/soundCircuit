@@ -129,13 +129,13 @@ bool objectRenderer::checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir){
 }
 
 
-bool objectRenderer::checkIsVisible(ofRectangle t){
+bool objectRenderer::checkIsVisible(vector<ofVec2f> t_corners){
 
 	vector<ofVec2f> points;
-	points.push_back(ofVec2f(t.x,t.y));
-	points.push_back(ofVec2f(t.x + t.width,t.y));
-	points.push_back(ofVec2f(t.x + t.width,t.y + t.height));
-	points.push_back(ofVec2f(t.x,t.y + t.height));
+	points.push_back(t_corners[0]);
+	points.push_back(t_corners[1]);
+	points.push_back(ofVec2f(t_corners[0].x, t_corners[1].y));
+	points.push_back(ofVec2f(t_corners[1].x, t_corners[0].y));
 	
 	for(int i = 0; i < points.size(); i++){
 		points[i].x = min(points[i].x, world_dims.x/2);
@@ -196,19 +196,20 @@ void objectRenderer::drawBlips(){
 				ofRect(it->getWrapTestArea());
 			}
 		}else{
-			//this still isn't quite correct as doesn't handle wrap in both directions (needs a wrapXDraw and WrapYDraw) and corresponding methods
+			if(checkIsVisible(it->getDrawer()->getCorners()))it->draw(0);
 			
-			if(!it->getDrawer()->getIsDrawWrap()){
-				if(checkIsVisible(it->getDrawer()->getDrawRect()))it->draw();
-			}else{
-				
-				if(checkIsVisible(it->getDrawer()->getDrawRect())){
-					it->draw();
-				}
-				if(checkIsVisible(it->getDrawer()->getWrapDrawRect())){
-					it->draw(true);
-				}
+			if(it->getDrawer()->getIsXWrapped()){
+				if(checkIsVisible(it->getDrawer()->getWrapXCorners()))it->draw(1);
 			}
+			
+			if(it->getDrawer()->getIsYWrapped()){
+			
+				if(checkIsVisible(it->getDrawer()->getWrapYCorners())){
+					it->draw(2);
+				}
+			}	
+			
+			   
 		}
 	}
 	
@@ -226,7 +227,20 @@ void objectRenderer::drawBlips(){
 				ofRect(previewBlip.getWrapTestArea());
 			}
 		}else {
-			previewBlip.draw();
+			
+			if(checkIsVisible(previewBlip.getDrawer()->getCorners()))previewBlip.draw(0);
+			
+			if(previewBlip.getDrawer()->getIsXWrapped()){
+				
+				if(checkIsVisible(previewBlip.getDrawer()->getWrapXCorners())){
+					previewBlip.draw(1);
+					
+				}
+			}
+			
+			if(previewBlip.getDrawer()->getIsYWrapped()){
+				if(checkIsVisible(previewBlip.getDrawer()->getWrapYCorners()))previewBlip.draw(2);
+			}
 		}
 
 		

@@ -13,47 +13,30 @@
 
 testBlip::testBlip():baseBlipDraw(){
 	
-	
-
 }
 
-void testBlip::update(){
 
-	ofVec2f l_dir(length, length);
-	l_dir *= direction;
-	ofVec2f inv_dir(direction.y,direction.x);
-	
-	centre = startPos + l_dir/2;
-	wrapCentre = endPos - l_dir/2;
-	angle = (direction.y > 0) ? 90 : 0;
+void testBlip::update(){	
+
 	alpha = 255.0f * envVal;
 	c.setHsb(params[0],255,255, alpha);
 	testRect.setFromCenter(0, 0, length, 18);
 
-	ofVec2f a = startPos - ofVec2f(0,9);
-	ofVec2f b = a + ofVec2f(length, 18);
-	a.rotate(angle, centre);
-	b.rotate(angle, centre);
-	
-	ofVec2f wa = endPos - ofVec2f(length,9);
-	ofVec2f wb = endPos + ofVec2f(0,9);
-	
-	wa.rotate(angle, wrapCentre);
-	wb.rotate(angle, wrapCentre);
-
-	setTestingRects(a,b,wa,wb);
+	setWrapData(ofVec2f(length/2,9),angle);
 
 }
 
-void testBlip::draw(bool isWrapped){
+void testBlip::draw(int t_wrap){
 	
 	
 	glPushMatrix();
 	
-	if(isWrapped){
-		glTranslatef(wrapCentre.x, wrapCentre.y, 0);
-	}else{
-		glTranslatef(centre.x, centre.y, 0); 
+	if(t_wrap == 0){
+		glTranslatef(centre.x, centre.y, 0);
+	}else if(t_wrap == 1){
+		glTranslatef(wrapCoords.x, centre.y, 0); 
+	}else if(t_wrap == 2){
+		glTranslatef(centre.x, wrapCoords.y, 0); 
 	}
 	
 	glRotatef(angle, 0, 0, 1);

@@ -25,7 +25,7 @@ void testApp::setup(){
 	trans.set(0,0);
 	
 	mouseDown = false;
-	
+	isOptionKey = false;
 	mouseMode = MODE_NONE;
 	
 	setupDummyPresets();
@@ -37,8 +37,6 @@ void testApp::setup(){
 	currentLayer.getSM()->beginTrack(ofVec2f(0,0));
 	currentLayer.getSM()->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
 	currentLayer.getSM()->endTrack();
-	
-	//glEnable(GL_DEPTH_TEST); // this method causes problems ...needs a rethink
 	
 }
 
@@ -103,8 +101,7 @@ void testApp::setupDummyPresets(){
 	
 	presets.push_back(elecClip);
 	
-	//
-	
+
 	blipPreset strawClip;
 	strawClip.setName("strawClip");
 	strawClip.setSynthDef("clip");
@@ -277,6 +274,7 @@ string testApp::getModeString(e_mouseMode temp){
 		case MODE_DRAG:return "drag";break;
 		case MODE_ADD_TRACK:return "addTrack";break;
 		case MODE_ADD_BLIP:return "addBlip";break;
+		case MODE_HYBRID:return "addHybrid";break;
 		default:return "none";break;
 			
 	}
@@ -389,6 +387,7 @@ void testApp::keyPressed  (int key){
 		
 		isFixed = !isFixed;
 	}
+	
 	
 	if(key == OF_KEY_UP)selectedPreset = min(selectedPreset + 1, (int)presets.size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset = max(selectedPreset - 1, 0);

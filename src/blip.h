@@ -22,12 +22,12 @@ public:
 	blip();
 	
 	void update();
-	void draw(bool t_wrap = false);
+	void draw(int t_wrap = 0);
 	
 	bool react();
 	
-	void createDrawer();
-	void createDrawer(vector<paramAttributes> p);
+	void createDrawer(ofVec2f t_dims);
+	void updateDrawerPosition(ofVec2f t_dims);
 	void destroyDrawer();
 	void updateDrawer();
 	

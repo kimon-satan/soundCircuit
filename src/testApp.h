@@ -50,6 +50,7 @@ private:
 		MODE_DRAG,
 		MODE_ADD_TRACK,
 		MODE_ADD_BLIP,
+		MODE_HYBRID,
 		MODE_COUNT
 	};
 	
@@ -72,6 +73,7 @@ private:
 	ofVec2f trans;
 	
 	e_mouseMode mouseMode;
+	bool isOptionKey;
 	bool isPreview, mouseDown;
 	static bool drawData;
 

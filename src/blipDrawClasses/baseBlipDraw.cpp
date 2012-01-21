@@ -11,10 +11,52 @@
 
 baseBlipDraw::baseBlipDraw(){
 
+	for(int i = 0; i < 2; i++){
+		corners.push_back(ofVec2f(0,0));
+		wrapXcorners.push_back(ofVec2f(0,0));
+		wrapYcorners.push_back(ofVec2f(0,0));
+	}
+	
+	isXWrapped = false;
+	isYWrapped = false;
+}
 
+void baseBlipDraw::setup(ofVec2f t_dims){
+	
+	world_dims = t_dims;
+	ofVec2f l_dir(length, length);
+	l_dir *= direction;
+	centre = startPos + l_dir/2;
+	wrapCoords.set(centre);
+	wrapCoords.y += (startPos.y > 0)? -world_dims.y : world_dims.y;
+	wrapCoords.x += (startPos.x > 0)? -world_dims.x : world_dims.x;
+	angle = (direction.y > 0) ? 90 : 0;
+	
 }
 
 //getters and setters
+
+void baseBlipDraw::setCorners(vector<ofVec2f> & t_corners, ofVec2f t_centre, ofVec2f t_dims, float t_angle){
+	
+	t_corners[0] = t_centre - t_dims; //maybe a function for this in baseBlip
+	t_corners[1] = t_centre + t_dims;
+	t_corners[0].rotate(t_angle, t_centre);
+	t_corners[1].rotate(t_angle, t_centre);
+	
+}
+
+void baseBlipDraw::setWrapData(ofVec2f t_dims, float t_angle){
+	
+	setCorners(corners, centre, t_dims, t_angle);
+	
+	if(corners[0].x < -world_dims.x/2 || corners[1].x > world_dims.x/2){
+		isXWrapped = true;
+		setCorners(wrapXcorners, ofVec2f(wrapCoords.x, centre.y),t_dims, t_angle);
+	}else if(corners[0].y < -world_dims.y/2 || corners[1].y > world_dims.y/2){
+		isYWrapped = true;
+		setCorners(wrapYcorners, ofVec2f(centre.x, wrapCoords.y),t_dims, t_angle);
+	}
+}
 
 
 
@@ -22,8 +64,6 @@ void baseBlipDraw::setTimeParams(bool & t_active, float & t_envVal){
 
 	isActive = t_active;
 	envVal = t_envVal;
-
-	
 }
 
 void baseBlipDraw::setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l){
@@ -36,19 +76,9 @@ void baseBlipDraw::setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep
 }
 
 void baseBlipDraw::setPresetParams( vector<float> t_params){params = t_params;}
-void baseBlipDraw::setTestingRects(ofVec2f a, ofVec2f b, ofVec2f wa, ofVec2f wb){
+vector<ofVec2f> baseBlipDraw::getCorners(){return corners;}
+vector<ofVec2f> baseBlipDraw::getWrapXCorners(){return wrapXcorners;}
+vector<ofVec2f> baseBlipDraw::getWrapYCorners(){return wrapYcorners;}
 
-	drawRect.set((a.x < b.x)? a.x:b.x, 
-				 (a.y < b.y)? a.y:b.y, 
-				 abs(b.x - a.x), abs(b.y - a.y));
-	
-	wrapDrawRect.set((wa.x < wb.x)? wa.x:wb.x, 
-					 (wa.y < wb.y)? wa.y:wb.y, 
-					 abs(wb.x - wa.x), abs(wb.y - wa.y));
-	
-	isDrawWrap = (drawRect!= wrapDrawRect)? true : false;
-
-}
-ofRectangle baseBlipDraw::getDrawRect(){return drawRect;}
-ofRectangle baseBlipDraw::getWrapDrawRect(){return wrapDrawRect;}
-bool baseBlipDraw::getIsDrawWrap(){return isDrawWrap;}
+bool baseBlipDraw::getIsXWrapped(){return isXWrapped;}
+bool baseBlipDraw::getIsYWrapped(){return isYWrapped;}

@@ -125,8 +125,8 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 	}else{
 		s_pos[0] = s_tracks[0]->getSelectPos();
 		previewBlip.setPreset(bp);
-		previewBlip.createDrawer();
 		calcBlip(s_pos[0], ofVec2f(0,0));
+		previewBlip.createDrawer(world_dims);
 	}
 	
 	
@@ -227,6 +227,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 		}
 		if(!recalc){
 			previewBlip.setIsValid(true);
+			previewBlip.updateDrawerPosition(world_dims); //needs to be called as blip position can change
 			previewBlip.updateDrawer();
 		}else{
 			previewBlip.setIsValid(false);
@@ -241,7 +242,7 @@ void objectManager::endBlip(){
 	
 	if(previewBlip.getIsValid()){
 		blips->push_back(previewBlip);
-		blips->back().createDrawer();
+		blips->back().createDrawer(world_dims);
 		blips->back().aquireIndex();
 	}
 	previewBlip.setIsValid(false);
