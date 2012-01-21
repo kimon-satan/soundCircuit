@@ -27,12 +27,13 @@ void testApp::setup(){
 	mouseDown = false;
 	isOptionKey = false;
 	mouseMode = MODE_NONE;
+	currentAction = ACTION_NONE;
 	
 	setupDummyPresets();
 	selectedPreset = 0;
 	
 	thisReader.setLayer(&currentLayer);
-	thisReader.setOscSender(sender);
+	thisReader.setOscSender(&sender);
 	
 	currentLayer.getSM()->beginTrack(ofVec2f(0,0));
 	currentLayer.getSM()->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
@@ -171,9 +172,7 @@ void testApp::update(){
 	
 	if(!mouseDown){
 		
-		if(mouseMode == MODE_ADD_TRACK){
-			currentLayer.selectSomething(getWorldCoordinate(ofVec2f(mouseX, mouseY)));
-		}else if(mouseMode == MODE_ADD_BLIP){
+		if(mouseMode == MODE_ADD){
 			currentLayer.selectSomething(getWorldCoordinate(ofVec2f(mouseX, mouseY)));
 		}
 		
@@ -249,6 +248,7 @@ void testApp::draw(){
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 1000,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
 	ofDrawBitmapString("blipPreset: " + presets[selectedPreset].getName(), 400,20);
+	ofDrawBitmapString("readerMode: " + thisReader.getModeString(), 700,20);
 	ofEnableAlphaBlending();
 	ofSetColor(0, 20);
 	ofFill();
@@ -257,7 +257,7 @@ void testApp::draw(){
 	
 	ofSetColor(0);
 	
-	if(mouseDown && mouseMode == MODE_ADD_BLIP){
+	if(mouseDown && currentAction == ACTION_ADD_BLIP){
 		ofLine(mouse_a,mouse_b);
 		ofVec2f dir(mouse_b - mouse_a);
 		dir.normalize();
@@ -272,9 +272,7 @@ string testApp::getModeString(e_mouseMode temp){
 	switch(temp){
 			
 		case MODE_DRAG:return "drag";break;
-		case MODE_ADD_TRACK:return "addTrack";break;
-		case MODE_ADD_BLIP:return "addBlip";break;
-		case MODE_HYBRID:return "addHybrid";break;
+		case MODE_ADD:return "add";break;
 		default:return "none";break;
 			
 	}
@@ -363,10 +361,95 @@ void testApp::prepPauseFollow(){
 
 }
 
+void testApp::startAction(){
+
+	if(currentAction == ACTION_DRAG){
+		
+		prepPauseFollow();
+		
+		mouse_offset.x = -mouseX - viewPort.x;
+		mouse_offset.y = -mouseY - viewPort.y;
+		
+	}else if(currentAction == ACTION_ADD_SHORT_TRACK ||currentAction == ACTION_ADD_LONG_TRACK){
+		
+		prepPauseFollow();
+		
+		if(!isFixed)pauseFollow = true;
+		currentLayer.getSM()->beginTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)));
+		
+	}else if(currentAction == ACTION_ADD_BLIP){
+		
+		prepPauseFollow();
+		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset]);
+		
+	}
+	
+}
+
+void testApp::continueAction(ofVec2f t_dir){
+
+	if(currentAction == ACTION_DRAG){
+		
+		viewPort.x = -mouse_offset.x - mouseX;
+		viewPort.y = -mouse_offset.y - mouseY;
+		
+		trans.x = -mouse_offset.x - mouseX;
+		trans.y = -mouse_offset.y - mouseY;
+		
+	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
+		
+		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
+
+	}else if(currentAction == ACTION_ADD_LONG_TRACK){
+		
+		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
+		
+	}else if(currentAction == ACTION_ADD_BLIP){
+		
+		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
+		if(t_dir.length() > 1){
+			presets[selectedPreset].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
+		}
+		
+	}
+}
+
+void testApp::endAction(){
+	
+	if(currentAction == ACTION_DRAG){
+		
+		if(!isFixed){
+			pauseFollow = false;
+			trans -= thisReader.getPos();
+		}
+		
+	}else if(currentAction == ACTION_ADD_SHORT_TRACK || currentAction == ACTION_ADD_LONG_TRACK){
+		
+		isPreview = false;
+		if(!isFixed){
+			pauseFollow = false;
+			trans -= thisReader.getPos();
+		}
+		currentLayer.getSM()->endTrack();
+		
+	}else if(currentAction == ACTION_ADD_BLIP){
+		
+		isPreview = false;
+		if(!isFixed){
+			pauseFollow = false;
+			trans -= thisReader.getPos();
+		}
+		
+		currentLayer.getSM()->endBlip();
+		
+	}
+	
+}
+
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
 	
-	
+
 	for(int i = 1; i < MODE_COUNT; i ++){
 		if(key == 48 + i )mouseMode = e_mouseMode(i);
 		currentLayer.deselectAll();	
@@ -374,7 +457,7 @@ void testApp::keyPressed  (int key){
 	
 	if(key == ' '){
 		
-		vpHist.clear();
+		//vpHist.clear();
 		
 		if(isFixed){
 			trans -= thisReader.getPos();
@@ -389,8 +472,10 @@ void testApp::keyPressed  (int key){
 	}
 	
 	
+	if(key == 9)isOptionKey = true;
 	if(key == OF_KEY_UP)selectedPreset = min(selectedPreset + 1, (int)presets.size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset = max(selectedPreset - 1, 0);
+	if(key == 'r')thisReader.incrementMode();
 	
 	if(key == 'f')ofToggleFullscreen();
 	if(key == 's')currentLayer.toggleScreenData();
@@ -404,6 +489,7 @@ void testApp::keyPressed  (int key){
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
 	
+	if(isOptionKey)isOptionKey = false;
 }
 
 //--------------------------------------------------------------
@@ -422,25 +508,13 @@ void testApp::mousePressed(int x, int y, int button){
 	mouse_b.set(mouse_a);
 	
 	if(mouseMode == MODE_DRAG){
-		
-		prepPauseFollow();
-		
-		mouse_offset.x = -x - viewPort.x;
-		mouse_offset.y = -y - viewPort.y;
-		
-	}else if(mouseMode == MODE_ADD_TRACK){
-		
-		prepPauseFollow();
-		
-		if(!isFixed)pauseFollow = true;
-		currentLayer.getSM()->beginTrack(getWorldCoordinate(ofVec2f(x,y)));
-		
-	}else if(mouseMode == MODE_ADD_BLIP){
-		
-		prepPauseFollow();
-		
-		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(x,y)), presets[selectedPreset]);
+		currentAction = ACTION_DRAG;
+	}else if(mouseMode == MODE_ADD){
+		currentAction = (button == 0)? ACTION_ADD_BLIP : ((isOptionKey)? ACTION_ADD_LONG_TRACK : ACTION_ADD_SHORT_TRACK);
 	}
+	
+	startAction();
+
 }
 
 //--------------------------------------------------------------
@@ -448,63 +522,19 @@ void testApp::mouseDragged(int x, int y, int button){
 	
 	mouse_b.set(x,y);
 	ofVec2f dir = mouse_b - mouse_a;
+	continueAction(dir);
 
-	
-	if(mouseMode == MODE_DRAG){
-		
-		viewPort.x = -mouse_offset.x - x;
-		viewPort.y = -mouse_offset.y - y;
-		
-		trans.x = -mouse_offset.x - x;
-		trans.y = -mouse_offset.y - y;
-		
-	}else if(mouseMode == MODE_ADD_TRACK){
-		
-		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(x,y)),dir,button);
-		
-	}else if(mouseMode == MODE_ADD_BLIP){
-	
-		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(x,y)),dir);
-		if(dir.length() > 1){
-			presets[selectedPreset].setUserVals(dir.length(), abs(dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
-		}
-	
-	}
 }
 
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
 	
+	endAction();
+	
 	mouseDown = false;
-	
-	if(mouseMode == MODE_DRAG){
+	currentAction = ACTION_NONE;
 		
-		if(!isFixed){
-			pauseFollow = false;
-			trans -= thisReader.getPos();
-		}
-		
-	}else if(mouseMode == MODE_ADD_TRACK){
-		
-		isPreview = false;
-		if(!isFixed){
-			pauseFollow = false;
-			trans -= thisReader.getPos();
-		}
-		currentLayer.getSM()->endTrack();
-	
-	}else if(mouseMode == MODE_ADD_BLIP){
-		
-		isPreview = false;
-		if(!isFixed){
-			pauseFollow = false;
-			trans -= thisReader.getPos();
-		}
-		currentLayer.getSM()->endBlip();
-		
-	}
-	
 	mouse_a.set(0,0);
 	mouse_b.set(0,0);
 }

@@ -18,25 +18,44 @@ class reader{
 	
 	public:
 	
+	enum e_readerMode{
+		
+		READER_STRAIGHT,
+		READER_PERSIST,
+		READER_LOOP,
+		READER_FREE,
+		READER_WANDER,
+		READER_COUNT
+	};
+	
 	reader();
 	void update();
 	void draw(ofRectangle vp);
 	
+	void incrementMode();
+	
 	//getters and setters
 	void setLayer(layer * t_layer);
 	ofVec2f getPos();
-	void setOscSender(ofxOscSender & t);
+	void setOscSender(ofxOscSender * t);
+	string getModeString();
 	
 	private:
 	
 	void move();
 	void moduloPosition();
 	
+	ofVec2f nextDirection(ofVec2f t_dir, vector<bool> t_bools);
+
+	
 	ofRectangle body, testBody;
 	ofVec2f direction;
+	ofVec2f pDir, lDir;
+	vector<ofVec2f>socketDirections;
 	ofVec2f world_dims;
 	layer * currentLayer;
-	ofxOscSender sender;
+	ofxOscSender * sender;
+	e_readerMode mode;
 	
 	float speed, incr;
 	bool isStuck;

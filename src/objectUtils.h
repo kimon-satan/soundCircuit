@@ -23,7 +23,7 @@ public:
 protected:
 	
 	void limitStartPointFromMid(ofVec2f origin, vector<ofVec2f> & t_points, segment & s);
-	void limitEndPointFromMid(ofVec2f origin, vector<ofVec2f> & t_points, segment & s);
+	void limitEndPointFromMid(ofVec2f origin, vector<ofVec2f> & t_points, segment & s, bool preserveLength = false);
 	void limitEndPointFromStart(ofVec2f origin, vector<ofVec2f> & t_points, segment & s);
 	
 	vector<ofVec2f> getPlanarNeighbours(ofVec2f origin, vector<ofVec2f> &t_points);

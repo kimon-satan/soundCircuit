@@ -20,14 +20,18 @@ void objectUtils::limitStartPointFromMid(ofVec2f origin, vector<ofVec2f> & t_poi
 
 }
 
-void objectUtils::limitEndPointFromMid(ofVec2f origin, vector<ofVec2f> & t_points, segment & s){
+void objectUtils::limitEndPointFromMid(ofVec2f origin, vector<ofVec2f> & t_points, segment & s, bool preserveLength ){
 	
 	vector<ofVec2f> bounds = getPlanarNeighbours(origin, t_points);
 	sortNeighboursToSegment(origin, bounds, s);
 	
 	if(bounds[1] != origin){
 		
-		ofVec2f n_dir = bounds[1] - s.getStartPos();
+		ofVec2f n_dir = (preserveLength) ? s.getDirection() * s.getLength() : bounds[1] - s.getStartPos();
+		ofVec2f startPos = (preserveLength)? bounds[1] - n_dir: s.getStartPos();
+		
+		if(startPos.x < -world_dims.x/2)startPos.x += world_dims.x;
+		if(startPos.y < -world_dims.y/2)startPos.y += world_dims.y;
 		
 		if(
 		   (s.getTestArea().inside(origin) && !s.getTestArea().inside(bounds[1]))
@@ -37,7 +41,7 @@ void objectUtils::limitEndPointFromMid(ofVec2f origin, vector<ofVec2f> & t_point
 			n_dir += world_dims * s.getDirection();
 		}
 		
-		makeSegment(s.getStartPos(), n_dir, s);
+		makeSegment(startPos, n_dir, s);
 	}
 }
 

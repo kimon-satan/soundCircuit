@@ -15,7 +15,15 @@ reader::reader(){
 	speed = 200;
 	direction.set(1,0);
 	isStuck =false;
-
+	mode = READER_WANDER;
+	pDir.set(1,0);
+	
+	socketDirections.push_back(ofVec2f(0,-1)); // NORTH
+	socketDirections.push_back(ofVec2f(1,0)); // EAST
+	socketDirections.push_back(ofVec2f(0,1)); // SOUTH
+	socketDirections.push_back(ofVec2f(-1,0)); // WEST
+	
+	
 }
 
 void reader::update(){
@@ -65,7 +73,7 @@ void reader::move(){
 			
 			if(!it->getIsActive()){
 				
-				ofVec2f t_dir(it->getNextDirection(direction));
+				ofVec2f t_dir(nextDirection(direction, it->getSockets()));
 				nodeFound = true;
 				
 				if(t_dir != ofVec2f(0,0)){
@@ -112,7 +120,7 @@ void reader::move(){
 					m.addFloatArg(p.getSoundParam(i).abs_value);
 				}
 				
-				sender.sendMessage(m);
+				sender->sendMessage(m);
 			}
 			
 		}else{
@@ -127,13 +135,91 @@ void reader::move(){
 					m.setAddress("/blipOff");
 					m.addIntArg(it->getIndex());
 					
-					sender.sendMessage(m);
+					sender->sendMessage(m);
 				}
 				
 			}
 		}
 	}
 		
+}
+
+ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
+	
+	
+	vector<ofVec2f> available;
+	
+	for(int i = 0; i < 4 ; i++){
+		if(socketDirections[i] != -c_dir && t_bools[i] != false){
+			available.push_back(socketDirections[i]);
+		}
+	}
+	
+	if(available.size() == 0){
+		return ofVec2f(0,0);
+	}else if(available.size() == 1){
+		lDir.set(c_dir);
+		return available[0];
+		
+	}
+	
+	if(mode == READER_WANDER){
+		
+		for(int i = 0; i < available.size() ; i++){
+			if(available[i] == c_dir){
+				available.erase(available.begin() + i);
+				break;
+			}
+		}
+		
+		int choice = floor(ofRandom(0, 1) * available.size());
+		return available[choice];
+	
+	}else if(mode == READER_STRAIGHT){
+			
+		for(int i = 0; i < available.size() ; i++){
+			if(available[i] == c_dir){
+				return available[i];
+			}
+		}
+		
+		int choice = floor(ofRandom(0, 1) * available.size());
+		return available[choice];
+		
+	}else if(mode == READER_PERSIST){
+		
+		for(int i = 0; i < available.size() ; i++){
+			if(available[i] == pDir){
+				available.erase(available.begin() + i);
+				break;
+			}
+		}
+			
+		int choice = floor(ofRandom(0, 1) * available.size());
+		return available[choice];
+		
+	}else if(mode == READER_LOOP){
+		
+		for(int i = 0; i < available.size() ; i++){
+			if(available[i] == -lDir){
+				lDir = c_dir;
+				return available[i];
+				break;
+			}
+		}
+		
+		int choice = floor(ofRandom(0, 1) * available.size());
+		return available[choice];
+			
+	}else{		
+
+		int choice = floor(ofRandom(0, 1) * available.size());
+		return available[choice];
+		
+	}
+	
+	
+	
 }
 
 
@@ -157,9 +243,34 @@ void reader::draw(ofRectangle vp){
 	
 }
 
+void reader::incrementMode(){
+
+	mode = e_readerMode(mode + 1);
+	mode = e_readerMode((mode)%READER_COUNT);
+	if(mode == READER_PERSIST)pDir.set(-direction);
+	if(mode == READER_LOOP)lDir.set(direction);
+}
+
+string reader::getModeString(){
+	
+	string modeString = "";
+	
+	switch (mode) {
+		case READER_FREE: modeString = "free"; break;
+		case READER_PERSIST: modeString = "persist"; break;
+		case READER_WANDER: modeString = "wander"; break;
+		case READER_STRAIGHT: modeString = "straight"; break;
+		case READER_LOOP: modeString = "loop"; break;
+	}
+	
+	return modeString;
+}
+
+
+
 //getters and setters
 
 void reader::setLayer(layer * t_layer){currentLayer = t_layer;}
 ofVec2f reader::getPos(){return ofVec2f(body.x,body.y);}
-void reader::setOscSender(ofxOscSender & t){sender = t;}
+void reader::setOscSender(ofxOscSender * t){sender = t;}
 

@@ -209,7 +209,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 		s_pos[1] = s_pos[0] - t_dir/2;
 		makeSegment(s_pos[1], t_dir, previewBlip);
 		
-		if(p.getLength().setType == PSET_USERA){
+		if(p.getLength().setType == PSET_USERA || p.getLength().setType == PSET_USERB ){
 			constrainFromMidPoint(s_pos[0], previewBlip, false, true, true);
 		}else{
 			repositionFromMidPoint(s_pos[0], previewBlip, false, true, true);
@@ -221,6 +221,17 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 			if(selectBlip(previewBlip.getStartPos())||selectBlip(previewBlip.getEndPos())){
 				recalc =true;
 			}
+		}
+		if(!recalc){
+			vector<ofVec2f> points;
+			findNodeIntersects(previewBlip, points);
+	
+			for(int i = 0; i < points.size(); i ++){
+				if(points[i] != previewBlip.getStartPos() || points[i] != previewBlip.getEndPos()){
+					recalc = true; break;
+				}
+			}
+			
 		}
 		if(previewBlip.getLength() < p.getLength().min_val){
 			recalc = true;
@@ -253,11 +264,13 @@ void objectManager::endBlip(){
 //protected constructors
 
 void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
+
 	
 	if(s_nodes[1]){
-		s_nodes[1]->setSelected(false);
+		if(s_nodes[0] != s_nodes[1])s_nodes[1]->setSelected(false);
 		s_nodes[1] = NULL;
 	}
+	
 	
 	if(s_tracks[1]){
 		s_tracks[1]->setSelected(false);
@@ -266,7 +279,9 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	
 	ofVec2f t_pos_0(s_pos[0]); //copied to local so as not lose original sp
 	
+	
 	s_nodes[1] = selectNode(w_pos);
+
 	if(!s_nodes[1])s_tracks[1] = selectTrackPoint(w_pos);
 	
 	bool recalc = false;
@@ -276,14 +291,19 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 		
 	singleTrack:
 		
+	
 		makeSegment(t_pos_0, size, previewTracks[0]);
 		constrainEndPoint(t_pos_0, previewTracks[0]);
+		
 		recalc = findParalellIntersects(previewTracks[0]);
 		if(!recalc){
 			if(selectBlip(previewTracks[0].getStartPos())||selectBlip(previewTracks[0].getEndPos()))recalc =true;
 				}
+		
 		if(!recalc)recalc = findNodeIntersects(previewTracks[0]);
+		
 		if(previewTracks[0].getLength() < 20)recalc = true;
+		
 		if(recalc){
 			for(int j = 0; j < 2; j ++)previewTracks[j].setIsValid(false);
 		}else{
@@ -291,7 +311,10 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 			previewTracks[1].setIsValid(false);
 		}
 		
+		
+		
 		return;
+		
 	}
 	
 	
@@ -461,7 +484,23 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 	if(isNodes)findNodeIntersects(s, points);
 	if(isBlips)findParalellIntersects(s, points, false, true);
 	
+	ofVec2f old_sp(s.getStartPos());
+	
 	if(points.size() > 0){limitStartPointFromMid(origin, points, s);}
+	
+	if(old_sp == s.getStartPos()){
+	
+		points.clear();
+		
+		if(isNodes)findNodeIntersects(s, points);
+		if(isBlips)findParalellIntersects(s, points, false, true);
+		
+		if(points.size() > 0){
+			limitEndPointFromMid(origin, points, s, true);
+		}
+	}
+
+	
 }
 
 
@@ -530,7 +569,7 @@ bool objectManager::findParalellIntersects(segment & s, vector<ofVec2f> & t_poin
 	bool isIntersect = false;
 	
 	if(isTracks){
-		for(int i = 0; i < tracks->size(); i++){ //could use the more robust checkVisible from Track
+		for(int i = 0; i < tracks->size(); i++){ 
 			
 			if(s.getDirection() == tracks->at(i).getDirection()){
 				
@@ -544,7 +583,7 @@ bool objectManager::findParalellIntersects(segment & s, vector<ofVec2f> & t_poin
 						isIntersect = true;
 						t_points.push_back(tracks->at(i).getStartPos());
 						t_points.push_back(tracks->at(i).getEndPos());
-						//cout << "pb: " << i <<endl;
+
 						
 					}else{
 						return true;
@@ -556,7 +595,7 @@ bool objectManager::findParalellIntersects(segment & s, vector<ofVec2f> & t_poin
 	}
 	
 	if(isBlips){
-		for(int i = 0; i < blips->size(); i++){ //could use the more robust checkVisible from Track
+		for(int i = 0; i < blips->size(); i++){ 
 			
 			if(s.getDirection() == blips->at(i).getDirection()){
 				
@@ -591,6 +630,7 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 	for(int i = 0; i < nodes->size(); i++){
 		
 		if(!nodes->at(i).getIsSelected()){
+			
 			if(s.getInside(nodes->at(i).getPos())){
 				
 				if(&t_points != &DPOINTS){
@@ -598,6 +638,7 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 					isIntersect = true;
 				}else{
 					return true;
+					
 				}
 				
 			}else if( s.getStartPos().distanceSquared(nodes->at(i).getPos()) < 144 ||

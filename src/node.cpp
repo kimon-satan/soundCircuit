@@ -47,34 +47,6 @@ void node::openSocket(ofVec2f t_dir){
 
 }
 
-ofVec2f node::getNextDirection(ofVec2f c_dir){
-	
-	vector<ofVec2f> available;
-	 
-	for(int i = 0; i < 4 ; i++){
-		if(socketDirections[i] != -c_dir && socketBools[i] != false){
-			available.push_back(socketDirections[i]);
-		}
-	}
-	
-	if(available.size() == 0){
-		return ofVec2f(0,0);
-	}else if(available.size() == 1){
-		return available[0];
-	}else if(available.size() > 1){
-		for(int i = 0; i < available.size() ; i++){
-			if(available[i] == c_dir){
-				available.erase(available.begin() + i);
-				break;
-			}
-		}
-		int choice = floor(ofRandom(0, 1) * available.size());
-		return available[choice];
-	}
-	
-	
-}
-
 
 bool node::getSuperfluous(){
 	
@@ -90,6 +62,7 @@ bool node::getSuperfluous(){
 }
 
 //getters and setters
+
 ofVec2f node::getPos(){return pos;}
 void node::setPos(ofVec2f p){pos = p;}
 void node::setIsActive(bool t){isActive = t;}
@@ -97,3 +70,4 @@ bool node::getIsActive(){return isActive;}
 void node::setSelected(bool t){isSelected = t;}
 int node::getIndex(){return index;}
 bool node::getIsSelected(){return isSelected;}
+vector<bool> node::getSockets(){return socketBools;}

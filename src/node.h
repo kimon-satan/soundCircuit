@@ -20,7 +20,7 @@ public:
 	node(ofVec2f t_pos);
 	
 	void openSocket(ofVec2f t_dir);
-	ofVec2f getNextDirection(ofVec2f c_dir);
+
 	
 	bool getSuperfluous();
 	int getIndex();
@@ -35,7 +35,7 @@ public:
 	bool getIsSelected();
 	void setIsActive(bool t);
 	bool getIsActive();
-
+	vector<bool> getSockets();
 
 private:
 	
