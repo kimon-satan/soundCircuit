@@ -48,11 +48,11 @@ void testApp::setupDummyPresets(){
 	asrHard.setSynthDef("basic");
 	asrHard.setDrawType(BT_TESTBLIP);
 	asrHard.setEnvType(ENV_ASR);
-	asrHard.getAttackSecs().abs_value = 0.01;
-	asrHard.getDecaySecs().abs_value = 0.05;
-	asrHard.getLength().setType = PSET_USERA;
-	asrHard.getSoundParam("freq").setType = PSET_USERB;
-	asrHard.getVisualParam("hue").setType = PSET_USERB;
+	asrHard.getAttackSecs()->abs_value = 0.01;
+	asrHard.getDecaySecs()->abs_value = 0.05;
+	asrHard.getLength()->setType = PSET_USERA;
+	asrHard.getSoundParam("freq")->setType = PSET_USERB;
+	asrHard.getVisualParam("hue")->setType = PSET_USERB;
 
 	presets.push_back(asrHard);
 	
@@ -61,11 +61,11 @@ void testApp::setupDummyPresets(){
 	asrSoft.setSynthDef("basic");
 	asrSoft.setDrawType(BT_TESTBLIP);
 	asrSoft.setEnvType(ENV_ASR);
-	asrSoft.getAttackSecs().abs_value = 0.4;
-	asrSoft.getDecaySecs().abs_value = 0.01;
-	asrSoft.getLength().setType = PSET_USERA;
-	asrSoft.getSoundParam("freq").setType = PSET_USERB;
-	asrSoft.getVisualParam(0).setType = PSET_USERB;
+	asrSoft.getAttackSecs()->abs_value = 0.4;
+	asrSoft.getDecaySecs()->abs_value = 0.01;
+	asrSoft.getLength()->setType = PSET_USERA;
+	asrSoft.getSoundParam("freq")->setType = PSET_USERB;
+	asrSoft.getVisualParam(0)->setType = PSET_USERB;
 	presets.push_back(asrSoft);
 	
 	blipPreset ar;
@@ -73,12 +73,12 @@ void testApp::setupDummyPresets(){
 	ar.setEnvType(ENV_AR);
 	ar.setSynthDef("basic");
 	ar.setDrawType(BT_TESTBLIP);
-	ar.getAttackSecs().abs_value = 0.01;
-	ar.getDecaySecs().abs_value = 1;
-	ar.getLength().setType = PSET_FIXED;
-	ar.getLength().abs_value = 20;
-	ar.getSoundParam("freq").setType = PSET_MAP;
-	ar.getVisualParam(0).setType = PSET_MAP;
+	ar.getAttackSecs()->abs_value = 0.01;
+	ar.getDecaySecs()->abs_value = 1;
+	ar.getLength()->setType = PSET_FIXED;
+	ar.getLength()->abs_value = 20;
+	ar.getSoundParam("freq")->setType = PSET_MAP;
+	ar.getVisualParam(0)->setType = PSET_MAP;
 	presets.push_back(ar);
 	
 	blipPreset elecClip;
@@ -86,19 +86,19 @@ void testApp::setupDummyPresets(){
 	elecClip.setSynthDef("elec");
 	elecClip.setEnvType(ENV_ASR);
 	elecClip.setDrawType(BT_ELEC_CURRENT);
-	elecClip.getAttackSecs().abs_value = 0.01;
-	elecClip.getDecaySecs().abs_value = 0.2;
+	elecClip.getAttackSecs()->abs_value = 0.01;
+	elecClip.getDecaySecs()->abs_value = 0.2;
 	
-	elecClip.getLength().setType = PSET_USERA;
-	elecClip.getSoundParam("speed").setType = PSET_USERB;
-	elecClip.getSoundParam("freq").setType = PSET_USERB;
-	elecClip.getVisualParam("density").setType = PSET_USERB;
-	elecClip.getVisualParam("height").setType = PSET_USERB;
+	elecClip.getLength()->setType = PSET_USERA;
+	elecClip.getSoundParam("speed")->setType = PSET_USERB;
+	elecClip.getSoundParam("freq")->setType = PSET_USERB;
+	elecClip.getVisualParam("density")->setType = PSET_USERB;
+	elecClip.getVisualParam("height")->setType = PSET_USERB;
 	
-	elecClip.getSoundParam("separate").setType = PSET_FIXED;
-	elecClip.getSoundParam("separate").abs_value = 0;
-	elecClip.getSoundParam("amp").setType = PSET_FIXED;
-	elecClip.getSoundParam("amp").abs_value = 0.5;
+	elecClip.getSoundParam("separate")->setType = PSET_FIXED;
+	elecClip.getSoundParam("separate")->abs_value = 0;
+	elecClip.getSoundParam("amp")->setType = PSET_FIXED;
+	elecClip.getSoundParam("amp")->abs_value = 0.5;
 	
 	presets.push_back(elecClip);
 	
@@ -109,20 +109,25 @@ void testApp::setupDummyPresets(){
 	strawClip.setDrawType(BT_STRAW);
 	strawClip.setEnvType(ENV_AR);
 	
-	strawClip.getLength().setType = PSET_FIXED;
-	strawClip.getLength().abs_value = 10;
+	strawClip.getLength()->setType = PSET_FIXED;
+	strawClip.getLength()->abs_value = 10;
 	
-	strawClip.getAttackSecs().abs_value = 0.01;
-	strawClip.getDecaySecs().abs_value = 1;
-	strawClip.getPostDecaySecs().abs_value = 1;
+	strawClip.getAttackSecs()->abs_value = 0.01;
+	strawClip.getDecaySecs()->abs_value = 1;
+	strawClip.getPostDecaySecs()->abs_value = 1;
 	
-	strawClip.getSoundParam("freq").setType = PSET_USERB;
-	strawClip.getSoundParam("amp").setType = PSET_USERA;
-	strawClip.getSoundParam("clip").setType = PSET_FIXED;
-	strawClip.getSoundParam("clip").abs_value = 0;
+	strawClip.getSoundParam("freq")->setType = PSET_RANDOM;
+	strawClip.getSoundParam("amp")->setType = PSET_RANDOM;
+	strawClip.getSoundParam("clip")->setType = PSET_FIXED;
+	strawClip.getSoundParam("clip")->abs_value = 0;
 	
-	strawClip.getVisualParam("rotate").setType = PSET_USERB;
-	strawClip.getVisualParam("height").setType = PSET_USERA;
+	strawClip.getVisualParam("rotation")->setType = PSET_RANDOM;
+	strawClip.getVisualParam("pivot")->setType = PSET_SLAVE;
+	strawClip.getVisualParam("pivot")->slaveTo = "freq";
+	strawClip.getVisualParam("pivot")->min_val = 50;
+	strawClip.getVisualParam("pivot")->max_val = 10;
+	strawClip.getVisualParam("height")->setType = PSET_SLAVE;
+	strawClip.getVisualParam("height")->slaveTo = "amp";
 	
 	presets.push_back(strawClip);
 	
@@ -132,18 +137,19 @@ void testApp::setupDummyPresets(){
 	strawGlitch.setDrawType(BT_STRAW);
 	strawGlitch.setEnvType(ENV_AR);
 	
-	strawGlitch.getLength().setType = PSET_FIXED;
-	strawGlitch.getLength().abs_value = 10;
+	strawGlitch.getLength()->setType = PSET_FIXED;
+	strawGlitch.getLength()->abs_value = 10;
 	
-	strawGlitch.getAttackSecs().abs_value = 0.01;
-	strawGlitch.getDecaySecs().abs_value = 0.1;
+	strawGlitch.getAttackSecs()->abs_value = 0.01;
+	strawGlitch.getDecaySecs()->abs_value = 0.1;
 	
-	strawGlitch.getSoundParam("freq").setType = PSET_MAP;
-	strawGlitch.getSoundParam("amp").setType = PSET_USERA;
-	strawGlitch.getSoundParam("attack").setType = PSET_USERB;
+	strawGlitch.getSoundParam("freq")->setType = PSET_RANDOM;
+	strawGlitch.getSoundParam("amp")->setType = PSET_RANDOM;
+	strawGlitch.getSoundParam("attack")->setType = PSET_RANDOM;
 	
-	strawGlitch.getVisualParam("rotate").setType = PSET_USERB;
-	strawGlitch.getVisualParam("height").setType = PSET_USERA;
+	strawGlitch.getVisualParam("rotation")->setType = PSET_RANDOM;
+	strawGlitch.getVisualParam("height")->setType = PSET_SLAVE;
+	strawGlitch.getVisualParam("height")->slaveTo = "amp";
 	
 	presets.push_back(strawGlitch);
 

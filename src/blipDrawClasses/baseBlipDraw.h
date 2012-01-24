@@ -12,30 +12,7 @@
 
 #include "ofMain.h"
 
-enum e_setType{
-	
-	PSET_FIXED,
-	PSET_USERA,
-	PSET_USERB,
-	PSET_MAP,
-	PSET_RANDOM
-	
-};
 
-struct paramAttributes{
-	
-	paramAttributes(){
-		name = "emptyAttribute";
-		abs_value = 0;
-		min_val = 0;
-		max_val = 1;
-		setType = PSET_FIXED;
-	}
-	
-	string name;
-	float abs_value, min_val, max_val;
-	e_setType setType;
-};
 
 
 

@@ -26,6 +26,7 @@ blipPreset::blipPreset(){
 	length.max_val = 300;
 	
 	envType = ENV_ASR;
+	isRandsSet = false;
 	
 	userVals.push_back(0);
 	userVals.push_back(0);
@@ -56,32 +57,34 @@ void blipPreset::setDrawType(blipDrawType t){
 	visualParams = thisDrawDef.getDefinition(drawType);
 }
 
-paramAttributes& blipPreset::getSoundParam(int p){return soundParams[p];}
-paramAttributes& blipPreset::getSoundParam(string s){
+paramAttributes * blipPreset::getSoundParam(int p){return &soundParams[p];}
+paramAttributes * blipPreset::getSoundParam(string s){
 	
 	for(int i = 0; i < soundParams.size(); i ++){
-		if(s == soundParams[i].name)return soundParams[i];
+		if(s == soundParams[i].name)return &soundParams[i];
 	}
 	
-	return soundParams[0]; //probably need a better solution to this
+	return NULL; 
 }
 
-paramAttributes& blipPreset::getVisualParam(int p){return visualParams[p];}
-paramAttributes& blipPreset::getVisualParam(string s){
+paramAttributes * blipPreset::getVisualParam(int p){return &visualParams[p];}
+paramAttributes * blipPreset::getVisualParam(string s){
 	
 	for(int i = 0; i < visualParams.size(); i ++){
-		if(s == visualParams[i].name)return visualParams[i];
+		if(s == visualParams[i].name)return &visualParams[i];
 	}
 	
-	return visualParams[0]; //probably need a better solution to this
+	return NULL;
 }
 
-paramAttributes& blipPreset::getAttackSecs(){return attack_secs;}
-paramAttributes& blipPreset::getDecaySecs(){return decay_secs;}
-paramAttributes& blipPreset::getPostDecaySecs(){return post_decay;}
-paramAttributes& blipPreset::getLength(){return length;}
-vector<paramAttributes>& blipPreset::getSoundParams(){return soundParams;}
-vector<paramAttributes>& blipPreset::getVisualParams(){return visualParams;}
+paramAttributes * blipPreset::getAttackSecs(){return &attack_secs;}
+paramAttributes * blipPreset::getDecaySecs(){return &decay_secs;}
+paramAttributes * blipPreset::getPostDecaySecs(){return &post_decay;}
+paramAttributes * blipPreset::getLength(){return &length;}
+vector<paramAttributes> * blipPreset::getSoundParams(){return &soundParams;}
+vector<paramAttributes> * blipPreset::getVisualParams(){return &visualParams;}
 
 void blipPreset::setUserVals(float a, float b){userVals[0] = a; userVals[1] = b;}
 vector<float> blipPreset::getUserVals(){return userVals;}
+bool blipPreset::getIsRandSet(){return isRandsSet;}
+void blipPreset::setIsRandSet(bool t){isRandsSet = t;}

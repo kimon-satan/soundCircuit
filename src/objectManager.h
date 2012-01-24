@@ -30,6 +30,7 @@ public:
 	void calcBlip(ofVec2f w_pos, ofVec2f dir);
 	void endBlip();
 	
+	void setParam(paramAttributes * p, float userA, float userB, float m_val);
 	string getPreviewParams();
 	
 	//getters and setters

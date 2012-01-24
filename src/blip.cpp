@@ -117,9 +117,9 @@ bool blip::react(){
 	if(!isOccupied){
 		isOccupied = true;
 		isActive = true;
-		attackCount = preset.getAttackSecs().abs_value * ofGetFrameRate();
-		decayCount = preset.getDecaySecs().abs_value * ofGetFrameRate();
-		postDecayCount = preset.getPostDecaySecs().abs_value * ofGetFrameRate();
+		attackCount = preset.getAttackSecs()->abs_value * ofGetFrameRate();
+		decayCount = preset.getDecaySecs()->abs_value * ofGetFrameRate();
+		postDecayCount = preset.getPostDecaySecs()->abs_value * ofGetFrameRate();
 		totalPostDecay = postDecayCount;
 		totalDecay = decayCount;
 		totalAttack = attackCount;
@@ -155,9 +155,9 @@ void blip::updateDrawer(){
 		
 		vector<float> t_params;
 		
-		for(int i =0; i < preset.getVisualParams().size(); i++){
+		for(int i =0; i < preset.getVisualParams()->size(); i++){
 			
-			t_params.push_back(preset.getVisualParam(i).abs_value);
+			t_params.push_back(preset.getVisualParam(i)->abs_value);
 		
 		}
 		

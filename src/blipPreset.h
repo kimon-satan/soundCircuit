@@ -37,21 +37,23 @@ public:
 	blipDrawType getDrawType();
 	void setDrawType(blipDrawType t);
 	
-	paramAttributes& getAttackSecs();
-	paramAttributes& getDecaySecs();
-	paramAttributes& getPostDecaySecs();
-	paramAttributes& getLength();
+	paramAttributes * getAttackSecs();
+	paramAttributes * getDecaySecs();
+	paramAttributes * getPostDecaySecs();
+	paramAttributes * getLength();
 	
-	paramAttributes& getSoundParam(int p);
-	paramAttributes& getSoundParam(string s);
-	vector<paramAttributes>& getSoundParams();
-	paramAttributes& getVisualParam(int p);
-	paramAttributes& getVisualParam(string s);
-	vector<paramAttributes>& getVisualParams();
+	paramAttributes * getSoundParam(int p);
+	paramAttributes * getSoundParam(string s);
+	vector<paramAttributes> * getSoundParams();
+	paramAttributes * getVisualParam(int p);
+	paramAttributes * getVisualParam(string s);
+	vector<paramAttributes> * getVisualParams();
 	
 	void setUserVals(float a, float b);
 	vector<float> getUserVals();
 	
+	bool getIsRandSet();
+	void setIsRandSet(bool t);
 	
 	static synthDictionary thisSynthDef;
 	static drawDictionary thisDrawDef;
@@ -61,6 +63,7 @@ private:
 	string name;
 	string synthDef;
 	blipDrawType drawType;
+	bool isRandsSet;
 	
 	vector<float> userVals;
 	

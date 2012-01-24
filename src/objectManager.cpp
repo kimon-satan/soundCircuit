@@ -127,6 +127,7 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 		previewBlip.setPreset(bp);
 		calcBlip(s_pos[0], ofVec2f(0,0));
 		previewBlip.createDrawer(world_dims);
+		previewBlip.getPresetRef().setIsRandSet(true);
 	}
 	
 	
@@ -154,62 +155,21 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	
 	float m_val = ofVec2f(ofGetScreenWidth()/2, ofGetScreenHeight()/2).length();
 
-	
-	for(int j = 0; j < 3; j++){
-		
-		paramAttributes * param;
-		
-		switch(j){
-		 	case 0:param = &p.getLength();break;
-			case 1:param = &p.getAttackSecs();break;
-			case 2:param = &p.getDecaySecs();break;
-		}
-		
-		if(param->setType == PSET_USERA){param->abs_value = ofMap(userA, 0, m_val, param->min_val, param->max_val);}
-		if(param->setType == PSET_USERB){param->abs_value = ofMap(userB, 0, 180, param->min_val, param->max_val);}
-	
-	}
-	
 
-	
-	
-	for(int j = 0; j < 2; j++){
-		
-		vector<paramAttributes> & params = (j == 0) ? p.getSoundParams() : p.getVisualParams();
-		
-		for(int i = 0; i < params.size(); i++){
-			if(params[i].setType == PSET_USERA){
-				
-				params[i].abs_value = ofMap(userA, 0, m_val, params[i].min_val, params[i].max_val);
-				
-			}else if(params[i].setType == PSET_USERB){
-				
-				params[i].abs_value = ofMap(userB, 0, 180, params[i].min_val, params[i].max_val);
-				
-			}else if(params[i].setType == PSET_MAP){
-				
-				float mapValue = 0;
-				//map to world position
-				if(s_tracks[0]->getDirection().x > 0){
-					mapValue = ofMap(s_pos[0].x, -world_dims.x/2, world_dims.x/2, 
-									 params[i].min_val, params[i].max_val);
-				}else{
-					mapValue = ofMap(s_pos[0].y, -world_dims.y/2, world_dims.y/2, 
-									 params[i].min_val, params[i].max_val);
-				}
-				
-				params[i].abs_value = mapValue;
-			}
-		}
-	}
+	setParam(p.getLength(),userA, userB, m_val);
+	setParam(p.getAttackSecs(),userA, userB, m_val);
+	setParam(p.getDecaySecs(),userA, userB, m_val);
+	setParam(p.getPostDecaySecs(),userA, userB, m_val);
+	for(int i = 0; i < p.getSoundParams()->size(); i++)setParam(p.getSoundParam(i), userA, userB, m_val);
+	for(int i = 0; i < p.getVisualParams()->size(); i++)setParam(p.getVisualParam(i), userA, userB, m_val);
 	
 	if(s_tracks[0] && !selectBlip(s_pos[0])){
 		
-		ofVec2f t_dir(s_tracks[0]->getDirection() * p.getLength().abs_value);
+		ofVec2f t_dir(s_tracks[0]->getDirection() * p.getLength()->abs_value);
 		s_pos[1] = s_pos[0] - t_dir/2;
 		makeSegment(s_pos[1], t_dir, previewBlip);
 		
-		if(p.getLength().setType == PSET_USERA || p.getLength().setType == PSET_USERB ){
+		if(p.getLength()->setType == PSET_USERA || p.getLength()->setType == PSET_USERB ){
 			constrainFromMidPoint(s_pos[0], previewBlip, false, true, true);
 		}else{
 			repositionFromMidPoint(s_pos[0], previewBlip, false, true, true);
@@ -233,7 +193,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 			}
 			
 		}
-		if(previewBlip.getLength() < p.getLength().min_val){
+		if(previewBlip.getLength() < p.getLength()->min_val){
 			recalc = true;
 		}
 		if(!recalc){
@@ -248,6 +208,53 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	
 }
 
+
+void objectManager::setParam(paramAttributes * p, float userA, float userB, float m_val){
+
+	if(p->setType == PSET_USERA){
+		
+		p->abs_value = ofMap(userA, 0, m_val, p->min_val, p->max_val);
+		
+	}else if(p->setType == PSET_USERB){
+		
+		p->abs_value = ofMap(userB, 0, 180, p->min_val, p->max_val);
+		
+	}else if(p->setType == PSET_MAP){
+		
+		float mapValue = 0;
+		//map to world position
+		if(s_tracks[0]->getDirection().x > 0){
+			mapValue = ofMap(s_pos[0].x, -world_dims.x/2, world_dims.x/2, 
+							 p->min_val, p->max_val);
+		}else{
+			mapValue = ofMap(s_pos[0].y, -world_dims.y/2, world_dims.y/2, 
+							 p->min_val, p->max_val);
+		}
+		
+		p->abs_value = mapValue;
+		
+	}else if(p->setType == PSET_RANDOM){
+		
+		if(!previewBlip.getPreset().getIsRandSet()){
+			p->abs_value = ofRandom(p->min_val, p->max_val);
+		}
+		//potentially throw in some other distributions PSET_NORMAL, PSET_SKEW // an extra attribute required 
+	
+	}else if(p->setType == PSET_SLAVE){
+		
+		if(p->slaveTo != ""){
+		
+			paramAttributes * master;
+			master = previewBlip.getPreset().getSoundParam(p->slaveTo);
+			if(!master)master = previewBlip.getPreset().getVisualParam(p->slaveTo);
+			if(master)p->abs_value = ofMap(master->abs_value, master->min_val, master->max_val, p->min_val, p->max_val);
+		}
+		
+	
+	}
+	
+	
+}
 
 void objectManager::endBlip(){
 	
@@ -725,11 +732,11 @@ string objectManager::getPreviewParams(){
 	string paramString = "";
 	blipPreset p = previewBlip.getPreset();
 	
-	for(int i = 0; i < p.getSoundParams().size(); i++){
+	for(int i = 0; i < p.getSoundParams()->size(); i++){
 		
-		if(p.getSoundParam(i).setType == PSET_USERA || p.getSoundParam(i).setType == PSET_USERB){
-			paramString = paramString + p.getSoundParams().at(i).name;
-			paramString +=  " : " + ofToString(p.getSoundParams().at(i).abs_value, 2);
+		if(p.getSoundParam(i)->setType == PSET_USERA || p.getSoundParam(i)->setType == PSET_USERB){
+			paramString = paramString + p.getSoundParams()->at(i).name;
+			paramString +=  " : " + ofToString(p.getSoundParams()->at(i).abs_value, 2);
 			paramString += "\n";
 		}
 	}

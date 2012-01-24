@@ -113,11 +113,11 @@ void reader::move(){
 				m.addIntArg(it->getIndex());
 				m.addStringArg(p.getSynthDef());
 				m.addIntArg(p.getEnvType());
-				m.addFloatArg(p.getAttackSecs().abs_value);
-				m.addFloatArg(p.getDecaySecs().abs_value);
+				m.addFloatArg(p.getAttackSecs()->abs_value);
+				m.addFloatArg(p.getDecaySecs()->abs_value);
 				
-				for(int i = 0; i < p.getSoundParams().size(); i++){
-					m.addFloatArg(p.getSoundParam(i).abs_value);
+				for(int i = 0; i < p.getSoundParams()->size(); i++){
+					m.addFloatArg(p.getSoundParam(i)->abs_value);
 				}
 				
 				sender->sendMessage(m);
