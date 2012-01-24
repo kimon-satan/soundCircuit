@@ -36,6 +36,9 @@ private:
 	paramAttributes pivot;
 	paramAttributes density;
 	paramAttributes height;
+	paramAttributes speed;
+	paramAttributes thickness;
+
 	
 };
 
@@ -48,9 +51,7 @@ public:
 	
 private:
 	
-	paramAttributes freq;
-	paramAttributes amp;
-	paramAttributes clip;
+	paramAttributes freq, amp, clip, speed, separate, attack; //this potentially could be done with an XML file
 	
 
 };

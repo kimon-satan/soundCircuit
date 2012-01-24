@@ -21,6 +21,8 @@ blip::blip(){
 	totalDecay = 0;
 	attackCount = 0;
 	decayCount = 0;
+	postDecayCount =0;
+	
 	preset = DPRESET;
 	drawer = NULL;
 
@@ -30,29 +32,39 @@ blip::blip(){
 
 void blip::update(){
 	
-	float attProp, decProp;
 	
 	if(preset.getEnvType() == ENV_ASR){
 		
 		if(isOccupied){
 			
+			postVal = 0;
+			
 			if(attackCount > 0){
 				attackCount -= 1;
-				attProp = 1 - (float)attackCount/(float)totalAttack;
-				envVal = attProp;
+				envVal = 1 - (float)attackCount/(float)totalAttack;
 			}else{envVal =1;}
 			
 		}else{
 			
-			if(decayCount == 0){
-				isActive = false;
-				envVal = 0;
-			}
 			if(decayCount > 0){
+				postVal = 1;
 				decayCount -= 1;
-				decProp = (float)decayCount/(float)totalDecay;
-				envVal = decProp;
+				envVal = (float)decayCount/(float)totalDecay;
+				
+			}else{
+				
+				envVal = 0;
+				
+				if(postDecayCount > 0 ){
+					postDecayCount -= 1;
+					postVal = (float)postDecayCount/(float)totalPostDecay;
+				}else{
+					postVal = 0;
+					isActive = false;
+				}
+				
 			}
+
 		
 			
 		}
@@ -60,20 +72,31 @@ void blip::update(){
 	}else if(preset.getEnvType() == ENV_AR){
 		
 		if(isActive){
-			
+	
 			if(attackCount > 0){
 				attackCount -= 1;
-				attProp = 1 - (float)attackCount/(float)totalAttack;
-				envVal = attProp;
+				envVal = 1 - (float)attackCount/(float)totalAttack;
 				
 			}else if(decayCount > 0){
+				
+				postVal = 1;
 				decayCount -= 1;
-				decProp = (float)decayCount/(float)totalDecay;
-				envVal = decProp;
+				envVal = (float)decayCount/(float)totalDecay;
 			
 			}else{
-				isActive = false;
-				envVal =0;
+				
+				envVal = 0;
+				
+				
+				if(postDecayCount > 0 ){
+					postDecayCount -= 1;
+					postVal = (float)postDecayCount/(float)totalPostDecay;
+					
+				}else{
+					postVal = 0;
+					isActive = false;
+				}
+				
 			}
 			
 		}
@@ -96,6 +119,8 @@ bool blip::react(){
 		isActive = true;
 		attackCount = preset.getAttackSecs().abs_value * ofGetFrameRate();
 		decayCount = preset.getDecaySecs().abs_value * ofGetFrameRate();
+		postDecayCount = preset.getPostDecaySecs().abs_value * ofGetFrameRate();
+		totalPostDecay = postDecayCount;
 		totalDecay = decayCount;
 		totalAttack = attackCount;
 		return true;
@@ -138,7 +163,7 @@ void blip::updateDrawer(){
 		
 		drawer->setPresetParams(t_params);
 		
-		drawer->setTimeParams(isActive, envVal);
+		drawer->setTimeParams(isActive, envVal, postVal);
 		
 		drawer->update();
 	

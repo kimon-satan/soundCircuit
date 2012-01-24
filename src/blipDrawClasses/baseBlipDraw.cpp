@@ -60,10 +60,12 @@ void baseBlipDraw::setWrapData(ofVec2f t_dims, float t_angle){
 
 
 
-void baseBlipDraw::setTimeParams(bool & t_active, float & t_envVal){
+void baseBlipDraw::setTimeParams(bool  t_active, float  t_envVal, float  t_postVal){
 
 	isActive = t_active;
 	envVal = t_envVal;
+	postVal = t_postVal;
+	
 }
 
 void baseBlipDraw::setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l){

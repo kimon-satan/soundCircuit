@@ -51,9 +51,9 @@ private:
 	
 	bool isActive, isOccupied;
 	
-	int attackCount, decayCount;
-	int totalAttack, totalDecay;
-	float envVal;
+	int attackCount, decayCount, postDecayCount;
+	int totalAttack, totalDecay, totalPostDecay;
+	float envVal, postVal;
 	
 
 

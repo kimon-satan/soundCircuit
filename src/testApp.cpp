@@ -83,22 +83,22 @@ void testApp::setupDummyPresets(){
 	
 	blipPreset elecClip;
 	elecClip.setName("elecClip");
-	elecClip.setSynthDef("clip");
+	elecClip.setSynthDef("elec");
 	elecClip.setEnvType(ENV_ASR);
 	elecClip.setDrawType(BT_ELEC_CURRENT);
 	elecClip.getAttackSecs().abs_value = 0.01;
 	elecClip.getDecaySecs().abs_value = 0.2;
 	
-	elecClip.getLength().setType = PSET_FIXED;
-	elecClip.getLength().abs_value = 100;
-	elecClip.getSoundParam("amp").setType = PSET_USERA;
-	elecClip.getVisualParam("height").setType = PSET_USERA;
-	
+	elecClip.getLength().setType = PSET_USERA;
+	elecClip.getSoundParam("speed").setType = PSET_USERB;
 	elecClip.getSoundParam("freq").setType = PSET_USERB;
 	elecClip.getVisualParam("density").setType = PSET_USERB;
+	elecClip.getVisualParam("height").setType = PSET_USERB;
 	
-	elecClip.getSoundParam("clip").setType = PSET_FIXED;
-	elecClip.getSoundParam("clip").abs_value = 0.2;
+	elecClip.getSoundParam("separate").setType = PSET_FIXED;
+	elecClip.getSoundParam("separate").abs_value = 0;
+	elecClip.getSoundParam("amp").setType = PSET_FIXED;
+	elecClip.getSoundParam("amp").abs_value = 0.5;
 	
 	presets.push_back(elecClip);
 	
@@ -114,6 +114,7 @@ void testApp::setupDummyPresets(){
 	
 	strawClip.getAttackSecs().abs_value = 0.01;
 	strawClip.getDecaySecs().abs_value = 1;
+	strawClip.getPostDecaySecs().abs_value = 1;
 	
 	strawClip.getSoundParam("freq").setType = PSET_USERB;
 	strawClip.getSoundParam("amp").setType = PSET_USERA;
@@ -124,6 +125,27 @@ void testApp::setupDummyPresets(){
 	strawClip.getVisualParam("height").setType = PSET_USERA;
 	
 	presets.push_back(strawClip);
+	
+	blipPreset strawGlitch;
+	strawGlitch.setName("strawGlitch");
+	strawGlitch.setSynthDef("brownGlitch");
+	strawGlitch.setDrawType(BT_STRAW);
+	strawGlitch.setEnvType(ENV_AR);
+	
+	strawGlitch.getLength().setType = PSET_FIXED;
+	strawGlitch.getLength().abs_value = 10;
+	
+	strawGlitch.getAttackSecs().abs_value = 0.01;
+	strawGlitch.getDecaySecs().abs_value = 0.1;
+	
+	strawGlitch.getSoundParam("freq").setType = PSET_MAP;
+	strawGlitch.getSoundParam("amp").setType = PSET_USERA;
+	strawGlitch.getSoundParam("attack").setType = PSET_USERB;
+	
+	strawGlitch.getVisualParam("rotate").setType = PSET_USERB;
+	strawGlitch.getVisualParam("height").setType = PSET_USERA;
+	
+	presets.push_back(strawGlitch);
 
 }
 

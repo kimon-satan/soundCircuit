@@ -56,7 +56,7 @@ public:
 	//getters and setters
 	void setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l);
 	void setPresetParams(vector<float> t_params);
-	void setTimeParams(bool & t_active, float & t_envVal);
+	void setTimeParams(bool  t_active, float  t_envVal, float  t_postVal);
 	
 	vector<ofVec2f>getCorners();
 	vector<ofVec2f>getWrapXCorners();
@@ -73,7 +73,7 @@ protected:
 	ofVec2f direction, startPos, endPos;
 	float length, angle;
 	vector<float> params;
-	float envVal;
+	float envVal, postVal;
 	bool isActive, isXWrapped, isYWrapped;
 
 };

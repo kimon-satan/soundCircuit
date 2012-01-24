@@ -78,6 +78,7 @@ paramAttributes& blipPreset::getVisualParam(string s){
 
 paramAttributes& blipPreset::getAttackSecs(){return attack_secs;}
 paramAttributes& blipPreset::getDecaySecs(){return decay_secs;}
+paramAttributes& blipPreset::getPostDecaySecs(){return post_decay;}
 paramAttributes& blipPreset::getLength(){return length;}
 vector<paramAttributes>& blipPreset::getSoundParams(){return soundParams;}
 vector<paramAttributes>& blipPreset::getVisualParams(){return visualParams;}

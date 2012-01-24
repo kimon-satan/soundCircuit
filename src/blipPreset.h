@@ -37,9 +37,9 @@ public:
 	blipDrawType getDrawType();
 	void setDrawType(blipDrawType t);
 	
-	
 	paramAttributes& getAttackSecs();
 	paramAttributes& getDecaySecs();
+	paramAttributes& getPostDecaySecs();
 	paramAttributes& getLength();
 	
 	paramAttributes& getSoundParam(int p);
@@ -65,7 +65,7 @@ private:
 	vector<float> userVals;
 	
 	e_envType envType;
-	paramAttributes attack_secs, decay_secs, length;
+	paramAttributes attack_secs, decay_secs, post_decay, length;
 	vector<paramAttributes> soundParams;
 	vector<paramAttributes> visualParams;
 	
