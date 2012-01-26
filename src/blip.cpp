@@ -129,16 +129,32 @@ bool blip::react(){
 	return false;
 }
 
+
+void blip::createDrawer(ofVec2f t_dims, baseBlipDraw * t_draw){
+	
+	selectDrawer();
+	drawer->setup(t_dims, t_draw);
+	updateDrawer();
+}
+
 void blip::createDrawer(ofVec2f t_dims){
+
+	selectDrawer();
+	drawer->setBlipParams(direction, startPos, endPos,length);
+	updateDrawerParams();
+	drawer->setup(t_dims);
+	updateDrawer();
+	
+}
+
+void blip::selectDrawer(){
 	
 	if(preset.getDrawType() == BT_TESTBLIP){drawer = new testBlip();}
 	if(preset.getDrawType() == BT_ELEC_CURRENT){drawer = new elecCurrent();}
 	if(preset.getDrawType() == BT_STRAW){drawer = new straw();}
-	
-	drawer->setBlipParams(direction, startPos, endPos,length);
-	drawer->setup(t_dims);
-	updateDrawer();
-	
+	if(preset.getDrawType() == BT_BELCH){drawer = new belch();}
+	if(preset.getDrawType() == BT_BEAN1){drawer = new bean1();}
+
 }
 
 void blip::updateDrawerPosition(ofVec2f t_dims){
@@ -147,24 +163,21 @@ void blip::updateDrawerPosition(ofVec2f t_dims){
 	
 }
 
+void blip::updateDrawerParams(){
+
+	vector<float> t_params;
+	for(int i =0; i < preset.getVisualParams()->size(); i++)t_params.push_back(preset.getVisualParam(i)->abs_value);
+	drawer->setPresetParams(t_params);
+
+}
+
 void blip::updateDrawer(){
 
 	if(drawer){
 		
 		drawer->setBlipParams(direction, startPos, endPos,length);
-		
-		vector<float> t_params;
-		
-		for(int i =0; i < preset.getVisualParams()->size(); i++){
-			
-			t_params.push_back(preset.getVisualParam(i)->abs_value);
-		
-		}
-		
-		drawer->setPresetParams(t_params);
-		
+		updateDrawerParams();
 		drawer->setTimeParams(isActive, envVal, postVal);
-		
 		drawer->update();
 	
 	}

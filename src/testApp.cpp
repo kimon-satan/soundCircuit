@@ -8,7 +8,7 @@ void testApp::setup(){
 	ofSetVerticalSync(true);
 	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
 	mouse_offset.set(0,0);
-	currentLayer.setDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenHeight() * 1));
+	currentLayer.setDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
 
 	sender.setup( HOST, PORT );
 	
@@ -59,13 +59,14 @@ void testApp::setupDummyPresets(){
 	blipPreset asrSoft;
 	asrSoft.setName("asrSoft");
 	asrSoft.setSynthDef("basic");
-	asrSoft.setDrawType(BT_TESTBLIP);
+	asrSoft.setDrawType(BT_BELCH);
 	asrSoft.setEnvType(ENV_ASR);
 	asrSoft.getAttackSecs()->abs_value = 0.4;
 	asrSoft.getDecaySecs()->abs_value = 0.01;
+	asrSoft.getPostDecaySecs()->abs_value = 0.5;
 	asrSoft.getLength()->setType = PSET_USERA;
 	asrSoft.getSoundParam("freq")->setType = PSET_USERB;
-	asrSoft.getVisualParam(0)->setType = PSET_USERB;
+	asrSoft.getVisualParam("height")->setType = PSET_USERB;
 	presets.push_back(asrSoft);
 	
 	blipPreset ar;
@@ -152,6 +153,20 @@ void testApp::setupDummyPresets(){
 	strawGlitch.getVisualParam("height")->slaveTo = "amp";
 	
 	presets.push_back(strawGlitch);
+	
+	blipPreset beanTest;
+	beanTest.setName("beanTest");
+	beanTest.setSynthDef("basic");
+	beanTest.setDrawType(BT_BEAN1);
+	beanTest.setEnvType(ENV_ASR);
+	
+	beanTest.getLength()->setType = PSET_USERA;
+	
+	beanTest.getAttackSecs()->abs_value = 0.5;
+	beanTest.getDecaySecs()->abs_value = 0.1;
+	
+	
+	presets.push_back(beanTest);
 
 }
 

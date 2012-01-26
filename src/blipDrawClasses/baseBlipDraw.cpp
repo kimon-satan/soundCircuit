@@ -34,6 +34,17 @@ void baseBlipDraw::setup(ofVec2f t_dims){
 	
 }
 
+
+void baseBlipDraw::setup(ofVec2f t_dims, baseBlipDraw * t_draw){
+	
+	direction = t_draw->getDirection();
+	startPos = t_draw->getStartPos();
+	endPos = t_draw->getEndPos();
+	length = t_draw->getLength();
+	setup(t_dims);
+	
+}
+
 //getters and setters
 
 void baseBlipDraw::setCorners(vector<ofVec2f> & t_corners, ofVec2f t_centre, ofVec2f t_dims, float t_angle){
@@ -57,7 +68,6 @@ void baseBlipDraw::setWrapData(ofVec2f t_dims, float t_angle){
 		setCorners(wrapYcorners, ofVec2f(centre.x, wrapCoords.y),t_dims, t_angle);
 	}
 }
-
 
 
 void baseBlipDraw::setTimeParams(bool  t_active, float  t_envVal, float  t_postVal){
@@ -84,3 +94,8 @@ vector<ofVec2f> baseBlipDraw::getWrapYCorners(){return wrapYcorners;}
 
 bool baseBlipDraw::getIsXWrapped(){return isXWrapped;}
 bool baseBlipDraw::getIsYWrapped(){return isYWrapped;}
+
+ofVec2f baseBlipDraw::getDirection(){return direction;}
+ofVec2f baseBlipDraw::getStartPos(){return startPos;}
+ofVec2f baseBlipDraw::getEndPos(){return endPos;}
+float baseBlipDraw::getLength(){return length;}

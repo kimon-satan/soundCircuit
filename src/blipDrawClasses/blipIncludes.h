@@ -13,6 +13,8 @@
 #include "testBlip.h"
 #include "elecCurrent.h"
 #include "straw.h"
+#include "belch.h"
+#include "bean1.h"
 
 enum e_setType{
 	
@@ -46,7 +48,9 @@ enum blipDrawType{
 
 	BT_TESTBLIP,
 	BT_ELEC_CURRENT,
-	BT_STRAW
+	BT_STRAW,
+	BT_BELCH,
+	BT_BEAN1
 
 };
 

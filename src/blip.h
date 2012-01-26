@@ -27,6 +27,8 @@ public:
 	bool react();
 	
 	void createDrawer(ofVec2f t_dims);
+	void createDrawer(ofVec2f t_dims, baseBlipDraw * t_d);
+
 	void updateDrawerPosition(ofVec2f t_dims);
 	void destroyDrawer();
 	void updateDrawer();
@@ -43,6 +45,9 @@ public:
 
 	
 private:
+	
+	void selectDrawer();
+	void updateDrawerParams();
 	
 	static int bCounter;
 	static blipPreset DPRESET;

@@ -23,6 +23,7 @@ public:
 	baseBlipDraw();
 	
 	virtual void setup(ofVec2f t_dims);
+	virtual void setup(ofVec2f t_dims, baseBlipDraw * t_draw);
 	virtual void draw(int t_wrap = 0){};
 	virtual void update(){};
 	virtual void drawPreview(){};
@@ -41,6 +42,11 @@ public:
 	
 	bool getIsXWrapped();
 	bool getIsYWrapped();
+	
+	ofVec2f getDirection();
+	ofVec2f getStartPos();
+	ofVec2f getEndPos();
+	float getLength();
 	
 protected:
 	

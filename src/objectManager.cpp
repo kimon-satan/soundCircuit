@@ -260,7 +260,7 @@ void objectManager::endBlip(){
 	
 	if(previewBlip.getIsValid()){
 		blips->push_back(previewBlip);
-		blips->back().createDrawer(world_dims);
+		blips->back().createDrawer(world_dims, previewBlip.getDrawer());
 		blips->back().aquireIndex();
 	}
 	previewBlip.setIsValid(false);
