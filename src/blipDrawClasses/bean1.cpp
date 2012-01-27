@@ -32,7 +32,7 @@ void bean1::setup(ofVec2f t_dims){
 	baseBlipDraw::setup(t_dims);
 	
 	if(vertices.size() == 0){
-		int numV = 4;
+		int numV = 5;
 		int midPoint = numV/2;
 		
 		for(int i = 0; i < numV; i ++){
@@ -79,10 +79,14 @@ void bean1::update(){
 	
 	bool concave = false;
 	
+	float swing = (postVal > 0) ? 0.3 * envVal + 0.7 * postVal: envVal;
+	//if(isActive)cout << swing << "\n";
 	
 	for(int i = 0; i < vertices.size(); i++){
 		
-		float d = 6; // the smoothness
+		float d =(isActive)? 6.0f * (1.0f - swing): 6; // the smoothness
+		d = max(1.0f, d);
+		
 		int n_i = (i + 1)%vertices.size();
 		
 		ofVec2f t_vec(vertices[n_i] - vertices[i]);
@@ -106,6 +110,7 @@ void bean1::update(){
 	
 	if(isActive){
 		
+
 		
 	}
 	

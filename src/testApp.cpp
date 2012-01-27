@@ -156,15 +156,20 @@ void testApp::setupDummyPresets(){
 	
 	blipPreset beanTest;
 	beanTest.setName("beanTest");
-	beanTest.setSynthDef("basic");
+	beanTest.setSynthDef("swell");
 	beanTest.setDrawType(BT_BEAN1);
 	beanTest.setEnvType(ENV_ASR);
 	
 	beanTest.getLength()->setType = PSET_USERA;
+	beanTest.getSoundParam("freq")->setType = PSET_USERB;
+	beanTest.getSoundParam("amp")->abs_value = 0.5;
+	beanTest.getSoundParam("sm1")->abs_value = 0.5;
+	beanTest.getSoundParam("sm2")->abs_value = 0.5;
+	beanTest.getSoundParam("sm3")->abs_value = 0.5;
 	
-	beanTest.getAttackSecs()->abs_value = 0.5;
+	beanTest.getAttackSecs()->abs_value = 0.9;
 	beanTest.getDecaySecs()->abs_value = 0.1;
-	
+	beanTest.getPostDecaySecs()->abs_value = 1.5;
 	
 	presets.push_back(beanTest);
 
