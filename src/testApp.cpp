@@ -167,7 +167,9 @@ void testApp::setupDummyPresets(){
 	beanTest.getSoundParam("sm2")->abs_value = 0.5;
 	beanTest.getSoundParam("sm3")->abs_value = 0.5;
 	
-	beanTest.getAttackSecs()->abs_value = 0.9;
+	beanTest.setIsAttackProp(true);
+	beanTest.getAttackProp()->setType = PSET_FIXED;
+	beanTest.getAttackProp()->abs_value = 0.99;
 	beanTest.getDecaySecs()->abs_value = 0.1;
 	beanTest.getPostDecaySecs()->abs_value = 1.5;
 	

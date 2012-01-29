@@ -103,7 +103,7 @@ void reader::move(){
 	for(vector<blip>::iterator it = t_blips->begin(); it != t_blips->end(); it++){
 	
 		if(it->getInside(ofVec2f(body.x,body.y))){
-			if(it->react()){
+			if(it->react(incr)){
 
 				blipPreset p = it->getPreset();
 				

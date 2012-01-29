@@ -36,6 +36,7 @@ struct paramAttributes{
 		max_val = 1;
 		setType = PSET_FIXED;
 		slaveTo = "";
+	
 	}
 	
 	string name, slaveTo;

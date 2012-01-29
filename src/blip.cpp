@@ -112,11 +112,19 @@ void blip::draw(int t_wrap){
 
 }
 
-bool blip::react(){
+bool blip::react(float incr){
 	
 	if(!isOccupied){
 		isOccupied = true;
 		isActive = true;
+		
+		paramAttributes * p = preset.getAttackProp();
+		if(p)preset.getAttackSecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
+		p = preset.getDecayProp();
+		if(p)preset.getDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
+		p = preset.getPostDecayProp();
+		if(p)preset.getPostDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
+		
 		attackCount = preset.getAttackSecs()->abs_value * ofGetFrameRate();
 		decayCount = preset.getDecaySecs()->abs_value * ofGetFrameRate();
 		postDecayCount = preset.getPostDecaySecs()->abs_value * ofGetFrameRate();

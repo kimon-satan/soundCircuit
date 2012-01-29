@@ -40,6 +40,9 @@ public:
 	paramAttributes * getAttackSecs();
 	paramAttributes * getDecaySecs();
 	paramAttributes * getPostDecaySecs();
+	paramAttributes * getAttackProp();
+	paramAttributes * getDecayProp();
+	paramAttributes * getPostDecayProp();
 	paramAttributes * getLength();
 	
 	paramAttributes * getSoundParam(int p);
@@ -55,20 +58,26 @@ public:
 	bool getIsRandSet();
 	void setIsRandSet(bool t);
 	
+	void setIsAttackProp(bool t);
+	void setIsDecayProp(bool t);
+	void setIsPostDecayProp(bool t);
+	
 	static synthDictionary thisSynthDef;
 	static drawDictionary thisDrawDef;
 	
 private:
 	
+	
 	string name;
 	string synthDef;
 	blipDrawType drawType;
 	bool isRandsSet;
+	bool isAttProp, isDecProp, isPostDecProp;
 	
 	vector<float> userVals;
 	
 	e_envType envType;
-	paramAttributes attack_secs, decay_secs, post_decay, length;
+	paramAttributes attack[2], decay[2], postDecay[2], length;
 	vector<paramAttributes> soundParams;
 	vector<paramAttributes> visualParams;
 	

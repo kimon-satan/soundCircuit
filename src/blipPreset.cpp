@@ -17,8 +17,8 @@ blipPreset::blipPreset(){
 	name = "default";
 	synthDef = "basic";
 	drawType = BT_TESTBLIP;
-	decay_secs.abs_value = 1;
-	attack_secs.abs_value = 0.2;
+	decay[0].abs_value = 1;
+	attack[0].abs_value = 0.2;
 	
 	length.abs_value = 100;
 	length.setType = PSET_USERA;
@@ -27,6 +27,8 @@ blipPreset::blipPreset(){
 	
 	envType = ENV_ASR;
 	isRandsSet = false;
+	
+	isAttProp = false; isDecProp = false; isPostDecProp = false;
 	
 	userVals.push_back(0);
 	userVals.push_back(0);
@@ -77,9 +79,14 @@ paramAttributes * blipPreset::getVisualParam(string s){
 	return NULL;
 }
 
-paramAttributes * blipPreset::getAttackSecs(){return &attack_secs;}
-paramAttributes * blipPreset::getDecaySecs(){return &decay_secs;}
-paramAttributes * blipPreset::getPostDecaySecs(){return &post_decay;}
+paramAttributes * blipPreset::getAttackSecs(){return &attack[0];}
+paramAttributes * blipPreset::getDecaySecs(){return &decay[0];}
+paramAttributes * blipPreset::getPostDecaySecs(){return &postDecay[0];}
+
+paramAttributes * blipPreset::getAttackProp(){if(isAttProp){return &attack[1];}else{return NULL;} }
+paramAttributes * blipPreset::getDecayProp(){if(isDecProp){return &decay[1];}else{return NULL;}}
+paramAttributes * blipPreset::getPostDecayProp(){if(isPostDecProp){return &postDecay[1];}else{return NULL;}}
+
 paramAttributes * blipPreset::getLength(){return &length;}
 vector<paramAttributes> * blipPreset::getSoundParams(){return &soundParams;}
 vector<paramAttributes> * blipPreset::getVisualParams(){return &visualParams;}
@@ -88,3 +95,7 @@ void blipPreset::setUserVals(float a, float b){userVals[0] = a; userVals[1] = b;
 vector<float> blipPreset::getUserVals(){return userVals;}
 bool blipPreset::getIsRandSet(){return isRandsSet;}
 void blipPreset::setIsRandSet(bool t){isRandsSet = t;}
+
+void blipPreset::setIsAttackProp(bool t){isAttProp  = t;}
+void blipPreset::setIsDecayProp(bool t){isDecProp = t;}
+void blipPreset::setIsPostDecayProp(bool t){isPostDecProp = t;}

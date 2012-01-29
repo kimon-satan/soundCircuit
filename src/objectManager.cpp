@@ -244,10 +244,14 @@ void objectManager::setParam(paramAttributes * p, float userA, float userB, floa
 		
 		if(p->slaveTo != ""){
 		
-			paramAttributes * master;
-			master = previewBlip.getPreset().getSoundParam(p->slaveTo);
+			paramAttributes * master = NULL;
+			if(p->slaveTo == "length")master = previewBlip.getPreset().getLength();
+			if(p->slaveTo == "attackSecs")master = previewBlip.getPreset().getAttackSecs();
+			if(p->slaveTo == "decaySecs")master = previewBlip.getPreset().getDecaySecs();
+			if(!master)master = previewBlip.getPreset().getSoundParam(p->slaveTo);
 			if(!master)master = previewBlip.getPreset().getVisualParam(p->slaveTo);
 			if(master)p->abs_value = ofMap(master->abs_value, master->min_val, master->max_val, p->min_val, p->max_val);
+			//if(master)cout << master->name << ":"<< p->abs_value << endl;
 		}
 		
 	
