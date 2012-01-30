@@ -19,6 +19,7 @@ public:
 	testBlip();
 	void update();
 	void draw(int t_wrap = 0);
+	static vector<paramAttributes>getParamDefs();
 	
 private:
 	

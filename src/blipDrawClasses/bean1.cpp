@@ -163,3 +163,13 @@ vector<ofVec2f>bean1::getVertices(){ return vertices;}
 vector<ofVec2f>bean1::getN_verts(){return n_verts;}
 vector<ofVec2f>bean1::getCps_a(){ return cps_a; }
 vector<ofVec2f>bean1::getCps_b(){ return cps_b; }
+
+
+vector<paramAttributes> bean1::getParamDefs(){
+	
+	vector<paramAttributes> def;
+	
+	
+	return def;
+	
+}

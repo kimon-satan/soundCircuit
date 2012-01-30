@@ -29,6 +29,7 @@ void testApp::setup(){
 	mouseMode = MODE_NONE;
 	currentAction = ACTION_NONE;
 	
+	blipPreset::thisSynthDef.loadDictionary();
 	setupDummyPresets();
 	selectedPreset = 0;
 	
@@ -38,6 +39,8 @@ void testApp::setup(){
 	currentLayer.getSM()->beginTrack(ofVec2f(0,0));
 	currentLayer.getSM()->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
 	currentLayer.getSM()->endTrack();
+	
+	
 	
 }
 

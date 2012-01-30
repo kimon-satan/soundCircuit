@@ -107,3 +107,17 @@ void belch::draw(int t_wrap){
 }
 
 float belch::getOffset(int t){return offset[t];}
+
+
+vector<paramAttributes> belch::getParamDefs(){
+	
+	vector<paramAttributes> def;
+	
+	paramAttributes height;
+	height.name = "height"; height.min_val = 20; height.max_val = 300; height.abs_value = 50;
+	
+	def.push_back(height);
+	
+	return def;
+	
+}

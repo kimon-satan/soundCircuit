@@ -91,3 +91,19 @@ void elecCurrent::draw(int t_wrap){
 	
 	
 }
+
+
+vector<paramAttributes> elecCurrent::getParamDefs(){
+	
+	vector<paramAttributes> def;
+	
+	paramAttributes height, density;
+	density.name = "density"; density.min_val = 0; density.max_val = 1; density.abs_value = 0.5;
+	height.name = "height"; height.min_val = 20; height.max_val = 300; height.abs_value = 50;
+	
+	def.push_back(height);
+	def.push_back(density);
+	
+	return def;
+	
+}

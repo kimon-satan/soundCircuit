@@ -10,8 +10,8 @@
 #ifndef blipPreset_h
 #define blipPreset_h
 
-#include "ofMain.h"
 #include "blipIncludes.h"
+#include "synthDictionary.h"
 
 enum e_envType {
 	ENV_ASR,
@@ -63,7 +63,6 @@ public:
 	void setIsPostDecayProp(bool t);
 	
 	static synthDictionary thisSynthDef;
-	static drawDictionary thisDrawDef;
 	
 private:
 	

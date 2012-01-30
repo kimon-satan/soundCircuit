@@ -23,6 +23,9 @@ node::node(ofVec2f t_pos) : pos(t_pos){
 	socketDirections.push_back(ofVec2f(-1,0)); // WEST
 	
 	aquireIndex();
+	
+	
+
 
 }
 

@@ -22,6 +22,7 @@ public:
 	void draw(int t_wrap = 0);
 	
 	float getOffset(int t);
+	static vector<paramAttributes>getParamDefs();
 	
 private:
 	

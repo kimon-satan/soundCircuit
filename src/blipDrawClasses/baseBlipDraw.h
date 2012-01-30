@@ -11,10 +11,7 @@
 #define baseBlipDraw_h
 
 #include "ofMain.h"
-
-
-
-
+#include "paramAttributes.h"
 
 class baseBlipDraw{
 
@@ -47,6 +44,8 @@ public:
 	ofVec2f getStartPos();
 	ofVec2f getEndPos();
 	float getLength();
+	
+	
 	
 protected:
 	

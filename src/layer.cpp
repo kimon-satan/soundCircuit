@@ -16,6 +16,7 @@ layer::layer(){
 	thisSM.setBlips(&blips);
 	isScreenData = false;
 	
+
 }
 
 void layer::update(){

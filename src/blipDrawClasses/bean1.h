@@ -26,6 +26,9 @@ public:
 	vector<ofVec2f> getN_verts();
 	vector<ofVec2f> getCps_a();
 	vector<ofVec2f> getCps_b();
+	
+	static vector<paramAttributes>getParamDefs();
+	
 private:
 	
 	float height, width;

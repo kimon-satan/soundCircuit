@@ -61,3 +61,17 @@ void testBlip::draw(int t_wrap){
 	
 
 }
+
+
+vector<paramAttributes> testBlip::getParamDefs(){
+
+	vector<paramAttributes> def;
+	
+	paramAttributes hue;
+	hue.name = "hue"; hue.min_val = 0; hue.max_val = 255; hue.abs_value = 100;
+	
+	def.push_back(hue);
+	
+	return def;
+
+}

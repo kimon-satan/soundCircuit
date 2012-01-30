@@ -16,35 +16,6 @@
 #include "belch.h"
 #include "bean1.h"
 
-enum e_setType{
-	
-	PSET_FIXED,
-	PSET_USERA,
-	PSET_USERB,
-	PSET_MAP,
-	PSET_RANDOM,
-	PSET_SLAVE
-	
-};
-
-struct paramAttributes{
-	
-	paramAttributes(){
-		name = "emptyAttribute";
-		abs_value = 0;
-		min_val = 0;
-		max_val = 1;
-		setType = PSET_FIXED;
-		slaveTo = "";
-	
-	}
-	
-	string name, slaveTo;
-	float abs_value, min_val, max_val;
-	e_setType setType;
-};
-
-
 enum blipDrawType{
 
 	BT_TESTBLIP,
@@ -55,38 +26,16 @@ enum blipDrawType{
 
 };
 
+
 class drawDictionary{
 	
 public:
 	
-	drawDictionary();
-	vector<paramAttributes> getDefinition(blipDrawType drawDef);
-	
-private:
-	
-	paramAttributes hue;
-	paramAttributes rotation;
-	paramAttributes pivot;
-	paramAttributes density;
-	paramAttributes height;
-	paramAttributes speed;
-	paramAttributes thickness;
+	static vector<paramAttributes> getDefinition(blipDrawType drawDef);
+		
 
 	
 };
 
-class synthDictionary{
-	
-public:
-	
-	synthDictionary();
-	vector<paramAttributes> getDefinition(string synthDef);
-	
-private:
-	
-	paramAttributes freq, amp, clip, speed, separate, attack; //this potentially could be done with an XML file
-	
-
-};
 
 #endif

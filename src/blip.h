@@ -14,7 +14,6 @@
 #include "blipPreset.h"
 #include "blipIncludes.h"
 
-
 class blip : public segment{
 	
 public:
@@ -43,14 +42,13 @@ public:
 	blipPreset getPreset();
 	baseBlipDraw * getDrawer();
 
+	static int bCounter;
 	
 private:
 	
 	void selectDrawer();
 	void updateDrawerParams();
 	
-	static int bCounter;
-	static blipPreset DPRESET;
 	blipPreset preset;
 	baseBlipDraw * drawer;
 	

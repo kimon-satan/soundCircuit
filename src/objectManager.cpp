@@ -16,6 +16,7 @@ vector<ofVec2f> objectManager::DPOINTS = vector<ofVec2f>();
 objectManager::objectManager(){
 	
 	isPreview = false;
+	
 }
 
 //accessible functions

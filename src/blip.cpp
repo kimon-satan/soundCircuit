@@ -11,7 +11,6 @@
 
 
 int blip::bCounter = 0;
-blipPreset blip::DPRESET = blipPreset();
 
 blip::blip(){
 
@@ -23,7 +22,6 @@ blip::blip(){
 	decayCount = 0;
 	postDecayCount =0;
 	
-	preset = DPRESET;
 	drawer = NULL;
 
 }

@@ -10,7 +10,6 @@
 #include "blipPreset.h"
 
 synthDictionary blipPreset::thisSynthDef = synthDictionary();
-drawDictionary blipPreset::thisDrawDef = drawDictionary();
 
 blipPreset::blipPreset(){
 
@@ -32,7 +31,6 @@ blipPreset::blipPreset(){
 	
 	userVals.push_back(0);
 	userVals.push_back(0);
-	
 	
 }
 
@@ -56,7 +54,7 @@ blipDrawType blipPreset::getDrawType(){return drawType;}
 void blipPreset::setDrawType(blipDrawType t){
 	drawType = t;
 	visualParams.clear();
-	visualParams = thisDrawDef.getDefinition(drawType);
+	visualParams = drawDictionary::getDefinition(drawType);
 }
 
 paramAttributes * blipPreset::getSoundParam(int p){return &soundParams[p];}
