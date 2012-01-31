@@ -22,8 +22,10 @@ void elecCurrent::update(){
 	//1 = density
 	
 	max_waveHeight = params[0];
-	waveHeight = params[0] * envVal;
+	float swing = (postVal > 0) ? 0.3 * envVal + 0.7 * postVal: envVal;
+	waveHeight = params[0] * swing;
 	waveHeight = max(1.0f, waveHeight);
+	
 	density = params[1];
 	
 	blankRect.setFromCenter(0, 0, length, 18);
@@ -99,7 +101,7 @@ vector<paramAttributes> elecCurrent::getParamDefs(){
 	
 	paramAttributes height, density;
 	density.name = "density"; density.min_val = 0; density.max_val = 1; density.abs_value = 0.5;
-	height.name = "height"; height.min_val = 20; height.max_val = 300; height.abs_value = 50;
+	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20;
 	
 	def.push_back(height);
 	def.push_back(density);

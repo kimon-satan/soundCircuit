@@ -15,10 +15,6 @@ class testApp : public ofBaseApp{
 public:
 	
 	void setup();
-	
-	void setupDummyPresets();
-	void loadPresets();
-	
 	void update();
 	void draw();
 
@@ -36,8 +32,7 @@ public:
 	
 private:
 	
-	layer currentLayer;
-	
+	void loadPresets();
 	void loadParamAttribute(ofxXmlSettings XML, paramAttributes * p);
 	void updateDummyViews();
 	ofVec2f getWorldCoordinate(ofVec2f point);
@@ -67,6 +62,7 @@ private:
 	
 	string getModeString(e_mouseMode temp);
 	
+	layer currentLayer;
 	ofVec2f mouse_offset;
 	ofRectangle viewPort;
 	ofVec2f world_dims;

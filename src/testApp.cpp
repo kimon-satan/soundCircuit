@@ -74,26 +74,53 @@ void testApp::loadPresets(){
 						}
 						
 						if(XML.pushTag("ATTACK", 0)){
-							if(XML.tagExists("PROPORTIONAL", 0))t_blip.setIsAttackProp(XML.getValue("PROPORTIONAL", true));
-							paramAttributes * p = t_blip.getAttackSecs();
-							loadParamAttribute(XML, p);
+							
+							
+							if(XML.pushTag("PROP", 0)){
+								t_blip.setIsAttackProp(true);
+								paramAttributes * p = t_blip.getAttackProp();
+								loadParamAttribute(XML, p);
+								XML.popTag();
+							}else{
+								paramAttributes * p = t_blip.getAttackSecs();
+								loadParamAttribute(XML, p);
+								t_blip.setIsAttackProp(false);
+							}
+							
 							XML.popTag();
 						}
 						
 						if(XML.pushTag("DECAY", 0)){
-							if(XML.tagExists("PROPORTIONAL", 0))t_blip.setIsDecayProp(XML.getValue("PROPORTIONAL", true));
-							paramAttributes * p = t_blip.getDecaySecs();
-							loadParamAttribute(XML, p);
+					
+							
+							if(XML.pushTag("PROP", 0)){
+								t_blip.setIsDecayProp(true);
+								paramAttributes * p = t_blip.getDecayProp();
+								loadParamAttribute(XML, p);
+								XML.popTag();
+							}else{
+								paramAttributes * p = t_blip.getDecaySecs();
+								loadParamAttribute(XML, p);
+								t_blip.setIsDecayProp(false);
+							}
 							XML.popTag();
 						}
 						
 						if(XML.pushTag("POST_DECAY", 0)){
-							if(XML.tagExists("PROPORTIONAL", 0))t_blip.setIsPostDecayProp(XML.getValue("PROPORTIONAL", true));
-							paramAttributes * p = t_blip.getPostDecaySecs();
-							loadParamAttribute(XML, p);
+							
+							if(XML.pushTag("PROP", 0)){
+								t_blip.setIsPostDecayProp(true);
+								paramAttributes * p = t_blip.getPostDecayProp();
+								loadParamAttribute(XML, p);
+								XML.popTag();
+							}else{
+								paramAttributes * p = t_blip.getPostDecaySecs();
+								loadParamAttribute(XML, p);
+								t_blip.setIsPostDecayProp(false);
+							}
+							
 							XML.popTag();
 						}
-						
 						
 						
 						int numSound = XML.getNumTags("SOUND");
@@ -101,7 +128,7 @@ void testApp::loadPresets(){
 						
 						for(int j = 0; j < numSound; j ++){
 							if(XML.pushTag("SOUND", j)){
-								paramAttributes * p = t_blip.getSoundParam(XML.getValue("NAME", 0)); 
+								paramAttributes * p = t_blip.getSoundParam(XML.getValue("NAME", "")); 
 								loadParamAttribute(XML, p);
 								XML.popTag();
 							}
@@ -110,7 +137,7 @@ void testApp::loadPresets(){
 						
 						for(int j = 0; j < numVisual; j ++){
 							if(XML.pushTag("VISUAL", j)){
-								paramAttributes * p = t_blip.getVisualParam(XML.getValue("NAME", 0)); 
+								paramAttributes * p = t_blip.getVisualParam(XML.getValue("NAME", "")); 
 								loadParamAttribute(XML, p);
 								XML.popTag();
 							}
@@ -149,103 +176,6 @@ void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
 	
 }
 
-void testApp::setupDummyPresets(){
-	
-	
-	blipPreset elecClip;
-	elecClip.setName("elecClip");
-	elecClip.setSynthDef("elec");
-	elecClip.setEnvType(ENV_ASR);
-	elecClip.setDrawType(BT_ELEC_CURRENT);
-	elecClip.getAttackSecs()->abs_value = 0.01;
-	elecClip.getDecaySecs()->abs_value = 0.2;
-	
-	elecClip.getLength()->setType = PSET_USERA;
-	elecClip.getSoundParam("speed")->setType = PSET_USERB;
-	elecClip.getSoundParam("freq")->setType = PSET_USERB;
-	elecClip.getVisualParam("density")->setType = PSET_USERB;
-	elecClip.getVisualParam("height")->setType = PSET_USERB;
-	
-	elecClip.getSoundParam("separate")->setType = PSET_FIXED;
-	elecClip.getSoundParam("separate")->abs_value = 0;
-	elecClip.getSoundParam("amp")->setType = PSET_FIXED;
-	elecClip.getSoundParam("amp")->abs_value = 0.5;
-	
-	presets.push_back(elecClip);
-	
-	
-	blipPreset strawClip;
-	strawClip.setName("strawClip");
-	strawClip.setSynthDef("clip");
-	strawClip.setDrawType(BT_STRAW);
-	strawClip.setEnvType(ENV_AR);
-	
-	strawClip.getLength()->setType = PSET_FIXED;
-	strawClip.getLength()->abs_value = 10;
-	
-	strawClip.getAttackSecs()->abs_value = 0.01;
-	strawClip.getDecaySecs()->abs_value = 1;
-	strawClip.getPostDecaySecs()->abs_value = 1;
-	
-	strawClip.getSoundParam("freq")->setType = PSET_RANDOM;
-	strawClip.getSoundParam("amp")->setType = PSET_RANDOM;
-	strawClip.getSoundParam("clip")->setType = PSET_FIXED;
-	strawClip.getSoundParam("clip")->abs_value = 0;
-	
-	strawClip.getVisualParam("rotation")->setType = PSET_RANDOM;
-	strawClip.getVisualParam("pivot")->setType = PSET_SLAVE;
-	strawClip.getVisualParam("pivot")->slaveTo = "freq";
-	strawClip.getVisualParam("pivot")->min_val = 50;
-	strawClip.getVisualParam("pivot")->max_val = 10;
-	strawClip.getVisualParam("height")->setType = PSET_SLAVE;
-	strawClip.getVisualParam("height")->slaveTo = "amp";
-	
-	presets.push_back(strawClip);
-	
-	blipPreset strawGlitch;
-	strawGlitch.setName("strawGlitch");
-	strawGlitch.setSynthDef("brownGlitch");
-	strawGlitch.setDrawType(BT_STRAW);
-	strawGlitch.setEnvType(ENV_AR);
-	
-	strawGlitch.getLength()->setType = PSET_FIXED;
-	strawGlitch.getLength()->abs_value = 10;
-	
-	strawGlitch.getAttackSecs()->abs_value = 0.01;
-	strawGlitch.getDecaySecs()->abs_value = 0.1;
-	
-	strawGlitch.getSoundParam("freq")->setType = PSET_RANDOM;
-	strawGlitch.getSoundParam("amp")->setType = PSET_RANDOM;
-	strawGlitch.getSoundParam("attack")->setType = PSET_RANDOM;
-	
-	strawGlitch.getVisualParam("rotation")->setType = PSET_RANDOM;
-	strawGlitch.getVisualParam("height")->setType = PSET_SLAVE;
-	strawGlitch.getVisualParam("height")->slaveTo = "amp";
-	
-	presets.push_back(strawGlitch);
-	
-	blipPreset beanTest;
-	beanTest.setName("beanTest");
-	beanTest.setSynthDef("swell");
-	beanTest.setDrawType(BT_BEAN1);
-	beanTest.setEnvType(ENV_ASR);
-	
-	beanTest.getLength()->setType = PSET_USERA;
-	beanTest.getSoundParam("freq")->setType = PSET_USERB;
-	beanTest.getSoundParam("amp")->abs_value = 0.5;
-	beanTest.getSoundParam("sm1")->abs_value = 0.5;
-	beanTest.getSoundParam("sm2")->abs_value = 0.5;
-	beanTest.getSoundParam("sm3")->abs_value = 0.5;
-	
-	beanTest.setIsAttackProp(true);
-	beanTest.getAttackProp()->setType = PSET_FIXED;
-	beanTest.getAttackProp()->abs_value = 0.99;
-	beanTest.getDecaySecs()->abs_value = 0.1;
-	beanTest.getPostDecaySecs()->abs_value = 1.5;
-	
-	presets.push_back(beanTest);
-	
-}
 
 //--------------------------------------------------------------
 void testApp::update(){

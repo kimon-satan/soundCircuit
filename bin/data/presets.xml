@@ -1,0 +1,130 @@
+<SOUND_CIRCUIT>
+    <BLIP_PRESETS>
+    
+        <BLIP>
+            <NAME>basicHard</NAME><SYNTH>basic</SYNTH><DRAW>testBlip</DRAW><ENV>0</ENV>
+            
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
+            
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>0.05</ABS_VAL></DECAY>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            
+            <VISUAL><NAME>hue</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            
+        </BLIP>
+        
+        <BLIP>
+            <NAME>basicRing</NAME><SYNTH>basic</SYNTH><DRAW>testBlip</DRAW><ENV>1</ENV>
+            
+            <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>20</ABS_VAL></LENGTH>
+            
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>1</ABS_VAL></DECAY>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>3</SET_TYPE></SOUND>
+            
+            <VISUAL><NAME>hue</NAME><SET_TYPE>3</SET_TYPE></VISUAL>
+        </BLIP>
+        
+        <BLIP>
+            <NAME>basicSoft</NAME><SYNTH>basic</SYNTH><DRAW>belch</DRAW><ENV>0</ENV>
+            
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
+            
+            <ATTACK><ABS_VAL>0.4</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>0.01</ABS_VAL></DECAY>
+            
+            <POST_DECAY><ABS_VAL>0.5</ABS_VAL></POST_DECAY>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            
+            <VISUAL><NAME>height</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            
+        </BLIP>
+        
+        <BLIP>
+            <NAME>elecClip</NAME><SYNTH>elec</SYNTH><DRAW>elecCurrent</DRAW><ENV>0</ENV>
+            
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
+            
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>0.2</ABS_VAL></DECAY>
+            
+            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            <SOUND><NAME>speed</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            <SOUND><NAME>separate</NAME><ABS_VAL>0</ABS_VAL></SOUND>
+  
+            
+            <VISUAL><NAME>density</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            
+        </BLIP>
+        
+        <BLIP>
+            <NAME>strawClip</NAME><SYNTH>clip</SYNTH><DRAW>straw</DRAW><ENV>1</ENV>
+            
+            <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>10</ABS_VAL></LENGTH>
+            
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>1</ABS_VAL></DECAY>
+            
+            <POST_DECAY><ABS_VAL>1</ABS_VAL></POST_DECAY>
+            
+            <SOUND><NAME>amp</NAME><SET_TYPE>1</SET_TYPE></SOUND>
+            <SOUND><NAME>freq</NAME><SET_TYPE>4</SET_TYPE></SOUND>
+            <SOUND><NAME>clip</NAME><ABS_VAL>0</ABS_VAL></SOUND>
+            <VISUAL><NAME>rotation</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            <VISUAL><NAME>pivot</NAME><SET_TYPE>5</SET_TYPE><SLAVE>freq</SLAVE><MIN_VAL>50</MIN_VAL><MAX_VAL>10</MAX_VAL></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
+            
+        </BLIP>
+        
+        <BLIP>
+            <NAME>strawGlitch</NAME><SYNTH>brownGlitch</SYNTH><DRAW>straw</DRAW><ENV>1</ENV>
+             
+            <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>10</ABS_VAL></LENGTH>
+             
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>0.1</ABS_VAL></DECAY>
+            
+            <SOUND><NAME>amp</NAME><SET_TYPE>1</SET_TYPE></SOUND>
+            <SOUND><NAME>freq</NAME><SET_TYPE>5</SET_TYPE></SOUND>
+            <SOUND><NAME>attack</NAME><SET_TYPE>5</SET_TYPE></SOUND>
+            <VISUAL><NAME>rotation</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
+             
+        </BLIP>
+        
+        <BLIP>
+            <NAME>beanTest</NAME><SYNTH>swell</SYNTH><DRAW>bean1</DRAW><ENV>0</ENV>
+             
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
+             
+            <ATTACK><PROP><ABS_VAL>0.99</ABS_VAL></PROP></ATTACK>
+            
+            <DECAY><ABS_VAL>0.1</ABS_VAL></DECAY>
+            
+            <POST_DECAY><ABS_VAL>1.5</ABS_VAL></POST_DECAY>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>1</SET_TYPE></SOUND>
+            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>sm1</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>sm2</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>sm3</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+             
+        </BLIP>
+        
+
+
+        
+    </BLIP_PRESETS>
+</SOUND_CIRCUIT>
