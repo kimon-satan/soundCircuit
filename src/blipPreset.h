@@ -36,6 +36,7 @@ public:
 	string getSynthDef();
 	blipDrawType getDrawType();
 	void setDrawType(blipDrawType t);
+	void setDrawType(string s);
 	
 	paramAttributes * getAttackSecs();
 	paramAttributes * getDecaySecs();

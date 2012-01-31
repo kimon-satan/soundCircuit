@@ -14,10 +14,10 @@ class testApp : public ofBaseApp{
 	
 public:
 	
-		
 	void setup();
 	
 	void setupDummyPresets();
+	void loadPresets();
 	
 	void update();
 	void draw();
@@ -38,7 +38,7 @@ private:
 	
 	layer currentLayer;
 	
-	
+	void loadParamAttribute(ofxXmlSettings XML, paramAttributes * p);
 	void updateDummyViews();
 	ofVec2f getWorldCoordinate(ofVec2f point);
 	void drawVp(ofRectangle& vp, bool isDummy = false);

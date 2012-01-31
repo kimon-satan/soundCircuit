@@ -32,6 +32,7 @@ class drawDictionary{
 public:
 	
 	static vector<paramAttributes> getDefinition(blipDrawType drawDef);
+	static blipDrawType getTypeFromString(string s);
 		
 
 	

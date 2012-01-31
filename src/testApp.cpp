@@ -4,12 +4,12 @@ bool testApp::drawData =false;
 
 //--------------------------------------------------------------
 void testApp::setup(){
-
+	
 	ofSetVerticalSync(true);
 	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
 	mouse_offset.set(0,0);
 	currentLayer.setDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
-
+	
 	sender.setup( HOST, PORT );
 	
 	ofxOscMessage m;
@@ -30,7 +30,8 @@ void testApp::setup(){
 	currentAction = ACTION_NONE;
 	
 	blipPreset::thisSynthDef.loadDictionary();
-	setupDummyPresets();
+	//setupDummyPresets();
+	loadPresets();
 	selectedPreset = 0;
 	
 	thisReader.setLayer(&currentLayer);
@@ -44,46 +45,112 @@ void testApp::setup(){
 	
 }
 
+void testApp::loadPresets(){
+	
+	ofxXmlSettings XML;
+	
+	if(XML.loadFile("presets.xml")){
+		
+		if(XML.pushTag("SOUND_CIRCUIT", 0)){
+			
+			if(XML.pushTag("BLIP_PRESETS", 0)){
+				
+				int numBlips = XML.getNumTags("BLIP");
+				
+				for(int i = 0; i < numBlips; i++){
+					
+					if(XML.pushTag("BLIP", i)){
+						
+						blipPreset t_blip;
+						t_blip.setName(XML.getValue("NAME", ""));
+						t_blip.setSynthDef(XML.getValue("SYNTH", ""));
+						t_blip.setDrawType(XML.getValue("DRAW", ""));
+						t_blip.setEnvType(e_envType(XML.getValue("ENV", ENV_ASR)));
+						
+						if(XML.pushTag("LENGTH", 0)){
+							paramAttributes * p = t_blip.getLength();
+							loadParamAttribute(XML, p);
+							XML.popTag();
+						}
+						
+						if(XML.pushTag("ATTACK", 0)){
+							if(XML.tagExists("PROPORTIONAL", 0))t_blip.setIsAttackProp(XML.getValue("PROPORTIONAL", true));
+							paramAttributes * p = t_blip.getAttackSecs();
+							loadParamAttribute(XML, p);
+							XML.popTag();
+						}
+						
+						if(XML.pushTag("DECAY", 0)){
+							if(XML.tagExists("PROPORTIONAL", 0))t_blip.setIsDecayProp(XML.getValue("PROPORTIONAL", true));
+							paramAttributes * p = t_blip.getDecaySecs();
+							loadParamAttribute(XML, p);
+							XML.popTag();
+						}
+						
+						if(XML.pushTag("POST_DECAY", 0)){
+							if(XML.tagExists("PROPORTIONAL", 0))t_blip.setIsPostDecayProp(XML.getValue("PROPORTIONAL", true));
+							paramAttributes * p = t_blip.getPostDecaySecs();
+							loadParamAttribute(XML, p);
+							XML.popTag();
+						}
+						
+						
+						
+						int numSound = XML.getNumTags("SOUND");
+						int numVisual = XML.getNumTags("VISUAL");
+						
+						for(int j = 0; j < numSound; j ++){
+							if(XML.pushTag("SOUND", j)){
+								paramAttributes * p = t_blip.getSoundParam(XML.getValue("NAME", 0)); 
+								loadParamAttribute(XML, p);
+								XML.popTag();
+							}
+							
+						}
+						
+						for(int j = 0; j < numVisual; j ++){
+							if(XML.pushTag("VISUAL", j)){
+								paramAttributes * p = t_blip.getVisualParam(XML.getValue("NAME", 0)); 
+								loadParamAttribute(XML, p);
+								XML.popTag();
+							}
+							
+						}
+						
+						
+						XML.popTag(); // blip pop
+						
+						presets.push_back(t_blip);
+					}
+					
+				} //loop end
+			
+				
+				XML.popTag(); //outer tags
+			}
+			XML.popTag();
+		}
+	
+	}else{
+	
+		cout << "file not found \n";
+	}
+	
+	
+}
+
+void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
+	
+	if(XML.tagExists("SET_TYPE", 0))p->setType = e_setType(XML.getValue("SET_TYPE", PSET_FIXED));
+	if(XML.tagExists("ABS_VAL", 0))p->abs_value = XML.getValue("ABS_VAL", 0.5f);
+	if(XML.tagExists("MIN_VAL", 0))p->min_val = XML.getValue("MIN_VAL", 0.0f);
+	if(XML.tagExists("MAX_VAL", 0))p->max_val = XML.getValue("MAX_VAL", 1.0f);
+	if(XML.tagExists("SLAVE_TO",0))p->slaveTo = XML.getValue("SLAVE", "");
+	
+}
+
 void testApp::setupDummyPresets(){
-
-	blipPreset asrHard;
-	asrHard.setName("asrHard");
-	asrHard.setSynthDef("basic");
-	asrHard.setDrawType(BT_TESTBLIP);
-	asrHard.setEnvType(ENV_ASR);
-	asrHard.getAttackSecs()->abs_value = 0.01;
-	asrHard.getDecaySecs()->abs_value = 0.05;
-	asrHard.getLength()->setType = PSET_USERA;
-	asrHard.getSoundParam("freq")->setType = PSET_USERB;
-	asrHard.getVisualParam("hue")->setType = PSET_USERB;
-
-	presets.push_back(asrHard);
 	
-	blipPreset asrSoft;
-	asrSoft.setName("asrSoft");
-	asrSoft.setSynthDef("basic");
-	asrSoft.setDrawType(BT_BELCH);
-	asrSoft.setEnvType(ENV_ASR);
-	asrSoft.getAttackSecs()->abs_value = 0.4;
-	asrSoft.getDecaySecs()->abs_value = 0.01;
-	asrSoft.getPostDecaySecs()->abs_value = 0.5;
-	asrSoft.getLength()->setType = PSET_USERA;
-	asrSoft.getSoundParam("freq")->setType = PSET_USERB;
-	asrSoft.getVisualParam("height")->setType = PSET_USERB;
-	presets.push_back(asrSoft);
-	
-	blipPreset ar;
-	ar.setName("ar");
-	ar.setEnvType(ENV_AR);
-	ar.setSynthDef("basic");
-	ar.setDrawType(BT_TESTBLIP);
-	ar.getAttackSecs()->abs_value = 0.01;
-	ar.getDecaySecs()->abs_value = 1;
-	ar.getLength()->setType = PSET_FIXED;
-	ar.getLength()->abs_value = 20;
-	ar.getSoundParam("freq")->setType = PSET_MAP;
-	ar.getVisualParam(0)->setType = PSET_MAP;
-	presets.push_back(ar);
 	
 	blipPreset elecClip;
 	elecClip.setName("elecClip");
@@ -106,7 +173,7 @@ void testApp::setupDummyPresets(){
 	
 	presets.push_back(elecClip);
 	
-
+	
 	blipPreset strawClip;
 	strawClip.setName("strawClip");
 	strawClip.setSynthDef("clip");
@@ -177,7 +244,7 @@ void testApp::setupDummyPresets(){
 	beanTest.getPostDecaySecs()->abs_value = 1.5;
 	
 	presets.push_back(beanTest);
-
+	
 }
 
 //--------------------------------------------------------------
@@ -207,18 +274,18 @@ void testApp::update(){
 		
 		//position averaging ... needs more work due to wrapping
 		/*ofVec2f t;  
-		t.x = thisReader.getPos().x + trans.x;
-		t.y = thisReader.getPos().y + trans.y;
-		vpHist.push_back(t);
-		if(vpHist.size() > 10){vpHist.erase(vpHist.begin());}
-		ofVec2f avPos(0,0);
-		for(int i = 0; i < vpHist.size(); i ++){
-			avPos += vpHist[i];
-		}
-		avPos /= vpHist.size();
-		
-		viewPort.x = avPos.x;
-		viewPort.y = avPos.y;*/
+		 t.x = thisReader.getPos().x + trans.x;
+		 t.y = thisReader.getPos().y + trans.y;
+		 vpHist.push_back(t);
+		 if(vpHist.size() > 10){vpHist.erase(vpHist.begin());}
+		 ofVec2f avPos(0,0);
+		 for(int i = 0; i < vpHist.size(); i ++){
+		 avPos += vpHist[i];
+		 }
+		 avPos /= vpHist.size();
+		 
+		 viewPort.x = avPos.x;
+		 viewPort.y = avPos.y;*/
 	}
 	
 	moduloViewPort();
@@ -283,7 +350,7 @@ void testApp::updateDummyViews(){
 		dummy_views.push_back(dummy_view);
 	}
 	
-
+	
 }
 
 //--------------------------------------------------------------
@@ -296,7 +363,7 @@ void testApp::draw(){
 	
 	thisReader.draw(viewPort);
 	for(int i = 0; i < dummy_views.size(); i ++){thisReader.draw(dummy_views[i]);}
-		
+	
 	ofSetColor(0);
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 1000,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
@@ -340,12 +407,12 @@ void testApp::moduloViewPort(){
 		mouse_offset.y += viewPort.y;	
 		viewPort.y += t_dims.y; 
 		mouse_offset.y -= viewPort.y;
-	//	vpHist.clear();
+		//	vpHist.clear();
 	}else if(viewPort.y > t_dims.y/2 + viewPort.height/2 ){
 		mouse_offset.y += viewPort.y;	
 		viewPort.y -= t_dims.y; 
 		mouse_offset.y -= viewPort.y;
-	//	vpHist.clear();
+		//	vpHist.clear();
 	}
 	
 	if(viewPort.x < -t_dims.x/2 -viewPort.width/2 ){
@@ -411,11 +478,11 @@ void testApp::prepPauseFollow(){
 		viewPort.x = trans.x;
 		viewPort.y = trans.y;
 	}
-
+	
 }
 
 void testApp::startAction(){
-
+	
 	if(currentAction == ACTION_DRAG){
 		
 		prepPauseFollow();
@@ -440,7 +507,7 @@ void testApp::startAction(){
 }
 
 void testApp::continueAction(ofVec2f t_dir){
-
+	
 	if(currentAction == ACTION_DRAG){
 		
 		viewPort.x = -mouse_offset.x - mouseX;
@@ -452,7 +519,7 @@ void testApp::continueAction(ofVec2f t_dir){
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
 		
 		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
-
+		
 	}else if(currentAction == ACTION_ADD_LONG_TRACK){
 		
 		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
@@ -502,7 +569,7 @@ void testApp::endAction(){
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
 	
-
+	
 	for(int i = 1; i < MODE_COUNT; i ++){
 		if(key == 48 + i )mouseMode = e_mouseMode(i);
 		currentLayer.deselectAll();	
@@ -567,7 +634,7 @@ void testApp::mousePressed(int x, int y, int button){
 	}
 	
 	startAction();
-
+	
 }
 
 //--------------------------------------------------------------
@@ -576,7 +643,7 @@ void testApp::mouseDragged(int x, int y, int button){
 	mouse_b.set(x,y);
 	ofVec2f dir = mouse_b - mouse_a;
 	continueAction(dir);
-
+	
 }
 
 
@@ -587,7 +654,7 @@ void testApp::mouseReleased(int x, int y, int button){
 	
 	mouseDown = false;
 	currentAction = ACTION_NONE;
-		
+	
 	mouse_a.set(0,0);
 	mouse_b.set(0,0);
 }
@@ -609,7 +676,7 @@ void testApp::dragEvent(ofDragInfo dragInfo){
 }
 
 void testApp::exit(){
-
+	
 	ofxOscMessage m;
 	m.setAddress("/init");
 	sender.sendMessage(m);

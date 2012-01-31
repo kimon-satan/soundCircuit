@@ -51,10 +51,17 @@ void blipPreset::setSynthDef(string t_def){
 string blipPreset::getSynthDef(){return synthDef;}
 
 blipDrawType blipPreset::getDrawType(){return drawType;}
+
 void blipPreset::setDrawType(blipDrawType t){
 	drawType = t;
 	visualParams.clear();
 	visualParams = drawDictionary::getDefinition(drawType);
+}
+
+void blipPreset::setDrawType(string s){
+	
+	setDrawType(drawDictionary::getTypeFromString(s));
+	
 }
 
 paramAttributes * blipPreset::getSoundParam(int p){return &soundParams[p];}

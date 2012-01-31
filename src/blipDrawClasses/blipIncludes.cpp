@@ -25,3 +25,14 @@ vector<paramAttributes> drawDictionary::getDefinition(blipDrawType drawDef){
 	return blank;
 }
 
+blipDrawType drawDictionary::getTypeFromString(string s){
+
+	if(s == "testBlip"){return BT_TESTBLIP;}
+	if(s == "elecCurrent"){return BT_ELEC_CURRENT;}
+	if(s == "straw"){return BT_STRAW;}
+	if(s == "belch"){return BT_BELCH;}
+	if(s == "bean1"){return BT_BEAN1;}
+	
+	return BT_TESTBLIP;
+	
+}
