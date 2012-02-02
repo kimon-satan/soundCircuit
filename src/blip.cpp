@@ -21,6 +21,8 @@ blip::blip(){
 	attackCount = 0;
 	decayCount = 0;
 	postDecayCount =0;
+	envVal = 0;
+	postVal =0;
 	
 	drawer = NULL;
 
@@ -139,6 +141,7 @@ bool blip::react(float incr){
 void blip::createDrawer(ofVec2f t_dims, baseBlipDraw * t_draw){
 	
 	selectDrawer();
+	updateDrawerParams();
 	drawer->setup(t_dims, t_draw);
 	updateDrawer();
 }
@@ -197,6 +200,39 @@ void blip::destroyDrawer(){
 	if(drawer)delete drawer;
 	drawer = NULL;
 	
+}
+
+
+bool blip::getInside(ofVec2f t_pos, int bufferZone){
+	
+
+		
+		ofRectangle n_testArea;
+		ofRectangle n_wrapTestArea;
+		
+		n_testArea.setFromCenter(testArea.getCenter(), 
+								 testArea.width + bufferZone * 2,
+								 testArea.height + bufferZone * 2);
+	
+		
+		if(!isWrapped){
+	
+			return (n_testArea.inside(t_pos));
+		}else{
+			
+			n_wrapTestArea.setFromCenter(wrapTestArea.getCenter(), 
+									 wrapTestArea.width + bufferZone * 2,
+									 wrapTestArea.height + bufferZone * 2);
+			
+			if(n_testArea.inside(t_pos))return true;
+			if(n_wrapTestArea.inside(t_pos))return true;
+			return false;
+		}
+	
+	
+	
+	
+
 }
 
 //getters and setters

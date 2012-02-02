@@ -24,6 +24,7 @@ void objectRenderer::draw(ofRectangle t_view){
 	drawTracks();
 	drawNodes();
 	drawBlips();
+	drawSelected();
 	
 }
 
@@ -47,7 +48,6 @@ void objectRenderer::drawTracks(){
 void objectRenderer::drawTrack(segment * t){
 	
 	glPushMatrix();
-	//glTranslatef(0, 0, -2);
 	
 	ofVec2f sp(t->getStartPos());
 	ofVec2f lp;
@@ -61,6 +61,7 @@ void objectRenderer::drawTrack(segment * t){
 	if(checkIsVisible(sp, lp, t->getDirection())){
 		ofSetColor(100);
 		ofLine(sp.x,sp.y,lp.x,lp.y);
+		
 	}
 	
 	if(t->getIsWrapped()){
@@ -81,16 +82,23 @@ void objectRenderer::drawTrack(segment * t){
 			ofLine(wsp.x, wsp.y, wlp.x, wlp.y);
 		}
 		
+		if(t->getIsSelected()){
+			ofVec2f l_pos1 =  t->getSelectPos() - t->getStartPos(); 
+			if(l_pos1.x + l_pos1.y < 0){
+				l_pos1 += world_dims * t->getDirection(); // when on other side of wrap border
+				
+			}
+			ofVec2f l_pos2 =  t->getDirection() * t->getLength() -  l_pos1;
+			selected.push_back(sp + l_pos1);
+			selected.push_back(wlp - l_pos2);
+			
+			//cout << sp + l_pos1 << ":" << wlp - l_pos2 << endl;
+		}
+		
 	}
+		
+	if(t->getIsSelected())selected.push_back(t->getSelectPos());
 
-	
-	if(t->getIsSelected()){
-		ofEnableAlphaBlending();
-		ofSetColor(255, 0, 0, 100);
-		ofFill();
-		ofCircle(t->getSelectPos(), 5);
-		ofDisableAlphaBlending();
-	}
 	
 	if(isTrackData){
 		ofDrawBitmapString("sp", sp);
@@ -106,6 +114,27 @@ void objectRenderer::drawTrack(segment * t){
 	
 	glPopMatrix();
 
+
+}
+
+void objectRenderer::drawSelected(){
+
+	for(int i = 0; i < selected.size(); i++){
+		
+		ofSetColor(255);
+		ofFill();
+		ofCircle(selected[i], 5);
+		
+		ofEnableAlphaBlending();
+		ofSetColor(255, 0, 0, 100);
+		ofFill();
+		ofCircle(selected[i], 5);
+		ofDisableAlphaBlending();
+		//ofSetColor(0);
+		//ofDrawBitmapString(ofToString(selected[i].x,0) + "," + ofToString(selected[i].y,0), selected[i]);
+	}
+	
+	selected.clear();
 
 }
 
@@ -156,14 +185,8 @@ void objectRenderer::drawNodes(){
 		
 		if(viewPort.inside(pos)){
 			
-			if(it->getIsSelected()){
-				ofEnableAlphaBlending();
-				ofFill();
-				ofSetColor(255, 0, 0, 100);
-				ofCircle(pos, 5);
-				ofDisableAlphaBlending();
+			if(it->getIsSelected())selected.push_back(it->getPos());
 				
-			}
 			
 			if(isNodeData){
 				ofNoFill();
@@ -184,6 +207,19 @@ void objectRenderer::drawBlips(){
 	
 	for(vector<blip>::iterator it = blips->begin(); it != blips->end(); it++){
 		
+		if(checkIsVisible(it->getDrawer()->getCorners()))it->draw(0);
+		
+		if(it->getDrawer()->getIsXWrapped()){
+			if(checkIsVisible(it->getDrawer()->getWrapXCorners()))it->draw(1);
+		}
+		
+		if(it->getDrawer()->getIsYWrapped()){
+			
+			if(checkIsVisible(it->getDrawer()->getWrapYCorners())){
+				it->draw(2);
+			}
+		}	
+		
 		if(isBlipData){
 			ofSetColor(255,0,0);
 			ofDrawBitmapString("sp", it->getStartPos());
@@ -195,25 +231,32 @@ void objectRenderer::drawBlips(){
 				ofSetColor(0, 255, 0);
 				ofRect(it->getWrapTestArea());
 			}
-		}else{
-			if(checkIsVisible(it->getDrawer()->getCorners()))it->draw(0);
-			
-			if(it->getDrawer()->getIsXWrapped()){
-				if(checkIsVisible(it->getDrawer()->getWrapXCorners()))it->draw(1);
-			}
-			
-			if(it->getDrawer()->getIsYWrapped()){
-			
-				if(checkIsVisible(it->getDrawer()->getWrapYCorners())){
-					it->draw(2);
-				}
-			}	
-			
-			   
 		}
+		
+
+		
 	}
 	
 	if(previewBlip.getIsValid()){
+	
+	
+		if(previewBlip.getDrawer()){
+			
+			if(checkIsVisible(previewBlip.getDrawer()->getCorners()))previewBlip.draw(0);
+		
+		
+			if(previewBlip.getDrawer()->getIsXWrapped()){
+			
+			if(checkIsVisible(previewBlip.getDrawer()->getWrapXCorners())){
+					previewBlip.draw(1);
+					
+				}
+			}
+			
+			if(previewBlip.getDrawer()->getIsYWrapped()){
+				if(checkIsVisible(previewBlip.getDrawer()->getWrapYCorners()))previewBlip.draw(2);
+			}
+		}
 	
 		if(isBlipData){
 			ofSetColor(255,0,0);
@@ -226,22 +269,8 @@ void objectRenderer::drawBlips(){
 				ofSetColor(0, 255, 0);
 				ofRect(previewBlip.getWrapTestArea());
 			}
-		}else {
-			
-			if(checkIsVisible(previewBlip.getDrawer()->getCorners()))previewBlip.draw(0);
-			
-			if(previewBlip.getDrawer()->getIsXWrapped()){
-				
-				if(checkIsVisible(previewBlip.getDrawer()->getWrapXCorners())){
-					previewBlip.draw(1);
-					
-				}
-			}
-			
-			if(previewBlip.getDrawer()->getIsYWrapped()){
-				if(checkIsVisible(previewBlip.getDrawer()->getWrapYCorners()))previewBlip.draw(2);
-			}
 		}
+		
 
 		
 	}

@@ -43,7 +43,7 @@ public:
 	void deselectTracks();
 	node * selectNode(ofVec2f t_pos);
 	segment * selectTrackPoint(ofVec2f t_pos);
-	segment * selectBlip(ofVec2f t_pos);
+	segment * selectBlip(ofVec2f t_pos, int bZone = 0);
 	
 	
 protected:

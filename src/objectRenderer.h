@@ -23,6 +23,7 @@ public:
 	void drawTracks();
 	void drawBlips();
 	void drawNodes();
+	void drawSelected();
 	
 	//getters and setters
 	void toggleTrackData();
@@ -39,6 +40,8 @@ private:
 	bool isTrackData;
 	bool isNodeData;
 	bool isBlipData;
+	
+	vector<ofVec2f> selected;
 	
 };
 

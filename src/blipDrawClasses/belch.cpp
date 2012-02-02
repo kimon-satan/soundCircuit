@@ -29,8 +29,8 @@ void belch::setup(ofVec2f t_dims, baseBlipDraw * t_draw){
 
 void belch::update(){
 
-	p1.set(-length * direction/2);
-	p2.set(length * direction/2);
+	p1.set(-length/2,0);
+	p2.set(length/2,0);
 	height = params[0]/3;
 	width = length/2;
 	

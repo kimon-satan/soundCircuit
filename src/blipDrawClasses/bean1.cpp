@@ -22,7 +22,11 @@
 
 bean1::bean1():baseBlipDraw(){
 	
-	
+	n_verts.clear();
+	cps_a.clear();
+	cps_b.clear();
+	height = 0;
+	width = 0;
 	
 }
 
@@ -31,86 +35,73 @@ void bean1::setup(ofVec2f t_dims){
 	
 	baseBlipDraw::setup(t_dims);
 	
-	if(vertices.size() == 0){
-		int numV = 5;
+	if(n_verts.size() == 0){
+		int numV = 6;
 		int midPoint = numV/2;
 		
 		for(int i = 0; i < numV; i ++){
-			ofVec2f t_vert(ofVec2f(0,0) + ofVec2f(ofRandom(-0.5,-1),0));
-			t_vert.rotate((float)i  * (float)360/numV + (float)360/numV  * ofRandom(-0.5,0.5), ofVec2f(0,0));
+			ofVec2f t_vert(ofRandom(-0.8,-1),0);
+			t_vert.rotate((float)i  * (float)360/numV + (float)360/numV  * ofRandom(-0.25,0.25), ofVec2f(0,0));
 			
 			if(i == 0)t_vert.set(-1,0);
 			if(i == midPoint)t_vert.set(1,0);
 			
 			n_verts.push_back(t_vert);
-			vertices.push_back(t_vert * length/2);
+			
 			cps_a.push_back(ofVec2f(0,0));
 			cps_b.push_back(ofVec2f(0,0));
 		}
 		
-	}else{
-	
-		for(int i = 0; i < vertices.size(); i ++)vertices[i] = n_verts[i] * length/2; 
 	}
 	
-	width = length/2;
-	height = length/2;
-	
-
+	envVal = 0;
+	postVal = 0;
 }
 
 void bean1::setup(ofVec2f t_dims, baseBlipDraw * t_draw){
 	
 	baseBlipDraw::setup(t_dims, t_draw);
 	bean1 * b = (bean1 *)t_draw;
-	vertices = b->getVertices();
 	cps_a = b->getCps_a();
 	cps_b = b->getCps_b();
 	n_verts = b->getN_verts();
 	
 	width = length/2;
-	height = length/2;
+	height = params[0];
 	
 }
 
 void bean1::update(){
 	
+	width = length/2;
+	height = params[0];
+	
 	blankRect.setFromCenter(0, 0, length -2, 2);
 	
-	bool concave = false;
-	
 	float swing = (postVal > 0) ? 0.3 * envVal + 0.7 * postVal: envVal;
-	//if(isActive)cout << swing << "\n";
+	
+	vertices.clear();
+	
+	for(int i = 0; i < n_verts.size(); i++)vertices.push_back(ofVec2f(n_verts[i].x * width,n_verts[i].y * height));
+	
+	cps_a.clear();
+	cps_b.clear();
 	
 	for(int i = 0; i < vertices.size(); i++){
 		
-		float d =(isActive)? 6.0f * (1.0f - swing): 6; // the smoothness
-		d = max(1.0f, d);
+		int n_i = (i+1)%vertices.size();
 		
-		int n_i = (i + 1)%vertices.size();
+		if(i != 0 && i != vertices.size()/2)vertices[i].y *= 1 + (swing * params[5]);
+		if(i != 0 && i != vertices.size()/2)vertices[i] *= 1 + (swing * params[6]);
 		
-		ofVec2f t_vec(vertices[n_i] - vertices[i]);
-		ofVec2f add(-t_vec.x/d,t_vec.y/d);
+		ofVec2f ta(vertices[i].getMiddle(vertices[n_i]));
+		ofVec2f add_a( -ta * (params[1] + params[3] * swing));
+		cps_a.push_back(ofVec2f(ta + add_a));
 		
-		if(t_vec.y > 0 && t_vec.x > 0){
-			add *= -1;
-		}else if(t_vec.x < 0  && t_vec.y < 0){
-			add *= - 1;
-		}
+		ofVec2f tb_vec(cps_a.back() - vertices[i]);
+		ofVec2f add_b( -tb_vec * (params[2] + params[4] * swing));
+		cps_b.push_back(ofVec2f(vertices[i] - tb_vec + add_b));
 		
-		if(concave)add*= -1;
-		
-		cps_a[i].set(ofVec2f (vertices[i].getMiddle(vertices[n_i]) + add));
-		
-		ofVec2f tc_vec(cps_a[i] - vertices[i]);
-		cps_b[i].set(vertices[i] - tc_vec);
-		
-		concave = !concave;
-	}
-	
-	if(isActive){
-		
-
 		
 	}
 	
@@ -120,6 +111,8 @@ void bean1::update(){
 
 
 void bean1::draw(int t_wrap){
+	
+	//figure out craziness on preview draw
 	
 	glPushMatrix();
 	
@@ -169,6 +162,23 @@ vector<paramAttributes> bean1::getParamDefs(){
 	
 	vector<paramAttributes> def;
 	
+	paramAttributes height, a_add, b_add, a_swell, b_swell, v_swell, o_swell;
+	
+	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20; //p0
+	def.push_back(height);
+	a_add.name = "a_add"; a_add.min_val = -1; a_add.max_val = 1; a_add.abs_value = 0; //p1
+	def.push_back(a_add);
+	b_add.name = "b_add"; b_add.min_val = -1; b_add.max_val = 1; b_add.abs_value = 0; //p2
+	def.push_back(b_add);
+	a_swell.name = "a_swell"; a_swell.min_val = -2; a_swell.max_val = 2; a_swell.abs_value = 0; //p3
+	def.push_back(a_swell);
+	b_swell.name = "b_swell"; b_swell.min_val = -2; b_swell.max_val = 2; b_swell.abs_value = 0; //p4
+	def.push_back(b_swell);
+	v_swell.name = "v_swell"; v_swell.min_val = 0; v_swell.max_val = 2; v_swell.abs_value = 0; //p5
+	def.push_back(v_swell);
+	o_swell.name = "o_swell"; o_swell.min_val = 0; o_swell.max_val = 2; o_swell.abs_value = 0; //p6
+	def.push_back(o_swell);
+
 	
 	return def;
 	

@@ -107,7 +107,7 @@
         <BLIP>
             <NAME>beanTest</NAME><SYNTH>swell</SYNTH><DRAW>bean1</DRAW><ENV>0</ENV>
              
-            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
+            <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>100</ABS_VAL></LENGTH>
              
             <ATTACK><PROP><ABS_VAL>0.99</ABS_VAL></PROP></ATTACK>
             
@@ -115,12 +115,18 @@
             
             <POST_DECAY><ABS_VAL>1.5</ABS_VAL></POST_DECAY>
             
-            <SOUND><NAME>freq</NAME><SET_TYPE>1</SET_TYPE></SOUND>
-            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            <SOUND><NAME>amp</NAME><SET_TYPE>1</SET_TYPE></SOUND>
             <SOUND><NAME>sm1</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             <SOUND><NAME>sm2</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             <SOUND><NAME>sm3</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
-             
+             <VISUAL><NAME>height</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+              <VISUAL><NAME>a_add</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+               <VISUAL><NAME>b_add</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
+            <VISUAL><NAME>o_swell</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
+            <VISUAL><NAME>b_swell</NAME><ABS_VAL>2</ABS_VAL></VISUAL>
+            <VISUAL><NAME>a_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>v_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
         </BLIP>
         
 

@@ -19,6 +19,8 @@ baseBlipDraw::baseBlipDraw(){
 	
 	isXWrapped = false;
 	isYWrapped = false;
+	envVal = 0;
+	postVal = 0;
 }
 
 void baseBlipDraw::setup(ofVec2f t_dims){
@@ -31,6 +33,8 @@ void baseBlipDraw::setup(ofVec2f t_dims){
 	wrapCoords.y += (startPos.y > 0)? -world_dims.y : world_dims.y;
 	wrapCoords.x += (startPos.x > 0)? -world_dims.x : world_dims.x;
 	angle = (direction.y > 0) ? 90 : 0;
+	postVal = 0;
+	envVal = 0;
 	
 }
 

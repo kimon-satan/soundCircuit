@@ -30,7 +30,7 @@ void testApp::setup(){
 	currentAction = ACTION_NONE;
 	
 	blipPreset::thisSynthDef.loadDictionary();
-	//setupDummyPresets();
+
 	loadPresets();
 	selectedPreset = 0;
 	

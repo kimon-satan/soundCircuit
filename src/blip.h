@@ -32,6 +32,8 @@ public:
 	void destroyDrawer();
 	void updateDrawer();
 	
+	bool getInside(ofVec2f t_pos, int bufferZone = 0);
+	
 	//getters and setters
 	bool getIsActive();
 	void setIsActive(bool t);

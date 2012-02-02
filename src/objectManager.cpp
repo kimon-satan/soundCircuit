@@ -119,15 +119,16 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 	
 	s_tracks[0] = selectTrackPoint(w_pos);
 	
+	
 	if(!s_tracks[0]){
 		return;
-	}else if(selectBlip(w_pos)){
+	}else if(selectBlip(w_pos, 3)){
 		return;
 	}else{
 		s_pos[0] = s_tracks[0]->getSelectPos();
 		previewBlip.setPreset(bp);
-		calcBlip(s_pos[0], ofVec2f(0,0));
 		previewBlip.createDrawer(world_dims);
+		calcBlip(s_pos[0], ofVec2f(0,0));
 		previewBlip.getPresetRef().setIsRandSet(true);
 	}
 	
@@ -139,6 +140,11 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	if(!s_tracks[0]){
 		previewBlip.setIsValid(false);
 		return;
+	}
+	
+	if(!previewBlip.getDrawer()){
+		previewBlip.setIsValid(false);
+		return; //a new blip hasn't been started
 	}
 	
 	//preset parameter sorting
@@ -156,7 +162,6 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	
 	float m_val = ofVec2f(ofGetScreenWidth()/2, ofGetScreenHeight()/2).length();
 
-
 	setParam(p.getLength(),userA, userB, m_val);
 	setParam(p.getAttackSecs(),userA, userB, m_val);
 	setParam(p.getDecaySecs(),userA, userB, m_val);
@@ -164,11 +169,12 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	for(int i = 0; i < p.getSoundParams()->size(); i++)setParam(p.getSoundParam(i), userA, userB, m_val);
 	for(int i = 0; i < p.getVisualParams()->size(); i++)setParam(p.getVisualParam(i), userA, userB, m_val);
 	
-	if(s_tracks[0] && !selectBlip(s_pos[0])){
+	
+	if(s_tracks[0] && !selectBlip(s_pos[0],3)){
 		
-		ofVec2f t_dir(s_tracks[0]->getDirection() * p.getLength()->abs_value);
-		s_pos[1] = s_pos[0] - t_dir/2;
-		makeSegment(s_pos[1], t_dir, previewBlip);
+		ofVec2f tt_dir(s_tracks[0]->getDirection() * p.getLength()->abs_value);
+		s_pos[1] = s_pos[0] - tt_dir/2;
+		makeSegment(s_pos[1], tt_dir, previewBlip); //look here !
 		
 		if(p.getLength()->setType == PSET_USERA || p.getLength()->setType == PSET_USERB ){
 			constrainFromMidPoint(s_pos[0], previewBlip, false, true, true);
@@ -194,17 +200,14 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 			}
 			
 		}
-		if(previewBlip.getLength() < p.getLength()->min_val){
-			recalc = true;
-		}
-		if(!recalc){
-			previewBlip.setIsValid(true);
-			previewBlip.updateDrawerPosition(world_dims); //needs to be called as blip position can change
-			previewBlip.updateDrawer();
-		}else{
-			previewBlip.setIsValid(false);
-		}
 		
+		if(previewBlip.getLength() < p.getLength()->min_val)recalc = true;
+		
+		previewBlip.updateDrawer();
+		previewBlip.updateDrawerPosition(world_dims); //needs to be called as blip position can change
+		previewBlip.updateDrawer();
+		previewBlip.setIsValid(!recalc);
+
 	}
 	
 }
@@ -252,7 +255,7 @@ void objectManager::setParam(paramAttributes * p, float userA, float userB, floa
 			if(!master)master = previewBlip.getPreset().getSoundParam(p->slaveTo);
 			if(!master)master = previewBlip.getPreset().getVisualParam(p->slaveTo);
 			if(master)p->abs_value = ofMap(master->abs_value, master->min_val, master->max_val, p->min_val, p->max_val);
-			//if(master)cout << master->name << ":"<< p->abs_value << endl;
+
 		}
 		
 	
@@ -718,14 +721,15 @@ segment * objectManager::selectTrackPoint(ofVec2f t_pos){
 	return t;
 }
 
-segment * objectManager::selectBlip(ofVec2f t_pos){
+segment * objectManager::selectBlip(ofVec2f t_pos, int bZone){
 	
 	segment * t = NULL;
 	
 	for(int i = 0; i < blips->size(); i++){
-		if(blips->at(i).getInside(t_pos)){
+		if(blips->at(i).getInside(t_pos, bZone)){
 			t = &blips->at(i);
-			break;}
+			break;
+		}
 	}
 	
 	return t;
