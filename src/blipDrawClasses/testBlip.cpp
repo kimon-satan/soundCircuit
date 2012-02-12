@@ -20,7 +20,7 @@ void testBlip::update(){
 
 	alpha = 255.0f * envVal;
 	c.setHsb(params[0],255,255, alpha);
-	testRect.setFromCenter(0, 0, length, 18);
+	testRect.setFromCenter(0, 0, length, params[1]);
 
 	setWrapData(ofVec2f(length/2,9),angle);
 
@@ -67,10 +67,12 @@ vector<paramAttributes> testBlip::getParamDefs(){
 
 	vector<paramAttributes> def;
 	
-	paramAttributes hue;
+	paramAttributes hue, height;
 	hue.name = "hue"; hue.min_val = 0; hue.max_val = 255; hue.abs_value = 100;
+	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20;
 	
 	def.push_back(hue);
+	def.push_back(height);
 	
 	return def;
 

@@ -28,9 +28,15 @@ void testApp::setup(){
 	isOptionKey = false;
 	mouseMode = MODE_NONE;
 	currentAction = ACTION_NONE;
+	buttonMode = 0;
 	
 	blipPreset::thisSynthDef.loadDictionary();
-
+	
+	for(int i =0 ; i < 4; i++){
+		vector<blipPreset> t;
+		presets.push_back(t);
+	}
+	
 	loadPresets();
 	selectedPreset = 0;
 	
@@ -61,62 +67,107 @@ void testApp::loadPresets(){
 					
 					if(XML.pushTag("BLIP", i)){
 						
-						blipPreset t_blip;
-						t_blip.setName(XML.getValue("NAME", ""));
-						t_blip.setSynthDef(XML.getValue("SYNTH", ""));
-						t_blip.setDrawType(XML.getValue("DRAW", ""));
-						t_blip.setEnvType(e_envType(XML.getValue("ENV", ENV_ASR)));
+						blipPreset t_blip[4];
+						
+						for(int j = 0; j < 4; j++){
+							t_blip[j].setName(XML.getValue("NAME", ""));
+							t_blip[j].setSynthDef(XML.getValue("SYNTH", ""));
+							t_blip[j].setDrawType(XML.getValue("DRAW", ""));
+							t_blip[j].setEnvType(e_envType(XML.getValue("ENV", ENV_ASR)));
+						}
 						
 						if(XML.pushTag("LENGTH", 0)){
-							paramAttributes * p = t_blip.getLength();
-							loadParamAttribute(XML, p);
+							
+							int numAlt = XML.getNumTags("ALT");
+							
+							for(int j = 0; j < 4; j++){
+								paramAttributes * p = t_blip[j].getLength();
+								
+								if(j > 0 && j <= numAlt){
+									if(XML.pushTag("ALT", 0)){
+										loadParamAttribute(XML, p);
+										XML.popTag();
+									}
+								}else{
+									loadParamAttribute(XML, p);
+								}
+							}
+					
 							XML.popTag();
 						}
 						
-						if(XML.pushTag("ATTACK", 0)){
+						if(XML.pushTag("ATTACK", 0)){ //continue updating from here ... needs a more efficient way of coding
 							
+							int numAlt = XML.getNumTags("ALT");
 							
-							if(XML.pushTag("PROP", 0)){
-								t_blip.setIsAttackProp(true);
-								paramAttributes * p = t_blip.getAttackProp();
-								loadParamAttribute(XML, p);
-								XML.popTag();
-							}else{
-								paramAttributes * p = t_blip.getAttackSecs();
-								loadParamAttribute(XML, p);
-								t_blip.setIsAttackProp(false);
+							for(int j = 0; j < 4; j++){
+								
+								if(j > 0 && j <= numAlt)XML.pushTag("ALT", j-1);
+								
+								if(XML.pushTag("PROP", 0)){
+									t_blip[j].setIsAttackProp(true);
+									paramAttributes * p = t_blip[j].getAttackProp();
+									loadParamAttribute(XML, p);
+									XML.popTag();
+								}else{
+									paramAttributes * p = t_blip[j].getAttackSecs();
+									loadParamAttribute(XML, p);
+									t_blip[j].setIsAttackProp(false);
+								}
+								
+								if(j > 0 && j <= numAlt)XML.popTag();
 							}
 							
+
 							XML.popTag();
 						}
 						
 						if(XML.pushTag("DECAY", 0)){
-					
 							
-							if(XML.pushTag("PROP", 0)){
-								t_blip.setIsDecayProp(true);
-								paramAttributes * p = t_blip.getDecayProp();
-								loadParamAttribute(XML, p);
-								XML.popTag();
-							}else{
-								paramAttributes * p = t_blip.getDecaySecs();
-								loadParamAttribute(XML, p);
-								t_blip.setIsDecayProp(false);
+							int numAlt = XML.getNumTags("ALT");
+							
+							for(int j = 0; j < 4; j++){
+								
+								if(j > 0 && j <= numAlt)XML.pushTag("ALT", j-1);
+								
+								if(XML.pushTag("PROP", 0)){
+									t_blip[j].setIsDecayProp(true);
+									paramAttributes * p = t_blip[j].getDecayProp();
+									loadParamAttribute(XML, p);
+									XML.popTag();
+								}else{
+									paramAttributes * p = t_blip[j].getDecaySecs();
+									loadParamAttribute(XML, p);
+									t_blip[j].setIsDecayProp(false);
+								}
+								
+								if(j > 0 && j <= numAlt)XML.popTag();
+								
 							}
+							
 							XML.popTag();
 						}
 						
 						if(XML.pushTag("POST_DECAY", 0)){
 							
-							if(XML.pushTag("PROP", 0)){
-								t_blip.setIsPostDecayProp(true);
-								paramAttributes * p = t_blip.getPostDecayProp();
-								loadParamAttribute(XML, p);
-								XML.popTag();
-							}else{
-								paramAttributes * p = t_blip.getPostDecaySecs();
-								loadParamAttribute(XML, p);
-								t_blip.setIsPostDecayProp(false);
+							int numAlt = XML.getNumTags("ALT");
+							
+							for(int j = 0; j < 4; j++){
+								
+								if(j > 0 && j <= numAlt)XML.pushTag("ALT", j-1);
+								
+								if(XML.pushTag("PROP", 0)){
+									t_blip[j].setIsPostDecayProp(true);
+									paramAttributes * p = t_blip[j].getPostDecayProp();
+									loadParamAttribute(XML, p);
+									XML.popTag();
+								}else{
+									paramAttributes * p = t_blip[j].getPostDecaySecs();
+									loadParamAttribute(XML, p);
+									t_blip[j].setIsPostDecayProp(false);
+								}
+								
+								if(j > 0 && j <= numAlt)XML.popTag();
 							}
 							
 							XML.popTag();
@@ -128,17 +179,49 @@ void testApp::loadPresets(){
 						
 						for(int j = 0; j < numSound; j ++){
 							if(XML.pushTag("SOUND", j)){
-								paramAttributes * p = t_blip.getSoundParam(XML.getValue("NAME", "")); 
-								loadParamAttribute(XML, p);
+								
+								for(int k = 0; k < 4; k++){
+									
+									paramAttributes * p = t_blip[k].getSoundParam(XML.getValue("NAME", "")); 
+									
+									int numAlt = XML.getNumTags("ALT");
+									
+									if(k > 0 && k <= numAlt){
+										if(XML.pushTag("ALT", k-1)){
+											loadParamAttribute(XML, p);
+											XML.popTag();
+										}
+									}else{
+										loadParamAttribute(XML, p);
+									}
+									
+								}
 								XML.popTag();
+
 							}
 							
 						}
 						
 						for(int j = 0; j < numVisual; j ++){
 							if(XML.pushTag("VISUAL", j)){
-								paramAttributes * p = t_blip.getVisualParam(XML.getValue("NAME", "")); 
-								loadParamAttribute(XML, p);
+								
+								for(int k = 0; k < 4; k++){
+									paramAttributes * p = t_blip[k].getVisualParam(XML.getValue("NAME", "")); 
+									
+									int numAlt = XML.getNumTags("ALT");
+									
+									if(k > 0 && k <= numAlt){
+										if(XML.pushTag("ALT", k-1)){
+											loadParamAttribute(XML, p);
+											XML.popTag();
+										}
+									}else{
+										loadParamAttribute(XML, p);
+									}
+
+									
+								}
+								
 								XML.popTag();
 							}
 							
@@ -147,7 +230,8 @@ void testApp::loadPresets(){
 						
 						XML.popTag(); // blip pop
 						
-						presets.push_back(t_blip);
+						for(int k = 0; k < 4; k++)presets[k].push_back(t_blip[k]);
+
 					}
 					
 				} //loop end
@@ -172,9 +256,10 @@ void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
 	if(XML.tagExists("ABS_VAL", 0))p->abs_value = XML.getValue("ABS_VAL", 0.5f);
 	if(XML.tagExists("MIN_VAL", 0))p->min_val = XML.getValue("MIN_VAL", 0.0f);
 	if(XML.tagExists("MAX_VAL", 0))p->max_val = XML.getValue("MAX_VAL", 1.0f);
-	if(XML.tagExists("SLAVE_TO",0))p->slaveTo = XML.getValue("SLAVE", "");
+	if(XML.tagExists("SLAVE_TO",0))p->slaveTo = XML.getValue("SLAVE_TO", "");
 	
 }
+
 
 
 //--------------------------------------------------------------
@@ -222,7 +307,7 @@ void testApp::update(){
 	
 	if(!mouseDown){
 		
-		if(mouseMode == MODE_ADD){
+		if(mouseMode == MODE_ADD_BLIP || mouseMode == MODE_ADD_TRACK){
 			currentLayer.selectSomething(getWorldCoordinate(ofVec2f(mouseX, mouseY)));
 		}
 		
@@ -297,7 +382,7 @@ void testApp::draw(){
 	ofSetColor(0);
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 1000,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
-	ofDrawBitmapString("blipPreset: " + presets[selectedPreset].getName(), 400,20);
+	ofDrawBitmapString("blipPreset: " + presets[buttonMode][selectedPreset].getName(), 400,20);
 	ofDrawBitmapString("readerMode: " + thisReader.getModeString(), 700,20);
 	ofEnableAlphaBlending();
 	ofSetColor(0, 20);
@@ -322,7 +407,8 @@ string testApp::getModeString(e_mouseMode temp){
 	switch(temp){
 			
 		case MODE_DRAG:return "drag";break;
-		case MODE_ADD:return "add";break;
+		case MODE_ADD_BLIP:return "add_blip";break;
+		case MODE_ADD_TRACK:return "add_track";break;
 		default:return "none";break;
 			
 	}
@@ -430,7 +516,7 @@ void testApp::startAction(){
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		prepPauseFollow();
-		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset]);
+		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[buttonMode][selectedPreset]);
 		
 	}
 	
@@ -458,7 +544,7 @@ void testApp::continueAction(ofVec2f t_dir){
 		
 		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
 		if(t_dir.length() > 1){
-			presets[selectedPreset].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
+			presets[buttonMode][selectedPreset].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
 		}
 		
 	}
@@ -523,7 +609,7 @@ void testApp::keyPressed  (int key){
 	
 	
 	if(key == 9)isOptionKey = true;
-	if(key == OF_KEY_UP)selectedPreset = min(selectedPreset + 1, (int)presets.size() - 1);
+	if(key == OF_KEY_UP)selectedPreset = min(selectedPreset + 1, (int)presets[0].size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset = max(selectedPreset - 1, 0);
 	if(key == 'r')thisReader.incrementMode();
 	
@@ -557,10 +643,17 @@ void testApp::mousePressed(int x, int y, int button){
 	mouse_a.set(x,y);
 	mouse_b.set(mouse_a);
 	
+	switch (button) {
+		case 0:buttonMode = 0;break;
+		default:buttonMode = 1;break;
+	}
+	
 	if(mouseMode == MODE_DRAG){
 		currentAction = ACTION_DRAG;
-	}else if(mouseMode == MODE_ADD){
-		currentAction = (button == 0)? ACTION_ADD_BLIP : ((isOptionKey)? ACTION_ADD_LONG_TRACK : ACTION_ADD_SHORT_TRACK);
+	}else if(mouseMode == MODE_ADD_BLIP){
+		currentAction =  ACTION_ADD_BLIP;
+	}else if(mouseMode == MODE_ADD_TRACK){
+		currentAction = (button == 0 )? ACTION_ADD_SHORT_TRACK: ACTION_ADD_LONG_TRACK;
 	}
 	
 	startAction();

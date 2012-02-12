@@ -8,11 +8,12 @@
             
             <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
             
-            <DECAY><ABS_VAL>0.05</ABS_VAL></DECAY>
+            <DECAY><ABS_VAL>0.01</ABS_VAL></DECAY>
             
             <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
             
             <VISUAL><NAME>hue</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO></VISUAL>
             
         </BLIP>
         
@@ -35,7 +36,7 @@
             
             <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
             
-            <ATTACK><ABS_VAL>0.4</ABS_VAL></ATTACK>
+            <ATTACK><PROP><ABS_VAL>0.99</ABS_VAL></PROP></ATTACK>
             
             <DECAY><ABS_VAL>0.01</ABS_VAL></DECAY>
             
@@ -58,12 +59,17 @@
             
             <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
-            <SOUND><NAME>speed</NAME><SET_TYPE>2</SET_TYPE></SOUND>
-            <SOUND><NAME>separate</NAME><ABS_VAL>0</ABS_VAL></SOUND>
+            <SOUND><NAME>filFreq</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL>
+            <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>0</MIN_VAL><MAX_VAL>1</MAX_VAL></ALT>
+            </SOUND>
+            <SOUND><NAME>speed</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>separate</NAME><ABS_VAL>0.1</ABS_VAL></SOUND>
   
             
             <VISUAL><NAME>density</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
-            <VISUAL><NAME>height</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            <VISUAL><NAME>height</NAME><ABS_VAL>50</ABS_VAL></VISUAL>
+            <VISUAL><NAME>thick_l</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            <VISUAL><NAME>thick_r</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
             
         </BLIP>
         
@@ -81,9 +87,13 @@
             <SOUND><NAME>amp</NAME><SET_TYPE>1</SET_TYPE></SOUND>
             <SOUND><NAME>freq</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             <SOUND><NAME>clip</NAME><ABS_VAL>0</ABS_VAL></SOUND>
-            <VISUAL><NAME>rotation</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
-            <VISUAL><NAME>pivot</NAME><SET_TYPE>5</SET_TYPE><SLAVE>freq</SLAVE><MIN_VAL>50</MIN_VAL><MAX_VAL>10</MAX_VAL></VISUAL>
+            <VISUAL><NAME>rotation</NAME><SET_TYPE>2</SET_TYPE>
+            <ALT><ABS_VAL>0</ABS_VAL></ALT>
+            </VISUAL>
+            <VISUAL><NAME>thickness</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
+            <VISUAL><NAME>pivot</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>50</MIN_VAL><MAX_VAL>10</MAX_VAL></VISUAL>
             <VISUAL><NAME>height</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
+            <VISUAL><NAME>grayCol</NAME><SET_TYPE>1</SET_TYPE><MIN_VAL>150</MIN_VAL><MAX_VAL>0</MAX_VAL></VISUAL>
             
         </BLIP>
         
@@ -101,6 +111,8 @@
             <SOUND><NAME>attack</NAME><SET_TYPE>5</SET_TYPE></SOUND>
             <VISUAL><NAME>rotation</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
             <VISUAL><NAME>height</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
+            <VISUAL><NAME>grayCol</NAME><ABS_VAL>100</ABS_VAL></VISUAL>
+            <VISUAL><NAME>thickness</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
              
         </BLIP>
         
@@ -109,24 +121,28 @@
              
             <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>100</ABS_VAL></LENGTH>
              
-            <ATTACK><PROP><ABS_VAL>0.99</ABS_VAL></PROP></ATTACK>
+            <ATTACK><PROP><ABS_VAL>0.99</ABS_VAL></PROP> <ALT><ABS_VAL>0.1</ABS_VAL></ALT></ATTACK>
             
             <DECAY><ABS_VAL>0.1</ABS_VAL></DECAY>
             
-            <POST_DECAY><ABS_VAL>1.5</ABS_VAL></POST_DECAY>
+            <POST_DECAY><ABS_VAL>0.6</ABS_VAL></POST_DECAY>
             
-            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            <SOUND><NAME>freq</NAME><SET_TYPE>3</SET_TYPE></SOUND>
             <SOUND><NAME>amp</NAME><SET_TYPE>1</SET_TYPE></SOUND>
             <SOUND><NAME>sm1</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             <SOUND><NAME>sm2</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             <SOUND><NAME>sm3</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
-             <VISUAL><NAME>height</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
-              <VISUAL><NAME>a_add</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
-               <VISUAL><NAME>b_add</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
-            <VISUAL><NAME>o_swell</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
-            <VISUAL><NAME>b_swell</NAME><ABS_VAL>2</ABS_VAL></VISUAL>
-            <VISUAL><NAME>a_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
-            <VISUAL><NAME>v_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            
+            <VISUAL><NAME>numV</NAME><ABS_VAL>3</ABS_VAL></VISUAL>
+            <VISUAL><NAME>displace_l</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>displace_r</NAME><ABS_VAL>0.25</ABS_VAL></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>-200</MIN_VAL><MAX_VAL>200</MAX_VAL></VISUAL>
+            <VISUAL><NAME>a_add</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>b_add</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
+            <VISUAL><NAME>o_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>b_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>a_swell</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
+            <VISUAL><NAME>v_swell</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
         </BLIP>
         
 

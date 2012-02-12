@@ -47,7 +47,7 @@ void blip::update(){
 		}else{
 			
 			if(decayCount > 0){
-				postVal = 1;
+				if(postDecayCount > 0)postVal = 1;
 				decayCount -= 1;
 				envVal = (float)decayCount/(float)totalDecay;
 				
@@ -79,7 +79,7 @@ void blip::update(){
 				
 			}else if(decayCount > 0){
 				
-				postVal = 1;
+				if(postDecayCount > 0)postVal = 1;
 				decayCount -= 1;
 				envVal = (float)decayCount/(float)totalDecay;
 			

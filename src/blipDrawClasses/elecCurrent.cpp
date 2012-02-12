@@ -69,10 +69,13 @@ void elecCurrent::draw(int t_wrap){
 		ofFill();
 		ofRect(blankRect);
 	
+		ofPushStyle();
 		ofSetColor(100);
+		ofSetLineWidth(params[2]);
 		ofLine(blankRect.x, -max_waveHeight, blankRect.x, max_waveHeight);
+		ofSetLineWidth(params[3]);
 		ofLine(blankRect.x + blankRect.width, -max_waveHeight, blankRect.x + blankRect.width, max_waveHeight);
-
+		ofPopStyle();
 	
 		if(isActive){
 			
@@ -90,8 +93,6 @@ void elecCurrent::draw(int t_wrap){
 
 	glPopMatrix();
 	
-	
-	
 }
 
 
@@ -99,12 +100,17 @@ vector<paramAttributes> elecCurrent::getParamDefs(){
 	
 	vector<paramAttributes> def;
 	
-	paramAttributes height, density;
+	paramAttributes height, density, thick_l, thick_r;
+	
 	density.name = "density"; density.min_val = 0; density.max_val = 1; density.abs_value = 0.5;
 	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20;
+	thick_l.name = "thick_l"; thick_l.min_val = 1; thick_l.max_val = 10; thick_l.abs_value = 1;
+	thick_r.name = "thick_r"; thick_r.min_val = 1; thick_r.max_val = 10; thick_r.abs_value = 1;
 	
 	def.push_back(height);
 	def.push_back(density);
+	def.push_back(thick_l);
+	def.push_back(thick_r);
 	
 	return def;
 	

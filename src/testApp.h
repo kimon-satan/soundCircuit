@@ -34,6 +34,7 @@ private:
 	
 	void loadPresets();
 	void loadParamAttribute(ofxXmlSettings XML, paramAttributes * p);
+	void loadTimeAttributes(ofxXmlSettings XML, blipPreset & bp);
 	void updateDummyViews();
 	ofVec2f getWorldCoordinate(ofVec2f point);
 	void drawVp(ofRectangle& vp, bool isDummy = false);
@@ -47,7 +48,8 @@ private:
 	enum e_mouseMode {
 		MODE_NONE,
 		MODE_DRAG,
-		MODE_ADD,
+		MODE_ADD_BLIP,
+		MODE_ADD_TRACK,
 		MODE_COUNT
 	};
 	
@@ -70,7 +72,7 @@ private:
 	
 	vector<ofVec2f> vpHist;
 	vector<ofRectangle> dummy_views;
-	vector<blipPreset> presets;
+	vector<vector<blipPreset> > presets;
 	
 	int selectedPreset;
 	
@@ -81,6 +83,7 @@ private:
 	
 	e_mouseMode mouseMode;
 	e_Action currentAction;
+	int buttonMode;
 	bool isOptionKey;
 	bool isPreview, mouseDown;
 	static bool drawData;

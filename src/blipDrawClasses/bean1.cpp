@@ -36,12 +36,12 @@ void bean1::setup(ofVec2f t_dims){
 	baseBlipDraw::setup(t_dims);
 	
 	if(n_verts.size() == 0){
-		int numV = 6;
+		int numV = params[0];
 		int midPoint = numV/2;
 		
 		for(int i = 0; i < numV; i ++){
-			ofVec2f t_vert(ofRandom(-0.8,-1),0);
-			t_vert.rotate((float)i  * (float)360/numV + (float)360/numV  * ofRandom(-0.25,0.25), ofVec2f(0,0));
+			ofVec2f t_vert(ofRandom(params[2] -1 ,-1),0);
+			t_vert.rotate((float)i  * (float)360/numV + (float)360/numV  * ofRandom(-params[3],params[3]), ofVec2f(0,0));
 			
 			if(i == 0)t_vert.set(-1,0);
 			if(i == midPoint)t_vert.set(1,0);
@@ -67,14 +67,14 @@ void bean1::setup(ofVec2f t_dims, baseBlipDraw * t_draw){
 	n_verts = b->getN_verts();
 	
 	width = length/2;
-	height = params[0];
+	height = params[1];
 	
 }
 
 void bean1::update(){
 	
 	width = length/2;
-	height = params[0];
+	height = params[1];
 	
 	blankRect.setFromCenter(0, 0, length -2, 2);
 	
@@ -91,15 +91,15 @@ void bean1::update(){
 		
 		int n_i = (i+1)%vertices.size();
 		
-		if(i != 0 && i != vertices.size()/2)vertices[i].y *= 1 + (swing * params[5]);
-		if(i != 0 && i != vertices.size()/2)vertices[i] *= 1 + (swing * params[6]);
+		if(i != 0 && i != vertices.size()/2)vertices[i].y *= 1 + (swing * params[8]);
+		if(i != 0 && i != vertices.size()/2)vertices[i] *= 1 + (swing * params[9]);
 		
 		ofVec2f ta(vertices[i].getMiddle(vertices[n_i]));
-		ofVec2f add_a( -ta * (params[1] + params[3] * swing));
+		ofVec2f add_a( -ta * (params[4] + params[6] * swing));
 		cps_a.push_back(ofVec2f(ta + add_a));
 		
 		ofVec2f tb_vec(cps_a.back() - vertices[i]);
-		ofVec2f add_b( -tb_vec * (params[2] + params[4] * swing));
+		ofVec2f add_b( -tb_vec * (params[5] + params[7] * swing));
 		cps_b.push_back(ofVec2f(vertices[i] - tb_vec + add_b));
 		
 		
@@ -162,21 +162,34 @@ vector<paramAttributes> bean1::getParamDefs(){
 	
 	vector<paramAttributes> def;
 	
-	paramAttributes height, a_add, b_add, a_swell, b_swell, v_swell, o_swell;
+	paramAttributes numV, height, displace_l, displace_r, a_add, b_add, a_swell, b_swell, v_swell, o_swell;
 	
-	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20; //p0
+	//numv p0
+	numV.name = "numV"; numV.min_val = 3; numV.max_val = 12; numV.abs_value = 6; //p0 = 1
+	def.push_back(numV);
+	
+	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20; //p0 = 1
 	def.push_back(height);
-	a_add.name = "a_add"; a_add.min_val = -1; a_add.max_val = 1; a_add.abs_value = 0; //p1
+	
+	//displace_l p2
+	displace_l.name = "displace_l"; displace_l.min_val = 0; displace_l.max_val = 1; displace_l.abs_value = 0.25; 
+	def.push_back(displace_l);
+	
+	//displace_r p3
+	displace_r.name = "displace_r"; displace_r.min_val = 0; displace_r.max_val = 1; displace_r.abs_value = 0.25; 
+	def.push_back(displace_r);
+	
+	a_add.name = "a_add"; a_add.min_val = -1; a_add.max_val = 1; a_add.abs_value = 0; //p1 = 4
 	def.push_back(a_add);
-	b_add.name = "b_add"; b_add.min_val = -1; b_add.max_val = 1; b_add.abs_value = 0; //p2
+	b_add.name = "b_add"; b_add.min_val = -1; b_add.max_val = 1; b_add.abs_value = 0; //p2 = 5
 	def.push_back(b_add);
-	a_swell.name = "a_swell"; a_swell.min_val = -2; a_swell.max_val = 2; a_swell.abs_value = 0; //p3
+	a_swell.name = "a_swell"; a_swell.min_val = -2; a_swell.max_val = 2; a_swell.abs_value = 0; //p3 = 6
 	def.push_back(a_swell);
-	b_swell.name = "b_swell"; b_swell.min_val = -2; b_swell.max_val = 2; b_swell.abs_value = 0; //p4
+	b_swell.name = "b_swell"; b_swell.min_val = -2; b_swell.max_val = 2; b_swell.abs_value = 0; //p4 = 7
 	def.push_back(b_swell);
-	v_swell.name = "v_swell"; v_swell.min_val = 0; v_swell.max_val = 2; v_swell.abs_value = 0; //p5
+	v_swell.name = "v_swell"; v_swell.min_val = 0; v_swell.max_val = 2; v_swell.abs_value = 0; //p5 = 8
 	def.push_back(v_swell);
-	o_swell.name = "o_swell"; o_swell.min_val = 0; o_swell.max_val = 2; o_swell.abs_value = 0; //p6
+	o_swell.name = "o_swell"; o_swell.min_val = 0; o_swell.max_val = 2; o_swell.abs_value = 0; //p6 = 9
 	def.push_back(o_swell);
 
 	
