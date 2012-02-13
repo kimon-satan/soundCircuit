@@ -57,19 +57,33 @@
             
             <DECAY><ABS_VAL>0.2</ABS_VAL></DECAY>
             
-            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
-            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
-            <SOUND><NAME>filFreq</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL>
-            <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>0</MIN_VAL><MAX_VAL>1</MAX_VAL></ALT>
+            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL>
+                    <ALT><ABS_VAL>0.5</ABS_VAL></ALT>
+                    <ALT><SET_TYPE>2</SET_TYPE></ALT>
+                    <ALT><SET_TYPE>2</SET_TYPE></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE>
+            <ALT><SET_TYPE>2</SET_TYPE></ALT>
+            <ALT><SET_TYPE>2</SET_TYPE></ALT>
+            <ALT><SET_TYPE>3</SET_TYPE></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>filFreq</NAME><SET_TYPE>2</SET_TYPE>
+            <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL></ALT>
+                    <ALT><SET_TYPE>3</SET_TYPE></ALT>
             </SOUND>
             <SOUND><NAME>speed</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             <SOUND><NAME>separate</NAME><ABS_VAL>0.1</ABS_VAL></SOUND>
   
             
             <VISUAL><NAME>density</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
-            <VISUAL><NAME>height</NAME><ABS_VAL>50</ABS_VAL></VISUAL>
-            <VISUAL><NAME>thick_l</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
-            <VISUAL><NAME>thick_r</NAME><SET_TYPE>2</SET_TYPE></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO></VISUAL>
+            
+            <VISUAL><NAME>thick_l</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreq</SLAVE_TO><MIN_VAL>5</MIN_VAL><MAX_VAL>1</MAX_VAL>
+            </VISUAL>
+            
+            <VISUAL><NAME>thick_r</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO> </VISUAL>
             
         </BLIP>
         
@@ -145,7 +159,23 @@
             <VISUAL><NAME>v_swell</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
         </BLIP>
         
-
+        <BLIP>
+            <NAME>flipperTest</NAME><SYNTH>basic</SYNTH><DRAW>flipper</DRAW><ENV>1</ENV>
+            
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
+            
+            <ATTACK><PROP><ABS_VAL>0.1</ABS_VAL></PROP></ATTACK>
+            
+            <DECAY><ABS_VAL>2</ABS_VAL></DECAY>
+            <POST_DECAY><ABS_VAL>1</ABS_VAL></POST_DECAY>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            
+            <VISUAL><NAME>height</NAME><ABS_VAL>50</ABS_VAL></VISUAL>
+            <VISUAL><NAME>trackOffset</NAME><SET_TYPE>4</SET_TYPE></VISUAL>
+            <VISUAL><NAME>x_speed</NAME><SET_TYPE>4</SET_TYPE><MIN_VAL>1</MIN_VAL></VISUAL>
+            
+        </BLIP>
 
         
     </BLIP_PRESETS>

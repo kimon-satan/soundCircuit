@@ -19,6 +19,14 @@ blipPreset::blipPreset(){
 	decay[0].abs_value = 1;
 	attack[0].abs_value = 0.2;
 	
+	attack[0].name = "attackSecs";
+	attack[1].name = "attackProp";
+	decay[0].name = "decaySecs";
+	decay[1].name = "decayProp";
+	postDecay[0].name = "postDecaySecs";
+	postDecay[1].name = "postDecayProp";
+	
+	length.name = "length";
 	length.abs_value = 100;
 	length.setType = PSET_USERA;
 	length.min_val = 10;

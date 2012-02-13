@@ -24,11 +24,12 @@ void testApp::setup(){
 	isPreview = false;
 	trans.set(0,0);
 	
-	mouseDown = false;
+	isMouseDown = false;
 	isOptionKey = false;
 	mouseMode = MODE_NONE;
 	currentAction = ACTION_NONE;
 	buttonMode = 0;
+	
 	
 	blipPreset::thisSynthDef.loadDictionary();
 	
@@ -38,7 +39,8 @@ void testApp::setup(){
 	}
 	
 	loadPresets();
-	selectedPreset = 0;
+	selectedPreset[0] = 0;
+	selectedPreset[1] = 0;
 	
 	thisReader.setLayer(&currentLayer);
 	thisReader.setOscSender(&sender);
@@ -305,7 +307,7 @@ void testApp::update(){
 	
 	moduloViewPort();
 	
-	if(!mouseDown){
+	if(!isMouseDown){
 		
 		if(mouseMode == MODE_ADD_BLIP || mouseMode == MODE_ADD_TRACK){
 			currentLayer.selectSomething(getWorldCoordinate(ofVec2f(mouseX, mouseY)));
@@ -382,7 +384,7 @@ void testApp::draw(){
 	ofSetColor(0);
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 1000,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
-	ofDrawBitmapString("blipPreset: " + presets[buttonMode][selectedPreset].getName(), 400,20);
+	ofDrawBitmapString("blipPreset: " + presets[selectedPreset[1]][selectedPreset[0]].getName(), 400,20);
 	ofDrawBitmapString("readerMode: " + thisReader.getModeString(), 700,20);
 	ofEnableAlphaBlending();
 	ofSetColor(0, 20);
@@ -392,7 +394,7 @@ void testApp::draw(){
 	
 	ofSetColor(0);
 	
-	if(mouseDown && currentAction == ACTION_ADD_BLIP){
+	if(isMouseDown && currentAction == ACTION_ADD_BLIP){
 		ofLine(mouse_a,mouse_b);
 		ofVec2f dir(mouse_b - mouse_a);
 		dir.normalize();
@@ -516,7 +518,8 @@ void testApp::startAction(){
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		prepPauseFollow();
-		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[buttonMode][selectedPreset]);
+		selectedPreset[1] = (isOptionKey)? buttonMode + 2: buttonMode;
+		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset[1]][selectedPreset[0]]);
 		
 	}
 	
@@ -544,7 +547,7 @@ void testApp::continueAction(ofVec2f t_dir){
 		
 		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
 		if(t_dir.length() > 1){
-			presets[buttonMode][selectedPreset].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
+			presets[selectedPreset[1]][selectedPreset[0]].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
 		}
 		
 	}
@@ -587,8 +590,10 @@ void testApp::keyPressed  (int key){
 	
 	
 	for(int i = 1; i < MODE_COUNT; i ++){
-		if(key == 48 + i )mouseMode = e_mouseMode(i);
-		currentLayer.deselectAll();	
+		if(key == 48 + i ){
+			mouseMode = e_mouseMode(i);
+			currentLayer.deselectAll();	
+		}
 	}
 	
 	if(key == ' '){
@@ -609,8 +614,8 @@ void testApp::keyPressed  (int key){
 	
 	
 	if(key == 9)isOptionKey = true;
-	if(key == OF_KEY_UP)selectedPreset = min(selectedPreset + 1, (int)presets[0].size() - 1);
-	if(key == OF_KEY_DOWN)selectedPreset = max(selectedPreset - 1, 0);
+	if(key == OF_KEY_UP)selectedPreset[0] = min(selectedPreset[0] + 1, (int)presets[0].size() - 1);
+	if(key == OF_KEY_DOWN)selectedPreset[0] = max(selectedPreset[0] - 1, 0);
 	if(key == 'r')thisReader.incrementMode();
 	
 	if(key == 'f')ofToggleFullscreen();
@@ -639,7 +644,7 @@ void testApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
 	
-	mouseDown = true;
+	isMouseDown = true;
 	mouse_a.set(x,y);
 	mouse_b.set(mouse_a);
 	
@@ -675,7 +680,7 @@ void testApp::mouseReleased(int x, int y, int button){
 	
 	endAction();
 	
-	mouseDown = false;
+	isMouseDown = false;
 	currentAction = ACTION_NONE;
 	
 	mouse_a.set(0,0);

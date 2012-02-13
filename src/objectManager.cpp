@@ -147,6 +147,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 		return; //a new blip hasn't been started
 	}
 	
+	
 	//preset parameter sorting
 
 	float userA = t_dir.length();
@@ -254,7 +255,15 @@ void objectManager::setParam(paramAttributes * p, float userA, float userB, floa
 			if(p->slaveTo == "decaySecs")master = previewBlip.getPreset().getDecaySecs();
 			if(!master){master = previewBlip.getPreset().getSoundParam(p->slaveTo);}
 			if(!master)master = previewBlip.getPreset().getVisualParam(p->slaveTo);
-			if(master)p->abs_value = ofMap(master->abs_value, master->min_val, master->max_val, p->min_val, p->max_val);
+			if(master){
+				
+				if(master->max_val < master->min_val){
+					p->abs_value = ofMap(master->abs_value, master->max_val, master->min_val, p->min_val, p->max_val);
+				}else{
+					p->abs_value = ofMap(master->abs_value, master->min_val, master->max_val, p->min_val, p->max_val);
+				}
+				
+			}
 
 		}
 		

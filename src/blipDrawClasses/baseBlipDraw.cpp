@@ -82,6 +82,7 @@ void baseBlipDraw::setTimeParams(bool  t_active, float  t_envVal, float  t_postV
 	
 }
 
+
 void baseBlipDraw::setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l){
 
 	direction = t_dir;
@@ -103,3 +104,9 @@ ofVec2f baseBlipDraw::getDirection(){return direction;}
 ofVec2f baseBlipDraw::getStartPos(){return startPos;}
 ofVec2f baseBlipDraw::getEndPos(){return endPos;}
 float baseBlipDraw::getLength(){return length;}
+
+void baseBlipDraw::setDecayRatio(float decay, float postdecay){
+	
+	decayRatio = decay/(decay+postdecay);
+	
+}

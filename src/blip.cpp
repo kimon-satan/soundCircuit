@@ -143,6 +143,7 @@ void blip::createDrawer(ofVec2f t_dims, baseBlipDraw * t_draw){
 	selectDrawer();
 	updateDrawerParams();
 	drawer->setup(t_dims, t_draw);
+	drawer->setDecayRatio(preset.getDecaySecs()->abs_value , preset.getPostDecaySecs()->abs_value);
 	updateDrawer();
 }
 
@@ -163,6 +164,7 @@ void blip::selectDrawer(){
 	if(preset.getDrawType() == BT_STRAW){drawer = new straw();}
 	if(preset.getDrawType() == BT_BELCH){drawer = new belch();}
 	if(preset.getDrawType() == BT_BEAN1){drawer = new bean1();}
+	if(preset.getDrawType() == BT_FLIPPER){drawer = new flipper();}
 
 }
 

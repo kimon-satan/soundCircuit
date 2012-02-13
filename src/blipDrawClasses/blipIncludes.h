@@ -15,6 +15,8 @@
 #include "straw.h"
 #include "belch.h"
 #include "bean1.h"
+#include "flipper.h"
+
 
 enum blipDrawType{
 
@@ -22,7 +24,8 @@ enum blipDrawType{
 	BT_ELEC_CURRENT,
 	BT_STRAW,
 	BT_BELCH,
-	BT_BEAN1
+	BT_BEAN1,
+	BT_FLIPPER
 
 };
 

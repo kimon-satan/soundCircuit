@@ -74,7 +74,7 @@ private:
 	vector<ofRectangle> dummy_views;
 	vector<vector<blipPreset> > presets;
 	
-	int selectedPreset;
+	int selectedPreset[2];
 	
 	ofxOscSender sender;
 	reader thisReader;
@@ -84,7 +84,7 @@ private:
 	e_mouseMode mouseMode;
 	e_Action currentAction;
 	int buttonMode;
-	bool isOptionKey;
+	bool isOptionKey, isMouseDown;
 	bool isPreview, mouseDown;
 	static bool drawData;
 
