@@ -9,7 +9,8 @@
         <DEF>
             <NAME>clip</NAME>
             <PARAM><T>freq</T></PARAM>
-            <PARAM><T>clip</T></PARAM>
+            <PARAM><T>filFreqL</T></PARAM>
+            <PARAM><T>filFreqH</T></PARAM>
             <PARAM><T>amp</T></PARAM>
         </DEF>
         <DEF>
