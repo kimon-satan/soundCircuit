@@ -78,7 +78,7 @@ void bean1::update(){
 	
 	blankRect.setFromCenter(0, 0, length -2, 2);
 	
-	float swing = (postVal > 0) ? 0.3 * envVal + 0.7 * postVal: envVal;
+	float swing = (postVal > 0) ? decayRatio * envVal + (1-decayRatio) * postVal: envVal;
 	
 	vertices.clear();
 	
@@ -125,9 +125,13 @@ void bean1::draw(int t_wrap){
 	}
 	glRotatef(angle, 0, 0, 1);
 	
-	ofFill();
-	ofSetColor(255);
-	ofRect(blankRect);
+	if(params[11] > 0){
+		ofFill();
+		ofSetColor(255);
+		ofRect(blankRect);
+	}
+	
+	glTranslatef(0, params[1] * params[10], 0);
 	
 	ofNoFill();
 	ofSetColor(0);
@@ -162,13 +166,13 @@ vector<paramAttributes> bean1::getParamDefs(){
 	
 	vector<paramAttributes> def;
 	
-	paramAttributes numV, height, displace_l, displace_r, a_add, b_add, a_swell, b_swell, v_swell, o_swell;
+	paramAttributes numV, height, displace_l, displace_r, a_add, b_add, a_swell, b_swell, v_swell, o_swell, trackOffset, blankTrack;
 	
 	//numv p0
-	numV.name = "numV"; numV.min_val = 3; numV.max_val = 12; numV.abs_value = 6; //p0 = 1
+	numV.name = "numV"; numV.min_val = 3; numV.max_val = 12; numV.abs_value = 6; //p0
 	def.push_back(numV);
 	
-	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20; //p0 = 1
+	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20; //p1
 	def.push_back(height);
 	
 	//displace_l p2
@@ -179,19 +183,22 @@ vector<paramAttributes> bean1::getParamDefs(){
 	displace_r.name = "displace_r"; displace_r.min_val = 0; displace_r.max_val = 1; displace_r.abs_value = 0.25; 
 	def.push_back(displace_r);
 	
-	a_add.name = "a_add"; a_add.min_val = -1; a_add.max_val = 1; a_add.abs_value = 0; //p1 = 4
+	a_add.name = "a_add"; a_add.min_val = -1; a_add.max_val = 1; a_add.abs_value = 0; //4
 	def.push_back(a_add);
-	b_add.name = "b_add"; b_add.min_val = -1; b_add.max_val = 1; b_add.abs_value = 0; //p2 = 5
+	b_add.name = "b_add"; b_add.min_val = -1; b_add.max_val = 1; b_add.abs_value = 0; //5
 	def.push_back(b_add);
-	a_swell.name = "a_swell"; a_swell.min_val = -2; a_swell.max_val = 2; a_swell.abs_value = 0; //p3 = 6
+	a_swell.name = "a_swell"; a_swell.min_val = -2; a_swell.max_val = 2; a_swell.abs_value = 0; //6
 	def.push_back(a_swell);
-	b_swell.name = "b_swell"; b_swell.min_val = -2; b_swell.max_val = 2; b_swell.abs_value = 0; //p4 = 7
+	b_swell.name = "b_swell"; b_swell.min_val = -2; b_swell.max_val = 2; b_swell.abs_value = 0; //7
 	def.push_back(b_swell);
-	v_swell.name = "v_swell"; v_swell.min_val = 0; v_swell.max_val = 2; v_swell.abs_value = 0; //p5 = 8
+	v_swell.name = "v_swell"; v_swell.min_val = 0; v_swell.max_val = 2; v_swell.abs_value = 0; //8
 	def.push_back(v_swell);
-	o_swell.name = "o_swell"; o_swell.min_val = 0; o_swell.max_val = 2; o_swell.abs_value = 0; //p6 = 9
+	o_swell.name = "o_swell"; o_swell.min_val = 0; o_swell.max_val = 2; o_swell.abs_value = 0; //9
 	def.push_back(o_swell);
-
+	trackOffset.name = "trackOffset"; trackOffset.min_val = -1; trackOffset.max_val = 1; trackOffset.abs_value = 0; //10
+	def.push_back(trackOffset);
+	blankTrack.name = "blankTrack"; blankTrack.min_val = 0; blankTrack.max_val = 1; blankTrack.abs_value = 1; //11
+	def.push_back(blankTrack);
 	
 	return def;
 	

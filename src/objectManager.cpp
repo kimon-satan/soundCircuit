@@ -161,7 +161,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	
 	blipPreset & p = previewBlip.getPresetRef();
 	
-	float m_val = ofVec2f(ofGetScreenWidth()/2, ofGetScreenHeight()/2).length();
+	float m_val = ofVec2f(ofGetScreenWidth()/2, ofGetScreenHeight()/2).length()/2;
 
 	setParam(p.getLength(),userA, userB, m_val);
 	setParam(p.getAttackSecs(),userA, userB, m_val);
@@ -749,6 +749,19 @@ string objectManager::getPreviewParams(){
 	
 	string paramString = "";
 	blipPreset p = previewBlip.getPreset();
+	
+	if(p.getAttackSecs()->setType == PSET_USERA || p.getAttackSecs()->setType == PSET_USERB){
+		paramString = paramString + p.getAttackSecs()->name;
+		paramString +=  " : " + ofToString(p.getAttackSecs()->abs_value, 2);
+		paramString += "\n";
+	}
+	
+	if(p.getDecaySecs()->setType == PSET_USERA || p.getDecaySecs()->setType == PSET_USERB){
+		paramString = paramString + p.getDecaySecs()->name;
+		paramString +=  " : " + ofToString(p.getDecaySecs()->abs_value, 2);
+		paramString += "\n";
+	}
+	
 	
 	for(int i = 0; i < p.getSoundParams()->size(); i++){
 		

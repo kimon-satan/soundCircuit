@@ -18,10 +18,15 @@ flipper::flipper():baseBlipDraw(){
 
 void flipper::update(){	
 	
+
+	
 	testRect.setFromCenter(0, 0, length, params[1]);	
 	setWrapData(ofVec2f(length/2,9),angle);
 	
 	float swing = (postVal > 0) ? decayRatio * envVal + (1-decayRatio) * postVal: envVal;
+	
+	alpha = params[10] * envVal;
+	c.setHsb(params[9],255,255, alpha);
 	
 	if(isActive){
 		
@@ -72,12 +77,23 @@ void flipper::draw(int t_wrap){
 	
 	glTranslatef(0, params[1] * params[0]/2, 0);
 	
+	ofSetRectMode(OF_RECTMODE_CENTER);
+	
+	if(isActive){
+		
+		ofFill();
+		ofEnableAlphaBlending();
+		ofSetColor(c);
+		ofRect(0, 0, length, params[0]);
+		ofDisableAlphaBlending();
+		
+	}
+	
 	ofSetColor(0);
 	ofNoFill();
-	ofSetRectMode(OF_RECTMODE_CENTER);
 	ofRect(0, 0, length, params[0]);
-	ofSetRectMode(OF_RECTMODE_CORNER);
 	
+	ofSetRectMode(OF_RECTMODE_CORNER);
 	
 	glPopMatrix();
 	
@@ -89,7 +105,7 @@ vector<paramAttributes> flipper::getParamDefs(){
 	
 	vector<paramAttributes> def;
 	
-	paramAttributes height, trackOffset, shapeType, x_rot, y_rot, z_rot, x_speed, y_speed, z_speed;
+	paramAttributes height, trackOffset, shapeType, x_rot, y_rot, z_rot, x_speed, y_speed, z_speed, hue, h_swell;
 	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20;
 	trackOffset.name = "trackOffset"; trackOffset.min_val = -1; trackOffset.max_val = 1; trackOffset.abs_value = 0;
 	shapeType.name = "shapeType"; shapeType.min_val = 0; shapeType.max_val = 3; shapeType.abs_value = 0;
@@ -99,16 +115,20 @@ vector<paramAttributes> flipper::getParamDefs(){
 	x_speed.name = "x_speed"; x_speed.min_val = 0; x_speed.max_val = 10; x_speed.abs_value = 0;
 	y_speed.name = "y_speed"; y_speed.min_val = 0; y_speed.max_val = 10; y_speed.abs_value = 0;
 	z_speed.name = "z_speed"; z_speed.min_val = 0; z_speed.max_val = 10; z_speed.abs_value = 0;
-
+	hue.name = "hue"; hue.min_val = 0; hue.max_val = 255; hue.abs_value = 100;
+	h_swell.name = "h_swell"; h_swell.min_val = 0; h_swell.max_val = 255; h_swell.abs_value = 100;
+	
 	def.push_back(height);
 	def.push_back(trackOffset);
 	def.push_back(shapeType);
 	def.push_back(x_rot); //3
 	def.push_back(y_rot); //4
 	def.push_back(z_rot); //5
-	def.push_back(x_speed);
-	def.push_back(y_speed);
-	def.push_back(z_speed);
+	def.push_back(x_speed); //6
+	def.push_back(y_speed); //7
+	def.push_back(z_speed); //8
+	def.push_back(hue); //9
+	def.push_back(h_swell); //10
 	
 	return def;
 	

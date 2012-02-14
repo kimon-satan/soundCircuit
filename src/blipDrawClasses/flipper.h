@@ -23,6 +23,7 @@ public:
 	
 private:
 	
+	float alpha;
 	float pivot[3];
 	ofColor c;
 	ofRectangle testRect;

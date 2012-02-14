@@ -86,7 +86,7 @@ void testApp::loadPresets(){
 								paramAttributes * p = t_blip[j].getLength();
 								
 								if(j > 0 && j <= numAlt){
-									if(XML.pushTag("ALT", 0)){
+									if(XML.pushTag("ALT", j-1)){
 										loadParamAttribute(XML, p);
 										XML.popTag();
 									}
@@ -616,7 +616,7 @@ void testApp::keyPressed  (int key){
 	if(key == 9)isOptionKey = true;
 	if(key == OF_KEY_UP)selectedPreset[0] = min(selectedPreset[0] + 1, (int)presets[0].size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset[0] = max(selectedPreset[0] - 1, 0);
-	if(key == 'r')thisReader.incrementMode();
+	if(key == 'r' || key == 'R')thisReader.incrementMode();
 	
 	if(key == 'f')ofToggleFullscreen();
 	if(key == 's')currentLayer.toggleScreenData();

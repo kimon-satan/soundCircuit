@@ -23,6 +23,7 @@
         <DEF>
             <NAME>brownGlitch</NAME>
             <PARAM><T>freq</T></PARAM>
+            <PARAM><T>filFreq</T></PARAM>
             <PARAM><T>attack</T></PARAM>
             <PARAM><T>amp</T></PARAM>
         </DEF>
