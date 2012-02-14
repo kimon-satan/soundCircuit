@@ -251,30 +251,66 @@
         <BLIP>
             <NAME>swellTooth</NAME><SYNTH>swell</SYNTH><DRAW>bean1</DRAW><ENV>0</ENV>
              
-            <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>100</ABS_VAL></LENGTH>
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
              
-            <ATTACK><PROP><ABS_VAL>0.99</ABS_VAL></PROP> <ALT><ABS_VAL>0.1</ABS_VAL></ALT></ATTACK>
+            <ATTACK><PROP><ABS_VAL>0.99</ABS_VAL></PROP></ATTACK>
             
             <DECAY><ABS_VAL>0.1</ABS_VAL></DECAY>
             
             <POST_DECAY><ABS_VAL>0.6</ABS_VAL></POST_DECAY>
             
-            <SOUND><NAME>freq</NAME><SET_TYPE>3</SET_TYPE></SOUND>
-            <SOUND><NAME>amp</NAME><SET_TYPE>1</SET_TYPE></SOUND>
-            <SOUND><NAME>sm1</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
-            <SOUND><NAME>sm2</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
-            <SOUND><NAME>sm3</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>freq</NAME>
+            <SET_TYPE>5</SET_TYPE><SLAVE_TO>length</SLAVE_TO><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>length</SLAVE_TO></ALT>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>length</SLAVE_TO><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL></ALT>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>length</SLAVE_TO></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>amp</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            
+            <SOUND><NAME>sm1</NAME>
+            <ABS_VAL>1</ABS_VAL>
+            <ALT><ABS_VAL>1</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.7</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.7</ABS_VAL></ALT>
+            </SOUND>
+            
+            <SOUND>
+            <NAME>sm2</NAME>
+            <ABS_VAL>0</ABS_VAL>
+            <ALT><ABS_VAL>0</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.15</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.15</ABS_VAL></ALT>
+            </SOUND>
+            
+            <SOUND>
+            <NAME>sm3</NAME>
+            <ABS_VAL>0</ABS_VAL>
+            <ALT><ABS_VAL>0</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.15</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.15</ABS_VAL></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>width</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             
             <VISUAL><NAME>numV</NAME><ABS_VAL>3</ABS_VAL></VISUAL>
             <VISUAL><NAME>displace_l</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
-            <VISUAL><NAME>displace_r</NAME><ABS_VAL>0.25</ABS_VAL></VISUAL>
-            <VISUAL><NAME>height</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>-200</MIN_VAL><MAX_VAL>200</MAX_VAL></VISUAL>
+            <VISUAL><NAME>displace_r</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            
+            <VISUAL><NAME>height</NAME>
+            <SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>0</MIN_VAL><MAX_VAL>-200</MAX_VAL>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>0</MIN_VAL><MAX_VAL>-200</MAX_VAL></ALT>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>0</MIN_VAL><MAX_VAL>200</MAX_VAL></ALT>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>0</MIN_VAL><MAX_VAL>200</MAX_VAL></ALT>
+            </VISUAL>
+            
             <VISUAL><NAME>a_add</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             <VISUAL><NAME>b_add</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
             <VISUAL><NAME>o_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             <VISUAL><NAME>b_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             <VISUAL><NAME>a_swell</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
             <VISUAL><NAME>v_swell</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
+            
         </BLIP>
         
        

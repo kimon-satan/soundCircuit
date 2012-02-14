@@ -35,6 +35,7 @@
             <PARAM><T>sm1</T></PARAM>
             <PARAM><T>sm2</T></PARAM>
             <PARAM><T>sm3</T></PARAM>
+            <PARAM><T>width</T></PARAM>
         </DEF>
     </SYNTH_DEFS>
 </SOUND_CIRCUIT>
