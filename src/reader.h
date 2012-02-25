@@ -14,6 +14,7 @@
 #include "layer.h"
 #include "ofxOsc.h"
 
+
 class reader{
 	
 	public:
@@ -29,7 +30,7 @@ class reader{
 	};
 	
 	reader();
-	void update();
+	bool update();
 	void draw(ofRectangle vp);
 	
 	void incrementMode();
@@ -39,17 +40,19 @@ class reader{
 	ofVec2f getPos();
 	void setOscSender(ofxOscSender * t);
 	string getModeString();
+	ofVec2f getDirection();
+	float getIncrement();
 	
 	private:
 	
-	void move();
+	bool move();
 	void moduloPosition();
 	
 	ofVec2f nextDirection(ofVec2f t_dir, vector<bool> t_bools);
 
 	
 	ofRectangle body, testBody;
-	ofVec2f direction;
+	ofVec2f direction, oldDirection;
 	ofVec2f pDir, lDir;
 	vector<ofVec2f>socketDirections;
 	ofVec2f world_dims;

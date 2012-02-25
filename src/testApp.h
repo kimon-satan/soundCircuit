@@ -4,6 +4,7 @@
 #include "layer.h"
 #include "reader.h"
 #include "ofxOsc.h"
+#include "ofxRotRect.h"
 
 
 #define HOST "localhost"
@@ -62,6 +63,10 @@ private:
 		ACTION_COUNT
 	};
 	
+	float rotZ,rotY;
+	float targetZ;
+	int lagCount;
+	
 	string getModeString(e_mouseMode temp);
 	
 	layer currentLayer;
@@ -76,10 +81,12 @@ private:
 	
 	int selectedPreset[2];
 	
+	
 	ofxOscSender sender;
 	reader thisReader;
 	bool isFixed, pauseFollow;
 	ofVec2f trans;
+	ofVec2f direction;
 	
 	e_mouseMode mouseMode;
 	e_Action currentAction;

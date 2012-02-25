@@ -26,10 +26,9 @@ reader::reader(){
 	
 }
 
-void reader::update(){
+bool reader::update(){
 	
-	move();
-	
+	return move();
 	
 }
 
@@ -52,7 +51,7 @@ void reader::moduloPosition(){
 	}
 }
 
-void reader::move(){
+bool reader::move(){
 	
 	incr = speed/ofGetFrameRate();
 	
@@ -67,6 +66,7 @@ void reader::move(){
 	testBody.setFromCenter(body.x, body.y, incr * 2, incr * 2);
 	
 	bool nodeFound = false;
+	bool newDir = false;
 	
 	for(vector<node>::iterator it = t_nodes->begin(); it != t_nodes->end(); it++){
 		if(testBody.inside(it->getPos())){ 
@@ -82,6 +82,7 @@ void reader::move(){
 					body.x = it->getPos().x;
 					body.y = it->getPos().y;
 					isStuck = false;
+					newDir = true;
 					break;
 				}else{
 					
@@ -141,6 +142,8 @@ void reader::move(){
 			}
 		}
 	}
+	
+	return newDir;
 		
 }
 
@@ -273,4 +276,6 @@ string reader::getModeString(){
 void reader::setLayer(layer * t_layer){currentLayer = t_layer;}
 ofVec2f reader::getPos(){return ofVec2f(body.x,body.y);}
 void reader::setOscSender(ofxOscSender * t){sender = t;}
+ofVec2f reader::getDirection(){return direction;}
+float reader::getIncrement(){return speed/ofGetFrameRate();}
 

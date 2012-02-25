@@ -5,7 +5,7 @@ bool testApp::drawData =false;
 //--------------------------------------------------------------
 void testApp::setup(){
 	
-	ofSetVerticalSync(true);
+	ofSetVerticalSync(false);
 	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
 	mouse_offset.set(0,0);
 	currentLayer.setDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
@@ -23,12 +23,19 @@ void testApp::setup(){
 	pauseFollow = false;
 	isPreview = false;
 	trans.set(0,0);
+	direction.set(1,0);
 	
+	rotY = 0;
+	rotZ =0;
+	targetZ = 0;
+	lagCount = 0;
+
 	isMouseDown = false;
 	isOptionKey = false;
 	mouseMode = MODE_NONE;
 	currentAction = ACTION_NONE;
 	buttonMode = 0;
+	
 	
 	
 	blipPreset::thisSynthDef.loadDictionary();
@@ -267,7 +274,8 @@ void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
 //--------------------------------------------------------------
 void testApp::update(){
 	
-	thisReader.update();
+	bool nD = thisReader.update();
+	if(nD)lagCount = 80;
 	currentLayer.update();
 	
 	if(!isFixed && !pauseFollow){
@@ -275,34 +283,46 @@ void testApp::update(){
 		viewPort.x = thisReader.getPos().x + trans.x;
 		viewPort.y = thisReader.getPos().y + trans.y;
 		
+		if(lagCount > 1){
+			trans -= thisReader.getIncrement() * (float)(lagCount/80.0f)  * thisReader.getDirection();
+			trans += thisReader.getIncrement()  * (float)(lagCount/80.0f) * direction;
+			lagCount -= 1;
+		}else if(lagCount ==  1){
+			direction = thisReader.getDirection();
+			lagCount = 0;
+		}
+
 		
-		if(abs(trans.x) > 0.5){ //needs some solution for wrapping //but leave for now
-			trans.x *= 0.98;
+		if(abs(trans.x) > 2){ //needs some solution for wrapping //but leave for now
+			float incr = (trans.x > 0)? max(1.0,trans.x * 0.02):min(-1.0,trans.x * 0.02);
+			trans.x -= incr;
 		}else{
 			trans.x = 0;
 		}
 		
-		if(abs(trans.y) > 0.5){
-			trans.y *= 0.98;
+		if(abs(trans.y) > 2){ //needs some solution for wrapping //but leave for now
+			float incr = (trans.y > 0)? max(1.0,trans.y * 0.02):min(-1.0,trans.y * 0.02);
+			trans.y -= incr;
 		}else{
 			trans.y = 0;
 		}
 		
+		//cout << trans << endl;
 		
-		//position averaging ... needs more work due to wrapping
-		/*ofVec2f t;  
-		 t.x = thisReader.getPos().x + trans.x;
-		 t.y = thisReader.getPos().y + trans.y;
-		 vpHist.push_back(t);
-		 if(vpHist.size() > 10){vpHist.erase(vpHist.begin());}
-		 ofVec2f avPos(0,0);
-		 for(int i = 0; i < vpHist.size(); i ++){
-		 avPos += vpHist[i];
-		 }
-		 avPos /= vpHist.size();
-		 
-		 viewPort.x = avPos.x;
-		 viewPort.y = avPos.y;*/
+	}
+	
+	//for rotation.
+	
+	if(abs(rotZ - targetZ) > 2){
+		
+		if(rotZ < targetZ){ 
+			rotZ += 1;
+		}else{
+			rotZ -= 1;
+		}
+		
+	}else{
+		rotZ = targetZ;
 	}
 	
 	moduloViewPort();
@@ -323,47 +343,61 @@ void testApp::updateDummyViews(){
 	
 	ofVec2f t_dims = currentLayer.getDims();
 	
-	float y_over = viewPort.y + viewPort.height/2.0f - t_dims.y/2.0f;
-	float y_under = -viewPort.y + viewPort.height/2.0f - t_dims.y/2.0f;
-	float x_over = viewPort.x + viewPort.width/2.0f - t_dims.x/2.0f;
-	float x_under = -viewPort.x + viewPort.width/2.0f - t_dims.x/2.0f;
+	ofxRotRect rotPort(viewPort,rotZ);
+	ofRectangle b_rect = rotPort.getBoundingRect();
+	
+	
+	float y_over = viewPort.y + b_rect.height/2.0f - t_dims.y/2.0f;
+	float y_under = -viewPort.y + b_rect.height/2.0f - t_dims.y/2.0f;
+	float x_over = viewPort.x + b_rect.width/2.0f - t_dims.x/2.0f;
+	float x_under = -viewPort.x + b_rect.width/2.0f - t_dims.x/2.0f;
 	
 	dummy_views.clear();
-	ofRectangle dummy_view(viewPort.x,viewPort.y,viewPort.width,viewPort.height);
+	ofRectangle dummy_view(viewPort.x,viewPort.y,b_rect.width,b_rect.height);
 	
-	if( y_over > 0 ){ // viewport goes over top edge
-		dummy_view.y = -t_dims.y/2 + y_over - viewPort.height/2;
+	//theres a better optimisation for this 
+	
+	if( y_over > 0 ){ 
+		dummy_view.y = -t_dims.y + viewPort.y;
 		dummy_views.push_back(dummy_view);
-	}else if( y_under > 0 ){ // viewport goes over top edge
-		dummy_view.y = t_dims.y/2 - y_under + viewPort.height/2;
+	}
+	if( y_under > 0 ){ 
+		dummy_view.y = t_dims.y +  viewPort.y;
 		dummy_views.push_back(dummy_view);
 	}
 	
-	dummy_view.set(viewPort.x,viewPort.y,viewPort.width,viewPort.height);
+	dummy_view.set(viewPort.x,viewPort.y,b_rect.width,b_rect.height);
 	
 	if( x_over > 0 ){ 
-		dummy_view.x = -t_dims.x/2 + x_over - viewPort.width/2;
+		dummy_view.x = -t_dims.x + viewPort.x;
 		dummy_views.push_back(dummy_view);
-	}else if( x_under > 0 ){ 
-		dummy_view.x = t_dims.x/2 - x_under + viewPort.width/2;
+	}
+	if( x_under > 0 ){ 
+		dummy_view.x = t_dims.x + viewPort.x;
 		dummy_views.push_back(dummy_view);
 	}
 	
 	if( x_over > 0 && y_over > 0){
-		dummy_view.y = -t_dims.y/2 + y_over - viewPort.height/2;
-		dummy_view.x = -t_dims.x/2 + x_over - viewPort.width/2;
+		dummy_view.y = -t_dims.y + viewPort.y;
+		dummy_view.x = -t_dims.x + viewPort.x;
 		dummy_views.push_back(dummy_view);
-	}else if( x_over > 0 && y_under > 0){
-		dummy_view.x = -t_dims.x/2 + x_over - viewPort.width/2;
-		dummy_view.y = t_dims.y/2 - y_under + viewPort.height/2;
+	}
+	
+	if( x_over > 0 && y_under > 0){
+		dummy_view.x = -t_dims.x + viewPort.x;
+		dummy_view.y = t_dims.y +  viewPort.y;
 		dummy_views.push_back(dummy_view);
-	}else if( x_under > 0 && y_under > 0){
-		dummy_view.y = t_dims.y/2 - y_under + viewPort.height/2;
-		dummy_view.x = t_dims.x/2 - x_under + viewPort.width/2;
+	}
+	
+	if( x_under > 0 && y_under > 0){
+		dummy_view.y = t_dims.y +  viewPort.y;
+		dummy_view.x = t_dims.x + viewPort.x;
 		dummy_views.push_back(dummy_view);
-	}else if( x_under > 0 && y_over > 0){
-		dummy_view.x = t_dims.x/2 - x_under + viewPort.width/2;
-		dummy_view.y = -t_dims.y/2 + y_over - viewPort.height/2;
+	}
+	
+	if( x_under > 0 && y_over > 0){
+		dummy_view.x = t_dims.x + viewPort.x;
+		dummy_view.y = -t_dims.y + viewPort.y;
 		dummy_views.push_back(dummy_view);
 	}
 	
@@ -375,14 +409,26 @@ void testApp::draw(){
 	
 	ofBackground(255);
 	
-	currentLayer.draw(viewPort);
+	glPushMatrix();
+	glTranslatef(viewPort.width/2, viewPort.height/2, 0);
+	glRotatef(rotZ,0,0,1);
+	glRotatef(rotY,0,1,0);
+	glTranslatef(-viewPort.width/2, -viewPort.height/2, 0);
+	
+	ofxRotRect rotPort(viewPort,rotZ);
+	ofRectangle b_rect = rotPort.getBoundingRect();
+	ofRectangle t(viewPort.x, viewPort.y, b_rect.width, b_rect.height);
+	
+	currentLayer.draw(t);
 	for(int i = 0; i < dummy_views.size(); i ++){currentLayer.draw(dummy_views[i], true);}
 	
-	thisReader.draw(viewPort);
+	thisReader.draw(t);
 	for(int i = 0; i < dummy_views.size(); i ++){thisReader.draw(dummy_views[i]);}
 	
+	glPopMatrix();
+	
 	ofSetColor(0);
-	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 1000,20);
+	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 900,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
 	ofDrawBitmapString("blipPreset: " + presets[selectedPreset[1]][selectedPreset[0]].getName(), 400,20);
 	ofDrawBitmapString("readerMode: " + thisReader.getModeString(), 700,20);
@@ -455,6 +501,8 @@ ofVec2f testApp::getWorldCoordinate(ofVec2f t_point){
 	t_point.x -= ofGetScreenWidth()/2;
 	t_point.y -= ofGetScreenHeight()/2;
 	
+	t_point.rotate(-rotZ);
+	
 	ofVec2f point(t_point);
 	
 	point.x += viewPort.x;
@@ -501,12 +549,15 @@ void testApp::prepPauseFollow(){
 
 void testApp::startAction(){
 	
+	ofVec2f p(mouseX,mouseY);
+	p.rotate(-rotZ);
+	
 	if(currentAction == ACTION_DRAG){
 		
 		prepPauseFollow();
 		
-		mouse_offset.x = -mouseX - viewPort.x;
-		mouse_offset.y = -mouseY - viewPort.y;
+		mouse_offset.x = -p.x - viewPort.x;
+		mouse_offset.y = -p.y - viewPort.y;
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK ||currentAction == ACTION_ADD_LONG_TRACK){
 		
@@ -527,20 +578,25 @@ void testApp::startAction(){
 
 void testApp::continueAction(ofVec2f t_dir){
 	
+	ofVec2f p(mouseX,mouseY);
+	p.rotate(-rotZ);
+	
 	if(currentAction == ACTION_DRAG){
 		
-		viewPort.x = -mouse_offset.x - mouseX;
-		viewPort.y = -mouse_offset.y - mouseY;
+		viewPort.x = -mouse_offset.x - p.x;
+		viewPort.y = -mouse_offset.y - p.y;
 		
-		trans.x = -mouse_offset.x - mouseX;
-		trans.y = -mouse_offset.y - mouseY;
+		trans.x = -mouse_offset.x - p.x;
+		trans.y = -mouse_offset.y - p.y;
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
 		
+		t_dir.rotate(-rotZ);
 		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
 		
 	}else if(currentAction == ACTION_ADD_LONG_TRACK){
 		
+		t_dir.rotate(-rotZ);
 		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
@@ -623,6 +679,9 @@ void testApp::keyPressed  (int key){
 	if(key == 'n')currentLayer.getSM()->toggleNodeData();
 	if(key == 't')currentLayer.getSM()->toggleTrackData();
 	if(key == 'b')currentLayer.getSM()->toggleBlipData();
+	
+	if(key == 'z'){targetZ = (targetZ == 0)? -90 : 0;}
+	if(key == 'y'){rotY += 1; fmod(rotY,360);}
 	
 	
 }
