@@ -101,6 +101,7 @@ paramAttributes * blipPreset::getDecayProp(){if(isDecProp){return &decay[1];}els
 paramAttributes * blipPreset::getPostDecayProp(){if(isPostDecProp){return &postDecay[1];}else{return NULL;}}
 
 paramAttributes * blipPreset::getLength(){return &length;}
+
 vector<paramAttributes> * blipPreset::getSoundParams(){return &soundParams;}
 vector<paramAttributes> * blipPreset::getVisualParams(){return &visualParams;}
 

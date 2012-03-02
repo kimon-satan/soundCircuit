@@ -33,6 +33,8 @@ public:
 	void setParam(paramAttributes * p, float userA, float userB, float m_val);
 	string getPreviewParams();
 	
+	void resize(ofVec2f t_dims);
+	
 	//getters and setters
 	
 	void setTracks(vector<segment> * t_ref);
@@ -44,6 +46,9 @@ public:
 	node * selectNode(ofVec2f t_pos);
 	segment * selectTrackPoint(ofVec2f t_pos);
 	segment * selectBlip(ofVec2f t_pos, int bZone = 0);
+	
+	void setIncr(float t);
+	
 	
 	
 protected:
@@ -57,11 +62,15 @@ protected:
 	void constrainEndPoint(ofVec2f origin, segment & s, bool isTracks = true, bool isNodes = false, bool isBlips = false);
 	void repositionFromMidPoint(ofVec2f origin, segment & s, bool isTracks = false, bool isNodes = true, bool isBlips = false);
 	
+	void blipLengthToDuration(blip & bTmp); 
+	
+	
 	//searches
 	
 	bool findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<ofVec2f> & t_points = DPOINTS, segment & s = DSEG, bool isTracks = true , bool isBlips = false);
 	bool findParalellIntersects(segment & s = DSEG, vector<ofVec2f> & t_points = DPOINTS, bool isTracks = true , bool isBlips = false);
 	bool findNodeIntersects(segment & s, vector<ofVec2f> & t_points = DPOINTS);
+	
 	
 	
 	//member variables
@@ -79,6 +88,7 @@ protected:
 	node * s_nodes[2];
 	segment * s_tracks[2];
 	ofVec2f s_pos[2];
+	float incr;
 	
 	bool isPreview;
 	

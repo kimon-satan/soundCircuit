@@ -11,9 +11,8 @@
 #define reader_h
 
 #include "ofMain.h"
-#include "layer.h"
 #include "ofxOsc.h"
-
+class layer;
 
 class reader{
 	
@@ -30,10 +29,11 @@ class reader{
 	};
 	
 	reader();
-	bool update();
-	void draw(ofRectangle vp);
+	void update();
+	void draw();
 	
 	void incrementMode();
+	void resize(ofVec2f t_dims);
 	
 	//getters and setters
 	void setLayer(layer * t_layer);
@@ -41,11 +41,14 @@ class reader{
 	void setOscSender(ofxOscSender * t);
 	string getModeString();
 	ofVec2f getDirection();
-	float getIncrement();
+	int getIncrement();
+	void setSpeed(int t);
+	int getSpeed();
+	bool getIsNewDirection();
 	
 	private:
 	
-	bool move();
+	void move();
 	void moduloPosition();
 	
 	ofVec2f nextDirection(ofVec2f t_dir, vector<bool> t_bools);
@@ -60,8 +63,8 @@ class reader{
 	ofxOscSender * sender;
 	e_readerMode mode;
 	
-	float speed, incr;
-	bool isStuck;
+	int mSpeed, mIncrement;
+	bool isStuck, isNewDirection;
 	
 };
 

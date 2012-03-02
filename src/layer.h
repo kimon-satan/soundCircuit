@@ -12,6 +12,7 @@
 
 #include "ofMain.h"
 #include "objectRenderer.h"
+#include "reader.h"
 
 class layer{
 
@@ -28,19 +29,23 @@ public:
 	void selectSomething(ofVec2f w_pos);
 	void deselectAll();
 	
+	void expand();
+	
 	//getters and setters
 	void setDims(ofVec2f t_dims);
 	ofVec2f getDims();
 	vector<node> * getNodes();
 	vector<blip> * getBlips();
-	objectRenderer * getSM();
+	objectRenderer * getObjectRenderer();
 	void toggleScreenData();
+	reader * getReader();
 	
 
 private:
 	
 	ofVec2f world_dims;
-	objectRenderer thisSM;
+	objectRenderer mObjectRenderer;
+	reader mReader;
 	
 	vector<node> nodes;
 	vector<segment> tracks;

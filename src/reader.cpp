@@ -8,11 +8,12 @@
  */
 
 #include "reader.h"
+#include "layer.h"
 
 reader::reader(){
 	
 	body.set(0,0,21,21);
-	speed = 200;
+	mSpeed = 200;
 	direction.set(1,0);
 	isStuck =false;
 	mode = READER_WANDER;
@@ -26,9 +27,9 @@ reader::reader(){
 	
 }
 
-bool reader::update(){
+void reader::update(){
 	
-	return move();
+	move();
 	
 }
 
@@ -51,22 +52,22 @@ void reader::moduloPosition(){
 	}
 }
 
-bool reader::move(){
+void reader::move(){
 	
-	incr = speed/ofGetFrameRate();
+	mIncrement = mSpeed/ofGetFrameRate();
 	
 	if(!isStuck){
-	body.x += direction.x * incr;
-	body.y += direction.y * incr;
+	body.x += direction.x * mIncrement;
+	body.y += direction.y * mIncrement;
 	moduloPosition();
 	}
 	
 	vector<node> * t_nodes = currentLayer->getNodes(); 
 	
-	testBody.setFromCenter(body.x, body.y, incr * 2, incr * 2);
+	testBody.setFromCenter(body.x, body.y, mIncrement * 2, mIncrement * 2);
 	
 	bool nodeFound = false;
-	bool newDir = false;
+	isNewDirection = false;
 	
 	for(vector<node>::iterator it = t_nodes->begin(); it != t_nodes->end(); it++){
 		if(testBody.inside(it->getPos())){ 
@@ -82,7 +83,7 @@ bool reader::move(){
 					body.x = it->getPos().x;
 					body.y = it->getPos().y;
 					isStuck = false;
-					newDir = true;
+					isNewDirection = true;
 					break;
 				}else{
 					
@@ -104,7 +105,7 @@ bool reader::move(){
 	for(vector<blip>::iterator it = t_blips->begin(); it != t_blips->end(); it++){
 	
 		if(it->getInside(ofVec2f(body.x,body.y))){
-			if(it->react(incr)){
+			if(it->react(mIncrement)){
 
 				blipPreset p = it->getPreset();
 				
@@ -143,7 +144,6 @@ bool reader::move(){
 		}
 	}
 	
-	return newDir;
 		
 }
 
@@ -226,23 +226,13 @@ ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
 }
 
 
-void reader::draw(ofRectangle vp){
-	
-	glPushMatrix();
-	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 0);
-	glPushMatrix();
-	glTranslatef(-vp.x, -vp.y,0); //centred coordinates
+void reader::draw(){
 	
 	ofSetRectMode(OF_RECTMODE_CENTER);
 	ofNoFill();
 	ofSetColor(0);
 	ofRect(body);
-	
-	glPopMatrix();
-	glPopMatrix();
-	
 	ofSetRectMode(OF_RECTMODE_CORNER);
-	
 	
 }
 
@@ -253,6 +243,7 @@ void reader::incrementMode(){
 	if(mode == READER_PERSIST)pDir.set(-direction);
 	if(mode == READER_LOOP)lDir.set(direction);
 }
+
 
 string reader::getModeString(){
 	
@@ -269,13 +260,26 @@ string reader::getModeString(){
 	return modeString;
 }
 
+void reader::resize(ofVec2f t_dims){
 
+	ofVec2f prop = t_dims/currentLayer->getDims();
+	
+	
+	body.x *= prop.x;
+	body.y *= prop.y;
+	
+	
+}
 
 //getters and setters
 
+bool reader::getIsNewDirection(){return isNewDirection;}
 void reader::setLayer(layer * t_layer){currentLayer = t_layer;}
 ofVec2f reader::getPos(){return ofVec2f(body.x,body.y);}
 void reader::setOscSender(ofxOscSender * t){sender = t;}
 ofVec2f reader::getDirection(){return direction;}
-float reader::getIncrement(){return speed/ofGetFrameRate();}
+int reader::getIncrement(){return mIncrement;}
+
+void reader::setSpeed(int t){mSpeed = t;}
+int reader::getSpeed(){return mSpeed;}
 

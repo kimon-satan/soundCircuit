@@ -1,6 +1,11 @@
 #include "testApp.h"
 
-bool testApp::drawData =false;
+bool testApp::drawData = false;
+
+testApp::testApp():kLagFrames(120){
+
+
+}
 
 //--------------------------------------------------------------
 void testApp::setup(){
@@ -29,14 +34,13 @@ void testApp::setup(){
 	rotZ =0;
 	targetZ = 0;
 	lagCount = 0;
+	
 
 	isMouseDown = false;
 	isOptionKey = false;
 	mouseMode = MODE_NONE;
 	currentAction = ACTION_NONE;
 	buttonMode = 0;
-	
-	
 	
 	blipPreset::thisSynthDef.loadDictionary();
 	
@@ -49,14 +53,12 @@ void testApp::setup(){
 	selectedPreset[0] = 0;
 	selectedPreset[1] = 0;
 	
-	thisReader.setLayer(&currentLayer);
-	thisReader.setOscSender(&sender);
+	currentReader = currentLayer.getReader();
+	currentReader->setOscSender(&sender);
 	
-	currentLayer.getSM()->beginTrack(ofVec2f(0,0));
-	currentLayer.getSM()->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
-	currentLayer.getSM()->endTrack();
-	
-	
+	currentLayer.getObjectRenderer()->beginTrack(ofVec2f(0,0));
+	currentLayer.getObjectRenderer()->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
+	currentLayer.getObjectRenderer()->endTrack();
 	
 }
 
@@ -274,35 +276,34 @@ void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
 //--------------------------------------------------------------
 void testApp::update(){
 	
-	bool nD = thisReader.update();
-	if(nD)lagCount = 80;
 	currentLayer.update();
+	if(currentReader->getIsNewDirection())lagCount = kLagFrames;
 	
 	if(!isFixed && !pauseFollow){
 		
-		viewPort.x = thisReader.getPos().x + trans.x;
-		viewPort.y = thisReader.getPos().y + trans.y;
+		viewPort.x = currentReader->getPos().x + trans.x;
+		viewPort.y = currentReader->getPos().y + trans.y;
 		
 		if(lagCount > 1){
-			trans -= thisReader.getIncrement() * (float)(lagCount/80.0f)  * thisReader.getDirection();
-			trans += thisReader.getIncrement()  * (float)(lagCount/80.0f) * direction;
+			trans -= currentReader->getIncrement() * (float)(lagCount/kLagFrames)  * currentReader->getDirection();
+			trans += currentReader->getIncrement()  * (float)(lagCount/kLagFrames) * direction;
 			lagCount -= 1;
 		}else if(lagCount ==  1){
-			direction = thisReader.getDirection();
+			direction = currentReader->getDirection();
 			lagCount = 0;
 		}
 
 		
-		if(abs(trans.x) > 2){ //needs some solution for wrapping //but leave for now
+		if(abs(trans.x) > 2){ 
 			float incr = (trans.x > 0)? max(1.0,trans.x * 0.02):min(-1.0,trans.x * 0.02);
-			trans.x -= incr;
+			trans.x -= floor(incr);
 		}else{
 			trans.x = 0;
 		}
 		
-		if(abs(trans.y) > 2){ //needs some solution for wrapping //but leave for now
+		if(abs(trans.y) > 2){ 
 			float incr = (trans.y > 0)? max(1.0,trans.y * 0.02):min(-1.0,trans.y * 0.02);
-			trans.y -= incr;
+			trans.y -= floor(incr);
 		}else{
 			trans.y = 0;
 		}
@@ -422,8 +423,6 @@ void testApp::draw(){
 	currentLayer.draw(t);
 	for(int i = 0; i < dummy_views.size(); i ++){currentLayer.draw(dummy_views[i], true);}
 	
-	thisReader.draw(t);
-	for(int i = 0; i < dummy_views.size(); i ++){thisReader.draw(dummy_views[i]);}
 	
 	glPopMatrix();
 	
@@ -431,7 +430,7 @@ void testApp::draw(){
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 900,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
 	ofDrawBitmapString("blipPreset: " + presets[selectedPreset[1]][selectedPreset[0]].getName(), 400,20);
-	ofDrawBitmapString("readerMode: " + thisReader.getModeString(), 700,20);
+	ofDrawBitmapString("readerMode: " + currentReader->getModeString(), 700,20);
 	ofEnableAlphaBlending();
 	ofSetColor(0, 20);
 	ofFill();
@@ -444,7 +443,7 @@ void testApp::draw(){
 		ofLine(mouse_a,mouse_b);
 		ofVec2f dir(mouse_b - mouse_a);
 		dir.normalize();
-		ofDrawBitmapString(currentLayer.getSM()->getPreviewParams(), mouse_b + dir * 20);
+		ofDrawBitmapString(currentLayer.getObjectRenderer()->getPreviewParams(), mouse_b + dir * 20);
 	}
 	
 }
@@ -539,7 +538,7 @@ void testApp::prepPauseFollow(){
 	
 	if(!isFixed){
 		pauseFollow = true;
-		trans += thisReader.getPos();
+		trans += currentReader->getPos();
 		moduloViewPort();
 		viewPort.x = trans.x;
 		viewPort.y = trans.y;
@@ -564,13 +563,13 @@ void testApp::startAction(){
 		prepPauseFollow();
 		
 		if(!isFixed)pauseFollow = true;
-		currentLayer.getSM()->beginTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)));
+		currentLayer.getObjectRenderer()->beginTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)));
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		prepPauseFollow();
 		selectedPreset[1] = (isOptionKey)? buttonMode + 2: buttonMode;
-		currentLayer.getSM()->beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset[1]][selectedPreset[0]]);
+		currentLayer.getObjectRenderer()->beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset[1]][selectedPreset[0]]);
 		
 	}
 	
@@ -592,16 +591,16 @@ void testApp::continueAction(ofVec2f t_dir){
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
 		
 		t_dir.rotate(-rotZ);
-		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
+		currentLayer.getObjectRenderer()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
 		
 	}else if(currentAction == ACTION_ADD_LONG_TRACK){
 		
 		t_dir.rotate(-rotZ);
-		currentLayer.getSM()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
+		currentLayer.getObjectRenderer()->calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
-		currentLayer.getSM()->calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
+		currentLayer.getObjectRenderer()->calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
 		if(t_dir.length() > 1){
 			presets[selectedPreset[1]][selectedPreset[0]].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
 		}
@@ -615,7 +614,7 @@ void testApp::endAction(){
 		
 		if(!isFixed){
 			pauseFollow = false;
-			trans -= thisReader.getPos();
+			trans -= currentReader->getPos();
 		}
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK || currentAction == ACTION_ADD_LONG_TRACK){
@@ -623,19 +622,19 @@ void testApp::endAction(){
 		isPreview = false;
 		if(!isFixed){
 			pauseFollow = false;
-			trans -= thisReader.getPos();
+			trans -= currentReader->getPos();
 		}
-		currentLayer.getSM()->endTrack();
+		currentLayer.getObjectRenderer()->endTrack();
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		isPreview = false;
 		if(!isFixed){
 			pauseFollow = false;
-			trans -= thisReader.getPos();
+			trans -= currentReader->getPos();
 		}
 		
-		currentLayer.getSM()->endBlip();
+		currentLayer.getObjectRenderer()->endBlip();
 		
 	}
 	
@@ -657,9 +656,9 @@ void testApp::keyPressed  (int key){
 		//vpHist.clear();
 		
 		if(isFixed){
-			trans -= thisReader.getPos();
+			trans -= currentReader->getPos();
 		}else{
-			trans += thisReader.getPos();
+			trans += currentReader->getPos();
 			moduloViewPort();
 			viewPort.x = trans.x;
 			viewPort.y = trans.y;
@@ -672,17 +671,20 @@ void testApp::keyPressed  (int key){
 	if(key == 9)isOptionKey = true;
 	if(key == OF_KEY_UP)selectedPreset[0] = min(selectedPreset[0] + 1, (int)presets[0].size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset[0] = max(selectedPreset[0] - 1, 0);
-	if(key == 'r' || key == 'R')thisReader.incrementMode();
+	if(key == 'r' || key == 'R')currentReader->incrementMode();
 	
 	if(key == 'f')ofToggleFullscreen();
 	if(key == 's')currentLayer.toggleScreenData();
-	if(key == 'n')currentLayer.getSM()->toggleNodeData();
-	if(key == 't')currentLayer.getSM()->toggleTrackData();
-	if(key == 'b')currentLayer.getSM()->toggleBlipData();
+	if(key == 'n')currentLayer.getObjectRenderer()->toggleNodeData();
+	if(key == 't')currentLayer.getObjectRenderer()->toggleTrackData();
+	if(key == 'b')currentLayer.getObjectRenderer()->toggleBlipData();
 	
 	if(key == 'z'){targetZ = (targetZ == 0)? -90 : 0;}
 	if(key == 'y'){rotY += 1; fmod(rotY,360);}
 	
+	//if(key == 'i'){currentReader->setSpeed(currentReader->getSpeed() + 1);}
+	//if(key == 'u'){currentReader->setSpeed(max(1,currentReader->getSpeed() - 1));}
+	if(key == 'i')currentLayer.expand();
 	
 }
 

@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "layer.h"
-#include "reader.h"
 #include "ofxOsc.h"
 #include "ofxRotRect.h"
 
@@ -15,6 +14,7 @@ class testApp : public ofBaseApp{
 	
 public:
 	
+	testApp();
 	void setup();
 	void update();
 	void draw();
@@ -66,6 +66,7 @@ private:
 	float rotZ,rotY;
 	float targetZ;
 	int lagCount;
+	const float kLagFrames;
 	
 	string getModeString(e_mouseMode temp);
 	
@@ -81,9 +82,9 @@ private:
 	
 	int selectedPreset[2];
 	
-	
 	ofxOscSender sender;
-	reader thisReader;
+	reader * currentReader;
+	
 	bool isFixed, pauseFollow;
 	ofVec2f trans;
 	ofVec2f direction;

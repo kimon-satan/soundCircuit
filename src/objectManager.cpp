@@ -16,6 +16,7 @@ vector<ofVec2f> objectManager::DPOINTS = vector<ofVec2f>();
 objectManager::objectManager(){
 	
 	isPreview = false;
+	incr = 200;
 	
 }
 
@@ -162,7 +163,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	blipPreset & p = previewBlip.getPresetRef();
 	
 	float m_val = ofVec2f(ofGetScreenWidth()/2, ofGetScreenHeight()/2).length()/2;
-
+	
 	setParam(p.getLength(),userA, userB, m_val);
 	setParam(p.getAttackSecs(),userA, userB, m_val);
 	setParam(p.getDecaySecs(),userA, userB, m_val);
@@ -278,6 +279,7 @@ void objectManager::endBlip(){
 	if(previewBlip.getIsValid()){
 		blips->push_back(previewBlip);
 		blips->back().createDrawer(world_dims, previewBlip.getDrawer());
+		blipLengthToDuration(blips->back());
 		blips->back().aquireIndex();
 	}
 	previewBlip.setIsValid(false);
@@ -527,6 +529,59 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 	
 }
 
+
+
+void objectManager::blipLengthToDuration(blip & t_b){
+	
+	float t_dur = t_b.getPreset().getLength()->abs_value /(incr * ofGetFrameRate());
+	t_b.setDuration(t_dur);
+	
+}
+
+void objectManager::resize(ofVec2f t_dims){
+	
+	ofVec2f prop = t_dims/world_dims;
+	world_dims = t_dims;
+	
+	for(int i = 0; i < nodes->size();i++){
+	
+		ofVec2f t_node(nodes->at(i).getPos() * prop);
+		nodes->at(i).setPos(t_node);
+		
+	}
+	
+	
+	for(int i = 0; i < tracks->size(); i++){
+		
+		ofVec2f sp = tracks->at(i).getStartPos() * prop;
+		float length = tracks->at(i).getLength();
+		length *= prop.x;
+		
+		tracks->at(i).setStartPos(sp);
+		tracks->at(i).setLength(length);
+		updateTestAreas(tracks->at(i));
+		
+	
+	}
+	
+	for(int i = 0; i < blips->size(); i++){
+		
+		ofVec2f sp = blips->at(i).getStartPos() * prop;
+		float length = blips->at(i).getLength();
+		length *= prop.x;
+		
+		blips->at(i).setStartPos(sp);
+		blips->at(i).setLength(length); //need to preserve length where lenght is fixed
+		
+		//for some reason a slight miss alignment between draw and testArea (investigate)
+		updateTestAreas(blips->at(i));
+		blips->at(i).updateDrawerPosition(t_dims);
+		
+		
+	}
+	
+
+}
 
 //searches
 
@@ -781,3 +836,4 @@ string objectManager::getPreviewParams(){
 void objectManager::setTracks(vector<segment> * t_ref){tracks = t_ref;}
 void objectManager::setNodes(vector<node> * t_ref){nodes = t_ref;}
 void objectManager::setBlips(vector<blip> * t_ref){blips = t_ref;}
+void objectManager::setIncr(float t){incr = t;}

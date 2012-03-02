@@ -40,6 +40,7 @@ public:
 	void setIsOccupied(bool t);
 	bool getIsOccupied();
 	void setPreset(blipPreset t);
+	void setDuration(float t);
 	blipPreset& getPresetRef();
 	blipPreset getPreset();
 	baseBlipDraw * getDrawer();
@@ -58,7 +59,7 @@ private:
 	
 	int attackCount, decayCount, postDecayCount;
 	int totalAttack, totalDecay, totalPostDecay;
-	float envVal, postVal;
+	float envVal, postVal, duration;
 	
 
 

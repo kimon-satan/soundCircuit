@@ -22,7 +22,7 @@ blip::blip(){
 	decayCount = 0;
 	postDecayCount =0;
 	envVal = 0;
-	postVal =0;
+	postVal = 0;
 	
 	drawer = NULL;
 
@@ -244,6 +244,8 @@ void blip::setIsActive(bool t){isActive = t;}
 void blip::setIsOccupied(bool t){isOccupied = t;}
 bool blip::getIsOccupied(){return isOccupied;}
 void blip::setPreset(blipPreset t){preset = t;}
+
+void blip::setDuration(float t){duration = t;}
 
 blipPreset & blip::getPresetRef(){return preset;}
 blipPreset blip::getPreset(){return preset;}
