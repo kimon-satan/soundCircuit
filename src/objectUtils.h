@@ -19,6 +19,7 @@ public:
 	
 	//getters and setters
 	void setWorldDims(ofVec2f t_dims);
+	ofVec2f getWorldDims();
 	
 protected:
 	

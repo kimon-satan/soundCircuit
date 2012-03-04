@@ -305,3 +305,4 @@ void objectUtils::quantizeDirection(ofVec2f & t_dir){
 //getters and setters
 
 void objectUtils::setWorldDims(ofVec2f t_dims){world_dims = t_dims;}
+ofVec2f objectUtils::getWorldDims(){return world_dims;}

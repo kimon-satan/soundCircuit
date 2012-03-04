@@ -33,7 +33,6 @@ class reader{
 	void draw();
 	
 	void incrementMode();
-	void resize(ofVec2f t_dims);
 	
 	//getters and setters
 	void setLayer(layer * t_layer);

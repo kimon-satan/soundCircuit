@@ -33,13 +33,12 @@ public:
 	void setParam(paramAttributes * p, float userA, float userB, float m_val);
 	string getPreviewParams();
 	
-	void resize(ofVec2f t_dims);
+	void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
+	void resizeInsertion(float size);
+	void endInsertion();
 	
 	//getters and setters
-	
-	void setTracks(vector<segment> * t_ref);
-	void setNodes(vector<node> * t_ref);
-	void setBlips(vector<blip> * t_ref);
+
 	
 	void deselectNodes();
 	void deselectTracks();
@@ -48,8 +47,6 @@ public:
 	segment * selectBlip(ofVec2f t_pos, int bZone = 0);
 	
 	void setIncr(float t);
-	
-	
 	
 protected:
 	
@@ -72,15 +69,14 @@ protected:
 	bool findNodeIntersects(segment & s, vector<ofVec2f> & t_points = DPOINTS);
 	
 	
-	
 	//member variables
 	
 	static vector<ofVec2f> DPOINTS;
 	static segment DSEG;
 	
-	vector <segment> * tracks;
-	vector <node> * nodes;
-	vector <blip> * blips;
+	vector <segment> tracks;
+	vector <node> nodes;
+	vector <blip> blips;
 	
 	segment previewTracks[2];
 	blip previewBlip;
@@ -89,6 +85,11 @@ protected:
 	segment * s_tracks[2];
 	ofVec2f s_pos[2];
 	float incr;
+	
+	ofVec2f insertPoint;
+	ofVec2f insertDir;
+	float insertSize;
+	bool isInsert;
 	
 	bool isPreview;
 	

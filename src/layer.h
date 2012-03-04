@@ -14,7 +14,7 @@
 #include "objectRenderer.h"
 #include "reader.h"
 
-class layer{
+class layer : public objectRenderer{
 
 public:
 	
@@ -29,29 +29,21 @@ public:
 	void selectSomething(ofVec2f w_pos);
 	void deselectAll();
 	
-	void expand();
-	
 	//getters and setters
-	void setDims(ofVec2f t_dims);
-	ofVec2f getDims();
+
 	vector<node> * getNodes();
 	vector<blip> * getBlips();
-	objectRenderer * getObjectRenderer();
+
 	void toggleScreenData();
 	reader * getReader();
 	
 
 private:
 	
-	ofVec2f world_dims;
-	objectRenderer mObjectRenderer;
 	reader mReader;
-	
-	vector<node> nodes;
-	vector<segment> tracks;
-	vector<blip> blips;
-	
 	bool isScreenData;
+	
+	
 	
 };
 

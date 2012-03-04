@@ -16,6 +16,7 @@ vector<ofVec2f> objectManager::DPOINTS = vector<ofVec2f>();
 objectManager::objectManager(){
 	
 	isPreview = false;
+	isInsert = false;
 	incr = 200;
 	
 }
@@ -66,8 +67,8 @@ void objectManager::endTrack(){
 	
 	for(int j = 0; j < numTracks; j ++){
 		
-		tracks->push_back(previewTracks[j]);
-		tracks->back().aquireIndex();
+		tracks.push_back(previewTracks[j]);
+		tracks.back().aquireIndex();
 		
 		for(int i = 0; i < 2; i ++){
 			
@@ -81,8 +82,8 @@ void objectManager::endTrack(){
 			if(!n){
 				node t(pos);
 				t.openSocket(previewTracks[j].getDirection() * mul);
-				nodes->push_back(t);
-				n = &nodes->back();
+				nodes.push_back(t);
+				n = &nodes.back();
 				
 			}else{
 				n->openSocket(previewTracks[j].getDirection() * mul);
@@ -107,8 +108,8 @@ void objectManager::endTrack(){
 	
 	//clean up
 	
-	vector<node>::iterator it = remove_if(nodes->begin(), nodes->end(), nodeSuperfluous);
-	nodes->erase(it, nodes->end());
+	vector<node>::iterator it = remove_if(nodes.begin(), nodes.end(), nodeSuperfluous);
+	nodes.erase(it, nodes.end());
 	
 	
 }
@@ -277,10 +278,10 @@ void objectManager::setParam(paramAttributes * p, float userA, float userB, floa
 void objectManager::endBlip(){
 	
 	if(previewBlip.getIsValid()){
-		blips->push_back(previewBlip);
-		blips->back().createDrawer(world_dims, previewBlip.getDrawer());
-		blipLengthToDuration(blips->back());
-		blips->back().aquireIndex();
+		blips.push_back(previewBlip);
+		blips.back().createDrawer(world_dims, previewBlip.getDrawer());
+		blipLengthToDuration(blips.back());
+		blips.back().aquireIndex();
 	}
 	previewBlip.setIsValid(false);
 	previewBlip.destroyDrawer();
@@ -538,49 +539,75 @@ void objectManager::blipLengthToDuration(blip & t_b){
 	
 }
 
-void objectManager::resize(ofVec2f t_dims){
+
+void objectManager::beginInsertion(ofVec2f t_point, ofVec2f t_dir){
+
+	insertPoint.set(t_point);
+	insertDir.set(t_dir);
+	isInsert = true;
+	insertSize = 0;
+
+}
+
+void objectManager::resizeInsertion(float size){
 	
-	ofVec2f prop = t_dims/world_dims;
-	world_dims = t_dims;
+	float diff = size - insertSize;
+	world_dims += insertDir * diff * 2;
+	insertSize = size;
+	float testInsert = insertPoint.x * insertDir.x + insertPoint.y * insertDir.y;
 	
-	for(int i = 0; i < nodes->size();i++){
-	
-		ofVec2f t_node(nodes->at(i).getPos() * prop);
-		nodes->at(i).setPos(t_node);
+	for(int i = 0; i < nodes.size();i++){
+		
+		ofVec2f t_pos(nodes[i].getPos());
+		float testPos = t_pos.x * insertDir.x + t_pos.y * insertDir.y;
+		t_pos += (testPos > testInsert)? diff * insertDir: -diff * insertDir;
+		nodes[i].setPos(t_pos);
 		
 	}
 	
-	
-	for(int i = 0; i < tracks->size(); i++){
+	for(int i = 0; i < tracks.size(); i++){
+				
+		ofVec2f t_pos(tracks[i].getStartPos());
+		float testPos = t_pos.x * insertDir.x + t_pos.y * insertDir.y;
+		t_pos += (testPos > testInsert)? diff * insertDir: -diff * insertDir;
+		tracks[i].setStartPos(t_pos);
+			
+		if(tracks[i].getDirection() == insertDir){
+			
+			ofVec2f testPoint(tracks[i].getStartPos() * ofVec2f(insertDir.y,insertDir.x) + insertDir * insertPoint);
+			if(tracks[i].getInside(testPoint)){
+				float length = tracks[i].getLength() + diff * 2;
+				tracks[i].setLength(length);
+				
+			}
+		}
 		
-		ofVec2f sp = tracks->at(i).getStartPos() * prop;
-		float length = tracks->at(i).getLength();
-		length *= prop.x;
+		updateTestAreas(tracks[i]);
 		
-		tracks->at(i).setStartPos(sp);
-		tracks->at(i).setLength(length);
-		updateTestAreas(tracks->at(i));
-		
-	
 	}
 	
-	for(int i = 0; i < blips->size(); i++){
+	for(int i = 0; i < blips.size(); i++){
 		
-		ofVec2f sp = blips->at(i).getStartPos() * prop;
-		float length = blips->at(i).getLength();
-		length *= prop.x;
+		ofVec2f t_pos = blips[i].getStartPos();
+		float testPos = t_pos.x * insertDir.x + t_pos.y * insertDir.y;
+		t_pos += (testPos > testInsert)? diff * insertDir: -diff * insertDir;
+		blips[i].setStartPos(t_pos);
 		
-		blips->at(i).setStartPos(sp);
-		blips->at(i).setLength(length); //need to preserve length where lenght is fixed
-		
-		//for some reason a slight miss alignment between draw and testArea (investigate)
-		updateTestAreas(blips->at(i));
-		blips->at(i).updateDrawerPosition(t_dims);
-		
+		//to reset the drawer
+		updateTestAreas(blips[i]);
+		blips[i].updateDrawer();
+		blips[i].updateDrawerPosition(world_dims);
+		blips[i].updateDrawer();
 		
 	}
 	
 
+}
+
+void objectManager::endInsertion(){
+
+	isInsert = false;
+	
 }
 
 //searches
@@ -592,13 +619,13 @@ bool objectManager::findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<of
 	bool isIntersect = false;
 
 	if(isTracks){
-		for(int i  = 0; i < tracks->size(); i ++){
+		for(int i  = 0; i < tracks.size(); i ++){
 			
-			if(t_dir != tracks->at(i).getDirection()){
+			if(t_dir != tracks[i].getDirection()){
 				
-				ofVec2f t_pos(origin * ofVec2f(t_dir.y,t_dir.x) + tracks->at(i).getStartPos() * t_dir);
+				ofVec2f t_pos(origin * ofVec2f(t_dir.y,t_dir.x) + tracks[i].getStartPos() * t_dir);
 				
-				if(tracks->at(i).getInside(t_pos)){
+				if(tracks[i].getInside(t_pos)){
 					
 					if(&s == &DSEG || s.getInside(t_pos)){
 						if(&t_points != &DPOINTS){
@@ -615,13 +642,13 @@ bool objectManager::findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<of
 	}
 	
 	if(isBlips){
-		for(int i  = 0; i < blips->size(); i ++){
+		for(int i  = 0; i < blips.size(); i ++){
 			
-			if(t_dir != blips->at(i).getDirection()){
+			if(t_dir != blips[i].getDirection()){
 				
-				ofVec2f t_pos(origin * ofVec2f(t_dir.y,t_dir.x) + blips->at(i).getStartPos() * t_dir);
+				ofVec2f t_pos(origin * ofVec2f(t_dir.y,t_dir.x) + blips[i].getStartPos() * t_dir);
 				
-				if(blips->at(i).getInside(t_pos)){
+				if(blips[i].getInside(t_pos)){
 					
 					if(&s == &DSEG || s.getInside(t_pos)){
 						if(&t_points != &DPOINTS){
@@ -648,20 +675,20 @@ bool objectManager::findParalellIntersects(segment & s, vector<ofVec2f> & t_poin
 	bool isIntersect = false;
 	
 	if(isTracks){
-		for(int i = 0; i < tracks->size(); i++){ 
+		for(int i = 0; i < tracks.size(); i++){ 
 			
-			if(s.getDirection() == tracks->at(i).getDirection()){
+			if(s.getDirection() == tracks[i].getDirection()){
 				
-				if(tracks->at(i).getInside(s.getStartPos())||
-				   tracks->at(i).getInside(s.getEndPos())||
-				   s.getInside(tracks->at(i).getStartPos())||
-				   s.getInside(tracks->at(i).getEndPos())
+				if(tracks[i].getInside(s.getStartPos())||
+				   tracks[i].getInside(s.getEndPos())||
+				   s.getInside(tracks[i].getStartPos())||
+				   s.getInside(tracks[i].getEndPos())
 				   ){
 					
 					if(&t_points != &DPOINTS){
 						isIntersect = true;
-						t_points.push_back(tracks->at(i).getStartPos());
-						t_points.push_back(tracks->at(i).getEndPos());
+						t_points.push_back(tracks[i].getStartPos());
+						t_points.push_back(tracks[i].getEndPos());
 
 						
 					}else{
@@ -674,20 +701,20 @@ bool objectManager::findParalellIntersects(segment & s, vector<ofVec2f> & t_poin
 	}
 	
 	if(isBlips){
-		for(int i = 0; i < blips->size(); i++){ 
+		for(int i = 0; i < blips.size(); i++){ 
 			
-			if(s.getDirection() == blips->at(i).getDirection()){
+			if(s.getDirection() == blips[i].getDirection()){
 				
-				if(blips->at(i).getInside(s.getStartPos())||
-				   blips->at(i).getInside(s.getEndPos())||
-				   s.getInside(blips->at(i).getStartPos())||
-				   s.getInside(blips->at(i).getEndPos())
+				if(blips[i].getInside(s.getStartPos())||
+				   blips[i].getInside(s.getEndPos())||
+				   s.getInside(blips[i].getStartPos())||
+				   s.getInside(blips[i].getEndPos())
 				   ){
 				
 					if(&t_points != &DPOINTS){
 						isIntersect = true;
-						t_points.push_back(blips->at(i).getStartPos());
-						t_points.push_back(blips->at(i).getEndPos());
+						t_points.push_back(blips[i].getStartPos());
+						t_points.push_back(blips[i].getEndPos());
 					}else{
 						return true;
 					}
@@ -706,22 +733,22 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 	
 	bool isIntersect = false;
 	
-	for(int i = 0; i < nodes->size(); i++){
+	for(int i = 0; i < nodes.size(); i++){
 		
-		if(!nodes->at(i).getIsSelected()){
+		if(!nodes[i].getIsSelected()){
 			
-			if(s.getInside(nodes->at(i).getPos())){
+			if(s.getInside(nodes[i].getPos())){
 				
 				if(&t_points != &DPOINTS){
-					t_points.push_back(nodes->at(i).getPos());
+					t_points.push_back(nodes[i].getPos());
 					isIntersect = true;
 				}else{
 					return true;
 					
 				}
 				
-			}else if( s.getStartPos().distanceSquared(nodes->at(i).getPos()) < 144 ||
-					 s.getEndPos().distanceSquared(nodes->at(i).getPos()) < 144
+			}else if( s.getStartPos().distanceSquared(nodes[i].getPos()) < 144 ||
+					 s.getEndPos().distanceSquared(nodes[i].getPos()) < 144
 					 ){
 				
 				if(&t_points != &DPOINTS){
@@ -744,14 +771,14 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 
 void objectManager::deselectNodes(){
 	
-	for(int i = 0; i < nodes->size(); i ++)nodes->at(i).setSelected(false);
+	for(int i = 0; i < nodes.size(); i ++)nodes[i].setSelected(false);
 	s_nodes[0] = NULL; s_nodes[1] = NULL;
 	
 }
 
 void objectManager::deselectTracks(){
 	
-	for(int i = 0; i < tracks->size(); i ++)tracks->at(i).setSelected(false);
+	for(int i = 0; i < tracks.size(); i ++)tracks[i].setSelected(false);
 	s_tracks[0] = NULL; s_tracks[1] = NULL;
 }
 
@@ -759,11 +786,11 @@ node * objectManager::selectNode(ofVec2f t_pos){
 	
 	node * n = NULL;
 	
-	for(int i = 0; i < nodes->size(); i++){
+	for(int i = 0; i < nodes.size(); i++){
 		
-		if( t_pos.distanceSquared(nodes->at(i).getPos()) < 144){
-			n = &nodes->at(i);
-			nodes->at(i).setSelected(true);
+		if( t_pos.distanceSquared(nodes[i].getPos()) < 144){
+			n = &nodes[i];
+			nodes[i].setSelected(true);
 			break;
 		}
 	}
@@ -775,9 +802,9 @@ segment * objectManager::selectTrackPoint(ofVec2f t_pos){
 	
 	segment * t = NULL;
 	
-	for(int i = 0; i < tracks->size(); i++){
-		if(tracks->at(i).getInside(t_pos)){
-			t = &tracks->at(i);
+	for(int i = 0; i < tracks.size(); i++){
+		if(tracks[i].getInside(t_pos)){
+			t = &tracks[i];
 			t->setSelected(true, t_pos);
 			break;}
 	}
@@ -789,9 +816,9 @@ segment * objectManager::selectBlip(ofVec2f t_pos, int bZone){
 	
 	segment * t = NULL;
 	
-	for(int i = 0; i < blips->size(); i++){
-		if(blips->at(i).getInside(t_pos, bZone)){
-			t = &blips->at(i);
+	for(int i = 0; i < blips.size(); i++){
+		if(blips[i].getInside(t_pos, bZone)){
+			t = &blips[i];
 			break;
 		}
 	}
@@ -833,7 +860,5 @@ string objectManager::getPreviewParams(){
 
 //getters and setters
 
-void objectManager::setTracks(vector<segment> * t_ref){tracks = t_ref;}
-void objectManager::setNodes(vector<node> * t_ref){nodes = t_ref;}
-void objectManager::setBlips(vector<blip> * t_ref){blips = t_ref;}
+
 void objectManager::setIncr(float t){incr = t;}

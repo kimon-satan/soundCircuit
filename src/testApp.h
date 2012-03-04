@@ -51,6 +51,7 @@ private:
 		MODE_DRAG,
 		MODE_ADD_BLIP,
 		MODE_ADD_TRACK,
+		MODE_INSERT_SPACE,
 		MODE_COUNT
 	};
 	
@@ -60,10 +61,11 @@ private:
 		ACTION_ADD_SHORT_TRACK,
 		ACTION_ADD_LONG_TRACK,
 		ACTION_ADD_BLIP,
+		ACTION_INSERT_SPACE,
 		ACTION_COUNT
 	};
 	
-	float rotZ,rotY;
+	float rotZ,rotX, transZ;
 	float targetZ;
 	int lagCount;
 	const float kLagFrames;

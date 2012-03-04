@@ -36,7 +36,7 @@ void reader::update(){
 
 void reader::moduloPosition(){
 	
-	ofVec2f t_dims = currentLayer->getDims();
+	ofVec2f t_dims = currentLayer->getWorldDims();
 	
 	//reader position wrapping
 	if(body.x > t_dims.x/2){
@@ -104,7 +104,7 @@ void reader::move(){
 	
 	for(vector<blip>::iterator it = t_blips->begin(); it != t_blips->end(); it++){
 	
-		if(it->getInside(ofVec2f(body.x,body.y))){
+		if(it->getInside(ofVec2f(body.x,body.y)) || testBody.inside(it->getStartPos())){
 			if(it->react(mIncrement)){
 
 				blipPreset p = it->getPreset();
@@ -260,16 +260,7 @@ string reader::getModeString(){
 	return modeString;
 }
 
-void reader::resize(ofVec2f t_dims){
 
-	ofVec2f prop = t_dims/currentLayer->getDims();
-	
-	
-	body.x *= prop.x;
-	body.y *= prop.y;
-	
-	
-}
 
 //getters and setters
 

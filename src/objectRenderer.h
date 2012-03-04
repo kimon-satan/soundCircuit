@@ -18,7 +18,7 @@ public:
 	
 	objectRenderer();
 	
-	void draw(ofRectangle t_view);
+	void render(ofRectangle t_view);
 
 	void drawTracks();
 	void drawBlips();

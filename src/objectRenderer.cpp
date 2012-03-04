@@ -9,7 +9,7 @@
 
 #include "objectRenderer.h"
 
-objectRenderer::objectRenderer(){
+objectRenderer::objectRenderer():objectManager(){
 
 	isTrackData = false;
 	isNodeData = false;
@@ -17,7 +17,7 @@ objectRenderer::objectRenderer(){
 
 }
 
-void objectRenderer::draw(ofRectangle t_view){
+void objectRenderer::render(ofRectangle t_view){
 	
 	viewPort = t_view;
 	
@@ -31,9 +31,9 @@ void objectRenderer::draw(ofRectangle t_view){
 
 void objectRenderer::drawTracks(){
 	
-	for(int i = 0; i < tracks->size(); i ++){
+	for(int i = 0; i < tracks.size(); i ++){
 		
-		drawTrack(&tracks->at(i));
+		drawTrack(&tracks.at(i));
 	}
 	
 	if(isPreview){
@@ -179,7 +179,7 @@ bool objectRenderer::checkIsVisible(vector<ofVec2f> t_corners){
 
 void objectRenderer::drawNodes(){
 	
-	for(vector<node>::iterator it = nodes->begin(); it != nodes->end(); it++){
+	for(vector<node>::iterator it = nodes.begin(); it != nodes.end(); it++){
 		
 		ofVec2f pos(it->getPos());
 		
@@ -205,7 +205,7 @@ void objectRenderer::drawBlips(){
 
 	glPushMatrix();
 	
-	for(vector<blip>::iterator it = blips->begin(); it != blips->end(); it++){
+	for(vector<blip>::iterator it = blips.begin(); it != blips.end(); it++){
 		
 		if(checkIsVisible(it->getDrawer()->getCorners()))it->draw(0);
 		

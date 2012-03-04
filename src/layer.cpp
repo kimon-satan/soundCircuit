@@ -9,14 +9,11 @@
 
 #include "layer.h"
 
-layer::layer(){
+layer::layer():objectRenderer(){
 
-	mObjectRenderer.setNodes(&nodes);
-	mObjectRenderer.setTracks(&tracks);
-	mObjectRenderer.setBlips(&blips);
 	isScreenData = false;
 	mReader.setLayer(this);
-	mObjectRenderer.setIncr(mReader.getIncrement());
+	incr = mReader.getIncrement();
 
 }
 
@@ -25,7 +22,6 @@ void layer::update(){
 	mReader.update();
 	for(vector<blip>::iterator it = blips.begin(); it != blips.end(); it++)it->update();
 	
-
 }
 
 void layer::draw(ofRectangle &vp, bool isDummy){
@@ -69,9 +65,9 @@ void layer::draw(ofRectangle &vp, bool isDummy){
 	viewable.width  = abs(viewable.x - br.x) + 5;
 	viewable.height = abs(viewable.y - br.y) + 5;
 	
-	mObjectRenderer.draw(viewable);
+	render(viewable);
 	
-	mReader.draw();
+	mReader.draw(); // will need to draw in a separate method for drawing orders
 	
 	glPopMatrix();
 	
@@ -81,43 +77,27 @@ void layer::draw(ofRectangle &vp, bool isDummy){
 
 void layer::selectSomething(ofVec2f w_pos){
 
-	mObjectRenderer.deselectTracks();
-	mObjectRenderer.deselectNodes();
-	if(!mObjectRenderer.selectNode(w_pos)){
-		mObjectRenderer.selectTrackPoint(w_pos);
+	deselectTracks();
+	deselectNodes();
+	if(!selectNode(w_pos)){
+		selectTrackPoint(w_pos);
 	}
 
 }
 
 void layer::deselectAll(){
 
-	mObjectRenderer.deselectNodes();
-	mObjectRenderer.deselectTracks();
+	deselectNodes();
+	deselectTracks();
 }
 
 
-void layer::expand(){
-	
-	ofVec2f t_dims = world_dims + 10;
-	mReader.resize(t_dims);
-	mObjectRenderer.resize(t_dims);
-	world_dims = t_dims;
-	
-
-}
+void layer::toggleScreenData(){isScreenData = !isScreenData;}
 
 //getters and setters
 
-void layer::setDims(ofVec2f t_dims){
-	
-	world_dims = t_dims;
-	mObjectRenderer.setWorldDims(t_dims);
-	
-}
 
-ofVec2f layer::getDims(){return world_dims;}
 vector<node> * layer::getNodes(){return &nodes;}
 vector<blip> * layer::getBlips(){return &blips;}
-objectRenderer * layer::getObjectRenderer(){return & mObjectRenderer;}
-void layer::toggleScreenData(){isScreenData = !isScreenData;}
+
 reader * layer::getReader(){return &mReader;}
