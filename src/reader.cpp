@@ -34,6 +34,7 @@ void reader::update(){
 }
 
 
+
 void reader::moduloPosition(){
 	
 	ofVec2f t_dims = currentLayer->getWorldDims();
@@ -261,12 +262,35 @@ string reader::getModeString(){
 }
 
 
+void reader::beginInsertion(ofVec2f t_point, ofVec2f t_dir){
+	
+	insertPoint.set(t_point);
+	insertDir.set(t_dir);
+	insertSize = 0;
+	
+}
+
+void reader::resizeInsertion(float size){
+	
+	float diff = size - insertSize;
+	insertSize = size;
+	float testInsert = insertPoint.x * insertDir.x + insertPoint.y * insertDir.y;
+
+	ofVec2f t_pos(body.x, body.y);
+	float testPos = body.x * insertDir.x + body.y * insertDir.y;
+	t_pos += (testPos > testInsert)? diff * insertDir: -diff * insertDir;
+	body.x = t_pos.x; body.y = t_pos.y;
+		
+
+}
+
 
 //getters and setters
 
 bool reader::getIsNewDirection(){return isNewDirection;}
 void reader::setLayer(layer * t_layer){currentLayer = t_layer;}
 ofVec2f reader::getPos(){return ofVec2f(body.x,body.y);}
+void reader::setPos(ofVec2f t_pos){body.x = t_pos.x; body.y = t_pos.y;}
 void reader::setOscSender(ofxOscSender * t){sender = t;}
 ofVec2f reader::getDirection(){return direction;}
 int reader::getIncrement(){return mIncrement;}

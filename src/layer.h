@@ -29,6 +29,10 @@ public:
 	void selectSomething(ofVec2f w_pos);
 	void deselectAll();
 	
+	void beginInsertion(ofVec2f t_pos, ofVec2f t_dir);
+	void resizeInsertion(float size);
+	void endInsertion();
+	
 	//getters and setters
 
 	vector<node> * getNodes();

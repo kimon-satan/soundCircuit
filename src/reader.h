@@ -33,10 +33,14 @@ class reader{
 	void draw();
 	
 	void incrementMode();
-	
+
+	void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
+	void resizeInsertion(float size);
+
 	//getters and setters
 	void setLayer(layer * t_layer);
 	ofVec2f getPos();
+	void setPos(ofVec2f t_pos);
 	void setOscSender(ofxOscSender * t);
 	string getModeString();
 	ofVec2f getDirection();
@@ -57,10 +61,14 @@ class reader{
 	ofVec2f direction, oldDirection;
 	ofVec2f pDir, lDir;
 	vector<ofVec2f>socketDirections;
-	ofVec2f world_dims;
 	layer * currentLayer;
 	ofxOscSender * sender;
 	e_readerMode mode;
+	
+	ofVec2f insertPoint;
+	ofVec2f insertDir;
+	float insertSize;
+
 	
 	int mSpeed, mIncrement;
 	bool isStuck, isNewDirection;

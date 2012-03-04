@@ -13,6 +13,7 @@
 #include "objectUtils.h"
 #include "node.h"
 #include "blip.h"
+#include "reader.h"
 
 class objectManager : public objectUtils{
 	
@@ -33,9 +34,9 @@ public:
 	void setParam(paramAttributes * p, float userA, float userB, float m_val);
 	string getPreviewParams();
 	
-	void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
-	void resizeInsertion(float size);
-	void endInsertion();
+	virtual void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
+	virtual void resizeInsertion(float size);
+	virtual void endInsertion();
 	
 	//getters and setters
 

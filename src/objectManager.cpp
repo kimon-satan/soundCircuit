@@ -604,6 +604,7 @@ void objectManager::resizeInsertion(float size){
 
 }
 
+
 void objectManager::endInsertion(){
 
 	isInsert = false;

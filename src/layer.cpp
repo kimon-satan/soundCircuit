@@ -92,6 +92,26 @@ void layer::deselectAll(){
 }
 
 
+void layer::beginInsertion(ofVec2f t_pos, ofVec2f t_dir){
+
+	mReader.beginInsertion(t_pos, t_dir);
+	objectManager::beginInsertion(t_pos, t_dir);
+	
+}
+
+void layer::resizeInsertion(float size){
+	
+	mReader.resizeInsertion(size);
+	objectManager::resizeInsertion(size);
+
+}
+
+void layer::endInsertion(){
+	
+	objectManager::endInsertion();
+	
+}
+
 void layer::toggleScreenData(){isScreenData = !isScreenData;}
 
 //getters and setters
