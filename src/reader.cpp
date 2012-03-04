@@ -63,7 +63,7 @@ void reader::move(){
 	moduloPosition();
 	}
 	
-	vector<node> * t_nodes = currentLayer->getNodes(); 
+	vector<node> * t_nodes = currentLayer->getNodesRef(); 
 	
 	testBody.setFromCenter(body.x, body.y, mIncrement * 2, mIncrement * 2);
 	
@@ -101,7 +101,7 @@ void reader::move(){
 	
 	isStuck = nodeFound;
 	
-	vector<blip> * t_blips = currentLayer->getBlips();
+	vector<blip> * t_blips = currentLayer->getBlipsRef();
 	
 	for(vector<blip>::iterator it = t_blips->begin(); it != t_blips->end(); it++){
 	

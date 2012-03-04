@@ -15,6 +15,36 @@ layer::layer():objectRenderer(){
 	mReader.setLayer(this);
 	incr = mReader.getIncrement();
 
+	for(int i =0; i < 3; i++){
+		rots.push_back(0);
+		targetRots.push_back(0);
+		trans.push_back(0);
+		targetTrans.push_back(0);
+	}
+
+}
+
+layer::layer(const layer &src):objectRenderer(){
+	
+	mReader.setLayer(this);
+	world_dims = src.getWorldDims();
+	incr = mReader.getIncrement();
+	isScreenData = false;
+	
+	blips = src.getBlips();
+	nodes = src.getNodes();
+	tracks = src.getTracks();
+	
+	mReader = src.getReader();
+	mReader.setLayer(this);
+	
+	trans = src.getTrans();
+	rots = src.getRots();
+	targetTrans = src.getTargetTrans();
+	targetRots = src.getTargetRots();
+	
+	isScreenData = false;
+
 }
 
 void layer::update(){
@@ -22,6 +52,17 @@ void layer::update(){
 	mReader.update();
 	for(vector<blip>::iterator it = blips.begin(); it != blips.end(); it++)it->update();
 	
+	if(abs(rots[2] - targetRots[2]) > 2){
+		
+		if(rots[2] < targetRots[2]){ 
+			rots[2] += 1;
+		}else{
+			rots[2] -= 1;
+		}
+		
+	}else{
+		rots[2] = targetRots[2];
+	}
 }
 
 void layer::draw(ofRectangle &vp, bool isDummy){
@@ -112,12 +153,37 @@ void layer::endInsertion(){
 	
 }
 
+void layer::rotate(int plane){
+	
+	switch (plane) {
+		case 2:
+			targetRots[2] = (targetRots[2] == 0)? -90 : 0;
+			break;
+	}
+	
+	
+}
+
 void layer::toggleScreenData(){isScreenData = !isScreenData;}
 
 //getters and setters
 
 
-vector<node> * layer::getNodes(){return &nodes;}
-vector<blip> * layer::getBlips(){return &blips;}
+vector<node> * layer::getNodesRef(){return &nodes;}
+vector<blip> * layer::getBlipsRef(){return &blips;}
 
-reader * layer::getReader(){return &mReader;}
+vector<node> layer::getNodes()const{return nodes;}
+vector<blip> layer::getBlips()const{return blips;}
+vector<segment> layer::getTracks()const{return tracks;}
+
+reader * layer::getReaderRef(){return &mReader;}
+reader layer::getReader()const{return mReader;}
+
+vector<float> layer::getTrans()const{return trans;}
+vector<float> layer::getRots()const{return rots;}
+vector<float> layer::getTargetTrans()const{return targetTrans;}
+vector<float> layer::getTargetRots()const{return targetRots;}
+
+float layer::getRot(int i){return rots[i];}
+void layer::setRot(int i, float t_rot){rots[i] = t_rot; }
+void layer::setTrans(int i, float t_trans){trans[i] = t_trans; }

@@ -45,7 +45,9 @@ private:
 	void startAction();
 	void continueAction(ofVec2f dir);
 	void endAction();
-
+	
+	void addLayer();
+	
 	enum e_mouseMode {
 		MODE_NONE,
 		MODE_DRAG,
@@ -65,20 +67,20 @@ private:
 		ACTION_COUNT
 	};
 	
-	float rotZ,rotX, transZ;
-	float targetZ;
+	float rotX,transZ;
 	int lagCount;
 	const float kLagFrames;
 	
 	string getModeString(e_mouseMode temp);
 	
-	layer currentLayer;
+	int currentLayer;
+	
+	vector<layer> layers;
 	ofVec2f mouse_offset;
 	ofRectangle viewPort;
 	ofVec2f world_dims;
 	ofVec2f mouse_a, mouse_b;
 	
-	vector<ofVec2f> vpHist;
 	vector<ofRectangle> dummy_views;
 	vector<vector<blipPreset> > presets;
 	

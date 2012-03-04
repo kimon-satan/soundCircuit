@@ -13,7 +13,7 @@ void testApp::setup(){
 	ofSetVerticalSync(false);
 	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
 	mouse_offset.set(0,0);
-	currentLayer.setWorldDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
+	
 	
 	sender.setup( HOST, PORT );
 	
@@ -31,9 +31,8 @@ void testApp::setup(){
 	direction.set(1,0);
 	
 	rotX = 0;
-	rotZ =0;
+
 	transZ = 0;
-	targetZ = 0;
 	lagCount = 0;
 	
 
@@ -54,12 +53,18 @@ void testApp::setup(){
 	selectedPreset[0] = 0;
 	selectedPreset[1] = 0;
 	
-	currentReader = currentLayer.getReader();
+	layer tmpLyr;
+	layers.push_back(tmpLyr);
+	
+	layers[0].setWorldDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
+	currentReader = layers[0].getReaderRef();
 	currentReader->setOscSender(&sender);
 	
-	currentLayer.beginTrack(ofVec2f(0,0));
-	currentLayer.calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
-	currentLayer.endTrack();
+	layers[0].beginTrack(ofVec2f(0,0));
+	layers[0].calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
+	layers[0].endTrack();
+	
+	currentLayer = 0;
 	
 }
 
@@ -277,7 +282,7 @@ void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
 //--------------------------------------------------------------
 void testApp::update(){
 	
-	currentLayer.update();
+	for(int i = 0; i < layers.size(); i ++){layers[i].update();}
 	if(currentReader->getIsNewDirection())lagCount = kLagFrames;
 	
 	if(!isFixed && !pauseFollow){
@@ -312,26 +317,12 @@ void testApp::update(){
 		
 	}
 	
-	//for rotation.
-	
-	if(abs(rotZ - targetZ) > 2){
-		
-		if(rotZ < targetZ){ 
-			rotZ += 1;
-		}else{
-			rotZ -= 1;
-		}
-		
-	}else{
-		rotZ = targetZ;
-	}
-	
 	moduloViewPort();
 	
 	if(!isMouseDown){
 		
 		if(mouseMode == MODE_ADD_BLIP || mouseMode == MODE_ADD_TRACK){
-			currentLayer.selectSomething(getWorldCoordinate(ofVec2f(mouseX, mouseY)));
+			layers[currentLayer].selectSomething(getWorldCoordinate(ofVec2f(mouseX, mouseY)));
 		}
 		
 	}
@@ -342,9 +333,9 @@ void testApp::update(){
 
 void testApp::updateDummyViews(){
 	
-	ofVec2f t_dims = currentLayer.getWorldDims();
+	ofVec2f t_dims = layers[currentLayer].getWorldDims();
 	
-	ofxRotRect rotPort(viewPort,rotZ);
+	ofxRotRect rotPort(viewPort,layers[currentLayer].getRot(2));
 	ofRectangle b_rect = rotPort.getBoundingRect();
 	
 	
@@ -410,18 +401,33 @@ void testApp::draw(){
 	
 	ofBackground(255);
 	
+	if(layers.size() > 1){ //very confusing indeed !
+		glPushMatrix();
+		glTranslatef(viewPort.width/2, viewPort.height/2, 0);
+		glRotatef(layers[(currentLayer+1)%layers.size()].getRot(2),0,0,1);
+		glTranslatef(-viewPort.width/2, -viewPort.height/2, -100);
+		
+		ofxRotRect rotPort(viewPort,layers[(currentLayer+1)%layers.size()].getRot(2));
+		ofRectangle b_rect = rotPort.getBoundingRect();
+		ofRectangle t(0, 0, b_rect.width, b_rect.height);
+		layers[(currentLayer+1)%layers.size()].draw(t);
+		
+		glPopMatrix();
+		
+	}
+	
 	glPushMatrix();
 	glTranslatef(viewPort.width/2, viewPort.height/2, 0);
 	glRotatef(rotX,1,0,0);
-	glRotatef(rotZ,0,0,1);
+	glRotatef(layers[currentLayer].getRot(2),0,0,1);
 	glTranslatef(-viewPort.width/2, -viewPort.height/2, transZ);
 	
-	ofxRotRect rotPort(viewPort,rotZ);
+	ofxRotRect rotPort(viewPort,layers[currentLayer].getRot(2));
 	ofRectangle b_rect = rotPort.getBoundingRect();
 	ofRectangle t(viewPort.x, viewPort.y, b_rect.width, b_rect.height);
 	
-	currentLayer.draw(t);
-	for(int i = 0; i < dummy_views.size(); i ++){currentLayer.draw(dummy_views[i], true);}
+	layers[currentLayer].draw(t);
+	for(int i = 0; i < dummy_views.size(); i ++){layers[currentLayer].draw(dummy_views[i], true);}
 	
 	
 	glPopMatrix();
@@ -443,7 +449,7 @@ void testApp::draw(){
 		ofLine(mouse_a,mouse_b);
 		ofVec2f dir(mouse_b - mouse_a);
 		dir.normalize();
-		ofDrawBitmapString(currentLayer.getPreviewParams(), mouse_b + dir * 20);
+		ofDrawBitmapString(layers[currentLayer].getPreviewParams(), mouse_b + dir * 20);
 	}
 	
 }
@@ -465,7 +471,7 @@ string testApp::getModeString(e_mouseMode temp){
 
 void testApp::moduloViewPort(){
 	
-	ofVec2f t_dims = currentLayer.getWorldDims();
+	ofVec2f t_dims = layers[currentLayer].getWorldDims();
 	
 	if(viewPort.y < -t_dims.y/2 -viewPort.height/2 ){
 		mouse_offset.y += viewPort.y;	
@@ -497,14 +503,14 @@ ofVec2f testApp::getWorldCoordinate(ofVec2f t_point){
 	t_point.x -= ofGetScreenWidth()/2;
 	t_point.y -= ofGetScreenHeight()/2;
 	
-	t_point.rotate(-rotZ);
+	t_point.rotate(-layers[currentLayer].getRot(2));
 	
 	ofVec2f point(t_point);
 	
 	point.x += viewPort.x;
 	point.y += viewPort.y;
 	
-	ofVec2f t_dims = currentLayer.getWorldDims();
+	ofVec2f t_dims = layers[currentLayer].getWorldDims();
 	
 	ofRectangle scr(-t_dims.x/2,-t_dims.y/2,t_dims.x,t_dims.y);
 	
@@ -546,7 +552,7 @@ void testApp::prepPauseFollow(){
 void testApp::startAction(){
 	
 	ofVec2f p(mouseX,mouseY);
-	p.rotate(-rotZ);
+	p.rotate(-layers[currentLayer].getRot(2));
 	prepPauseFollow();
 	
 	if(currentAction == ACTION_DRAG){
@@ -556,17 +562,17 @@ void testApp::startAction(){
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK ||currentAction == ACTION_ADD_LONG_TRACK){
 		
-		currentLayer.beginTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)));
+		layers[currentLayer].beginTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)));
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		selectedPreset[1] = (isOptionKey)? buttonMode + 2: buttonMode;
-		currentLayer.beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset[1]][selectedPreset[0]]);
+		layers[currentLayer].beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset[1]][selectedPreset[0]]);
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
-		ofVec2f orientation = (rotZ == 0)? ofVec2f(1,0):ofVec2f(0,1);
-		currentLayer.beginInsertion(getWorldCoordinate(ofVec2f(mouseX,mouseY)), orientation);
+		ofVec2f orientation = (layers[currentLayer].getRot(2) == 0)? ofVec2f(1,0):ofVec2f(0,1);
+		layers[currentLayer].beginInsertion(getWorldCoordinate(ofVec2f(mouseX,mouseY)), orientation);
 	
 	}
 	
@@ -575,7 +581,7 @@ void testApp::startAction(){
 void testApp::continueAction(ofVec2f t_dir){
 	
 	ofVec2f p(mouseX,mouseY);
-	p.rotate(-rotZ);
+	p.rotate(-layers[currentLayer].getRot(2));
 	
 	if(currentAction == ACTION_DRAG){
 		
@@ -587,24 +593,24 @@ void testApp::continueAction(ofVec2f t_dir){
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
 		
-		t_dir.rotate(-rotZ);
-		currentLayer.calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
+		t_dir.rotate(-layers[currentLayer].getRot(2));
+		layers[currentLayer].calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
 		
 	}else if(currentAction == ACTION_ADD_LONG_TRACK){
 		
-		t_dir.rotate(-rotZ);
-		currentLayer.calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
+		t_dir.rotate(-layers[currentLayer].getRot(2));
+		layers[currentLayer].calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
-		currentLayer.calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
+		layers[currentLayer].calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
 		if(t_dir.length() > 1){
 			presets[selectedPreset[1]][selectedPreset[0]].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
 		}
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
-		currentLayer.resizeInsertion(t_dir.length());
+		layers[currentLayer].resizeInsertion(t_dir.length());
 														 
 	}
 														 
@@ -626,7 +632,7 @@ void testApp::endAction(){
 			pauseFollow = false;
 			trans -= currentReader->getPos();
 		}
-		currentLayer.endTrack();
+		layers[currentLayer].endTrack();
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
@@ -636,7 +642,7 @@ void testApp::endAction(){
 			trans -= currentReader->getPos();
 		}
 		
-		currentLayer.endBlip();
+		layers[currentLayer].endBlip();
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
@@ -645,10 +651,27 @@ void testApp::endAction(){
 			trans -= currentReader->getPos();
 		}		
 		
-		currentLayer.endInsertion();
+		layers[currentLayer].endInsertion();
 		
 	}
 	
+}
+
+void testApp::addLayer(){
+
+	layer tmpLyr;
+	layers.push_back(tmpLyr);
+	layer * lyPtr = &layers.back();
+	
+	lyPtr->setWorldDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
+	currentReader = lyPtr->getReaderRef();
+	currentReader->setOscSender(&sender);
+	
+	lyPtr->beginTrack(ofVec2f(0,0));
+	lyPtr->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
+	lyPtr->endTrack();
+	
+	currentLayer += 1;
 }
 
 //--------------------------------------------------------------
@@ -658,7 +681,7 @@ void testApp::keyPressed  (int key){
 	for(int i = 1; i < MODE_COUNT; i ++){
 		if(key == 48 + i ){
 			mouseMode = e_mouseMode(i);
-			currentLayer.deselectAll();	
+			layers[currentLayer].deselectAll();	
 		}
 	}
 	
@@ -684,14 +707,26 @@ void testApp::keyPressed  (int key){
 	if(key == 'r' || key == 'R')currentReader->incrementMode();
 	
 	if(key == 'f')ofToggleFullscreen();
-	if(key == 's')currentLayer.toggleScreenData();
-	if(key == 'n')currentLayer.toggleNodeData();
-	if(key == 't')currentLayer.toggleTrackData();
-	if(key == 'b')currentLayer.toggleBlipData();
+	if(key == 's')layers[currentLayer].toggleScreenData();
+	if(key == 'n')layers[currentLayer].toggleNodeData();
+	if(key == 't')layers[currentLayer].toggleTrackData();
+	if(key == 'b')layers[currentLayer].toggleBlipData();
 	
-	if(key == 'z'){targetZ = (targetZ == 0)? -90 : 0;}
+	if(key == 'z'){layers[currentLayer].rotate(2);}
 	if(key == 'x'){rotX += 1; fmod(rotX,360);}
 	
+	if(key == ',')transZ -= 10;
+	if(key == '.')transZ += 10;
+	
+	if(key == 'l'){
+		addLayer();
+	}
+	
+	if(key == 'm'){
+		currentLayer = (currentLayer + 1)%layers.size();
+		currentReader = layers[currentLayer].getReaderRef();
+		
+	}
 }
 
 //--------------------------------------------------------------
