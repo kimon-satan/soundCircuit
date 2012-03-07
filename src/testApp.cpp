@@ -715,7 +715,7 @@ void testApp::keyPressed  (int key){
 	if(key == 'z'){layers[currentLayer].rotate(2);}
 	if(key == 'x'){rotX += 1; fmod(rotX,360);}
 	
-	if(key == ',')transZ -= 10;
+	/*if(key == ',')transZ -= 10;
 	if(key == '.')transZ += 10;
 	
 	if(key == 'l'){
@@ -726,7 +726,7 @@ void testApp::keyPressed  (int key){
 		currentLayer = (currentLayer + 1)%layers.size();
 		currentReader = layers[currentLayer].getReaderRef();
 		
-	}
+	}*/
 }
 
 //--------------------------------------------------------------
