@@ -13,6 +13,7 @@
 #include "segment.h"
 #include "blipPreset.h"
 #include "blipIncludes.h"
+#include "constants.h"
 
 class blip : public segment{
 	

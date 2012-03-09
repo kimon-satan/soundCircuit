@@ -4,10 +4,13 @@
 #include "layer.h"
 #include "ofxOsc.h"
 #include "ofxRotRect.h"
+#include "ofxGrabCam.h"
 
 
 #define HOST "localhost"
 #define PORT 57120
+
+
 
 //--------------------------------------------------------
 class testApp : public ofBaseApp{
@@ -36,14 +39,13 @@ private:
 	void loadPresets();
 	void loadParamAttribute(ofxXmlSettings XML, paramAttributes * p);
 	void loadTimeAttributes(ofxXmlSettings XML, blipPreset & bp);
-	void updateDummyViews();
-	ofVec2f getWorldCoordinate(ofVec2f point);
-	void drawVp(ofRectangle& vp, bool isDummy = false);
-	void moduloViewPort();
+	
+	ofVec2f moduloPoint(ofVec2f t_point, ofVec2f t_dims);
+	ofVec3f moduloPoint(ofVec3f t_point, ofVec2f t_dims);
 	void prepPauseFollow();
 	
 	void startAction();
-	void continueAction(ofVec2f dir);
+	void continueAction();
 	void endAction();
 	
 	void addLayer();
@@ -67,21 +69,29 @@ private:
 		ACTION_COUNT
 	};
 	
-	float rotX,transZ;
+
 	int lagCount;
 	const float kLagFrames;
+	const float kMinIncr;
+	ofxGrabCam cam;
+	ofRectangle viewPort;
 	
 	string getModeString(e_mouseMode temp);
 	
-	int currentLayer;
+	layer world;
 	
-	vector<layer> layers;
-	ofVec2f mouse_offset;
-	ofRectangle viewPort;
-	ofVec2f world_dims;
-	ofVec2f mouse_a, mouse_b;
+	ofVec2f mouseP, mouseP_prev, mouseP_down;
+	ofVec3f mouseW;
+	ofVec3f mousePick, mousePick_down;
 	
-	vector<ofRectangle> dummy_views;
+	vector<ofVec3f> VPW_coords;
+	vector<ofVec2f> VP_coords;
+	ofRectangle roi;
+	vector<ofColor> testCols;
+	
+	float rots[3];
+	float targetRots[3];
+	
 	vector<vector<blipPreset> > presets;
 	
 	int selectedPreset[2];
@@ -97,7 +107,7 @@ private:
 	e_Action currentAction;
 	int buttonMode;
 	bool isOptionKey, isMouseDown;
-	bool isPreview, mouseDown;
+	bool isPreview;
 	static bool drawData;
 
 	

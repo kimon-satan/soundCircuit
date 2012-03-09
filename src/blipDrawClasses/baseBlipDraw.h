@@ -12,6 +12,7 @@
 
 #include "ofMain.h"
 #include "paramAttributes.h"
+#include "constants.h"
 
 class baseBlipDraw{
 
@@ -35,12 +36,7 @@ public:
 	void setTimeParams(bool  t_active, float  t_envVal, float  t_postVal);
 	
 	vector<ofVec2f>getCorners();
-	vector<ofVec2f>getWrapXCorners();
-	vector<ofVec2f>getWrapYCorners();
-	
-	bool getIsXWrapped();
-	bool getIsYWrapped();
-	
+
 	ofVec2f getDirection();
 	ofVec2f getStartPos();
 	ofVec2f getEndPos();
@@ -50,14 +46,13 @@ public:
 	
 protected:
 	
-	ofVec2f world_dims, centre, wrapCoords;
-	vector<ofVec2f> corners, wrapXcorners, wrapYcorners;
-	ofVec2f wrapXCentre, wrapYCentre;
+	ofVec2f world_dims, centre;
+	vector<ofVec2f> corners;
 	ofVec2f direction, startPos, endPos;
 	float length, angle;
 	vector<float> params;
 	float envVal, postVal, decayRatio;
-	bool isActive, isXWrapped, isYWrapped;
+	bool isActive;
 
 };
 

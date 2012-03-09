@@ -2,7 +2,7 @@
 
 bool testApp::drawData = false;
 
-testApp::testApp():kLagFrames(120){
+testApp::testApp():kLagFrames(120),kMinIncr(1){
 
 
 }
@@ -10,37 +10,68 @@ testApp::testApp():kLagFrames(120){
 //--------------------------------------------------------------
 void testApp::setup(){
 	
-	ofSetVerticalSync(false);
-	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
-	mouse_offset.set(0,0);
-	
+	//basics
 	
 	sender.setup( HOST, PORT );
-	
 	ofxOscMessage m;
 	m.setAddress("/init");
 	sender.sendMessage(m);
-	
 	ofSetFrameRate(60);
 	ofSetVerticalSync(true);
+	ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
+	
+	//set up camera
+	
+	cam.setPosition(0, 0, 800);
+	cam.setFarClip(2000);
+	cam.setNearClip(200);
+	
+	ofVec3f c(0,0,0);
+	cam.orbit(180,0, cam.getPosition().z, c);
+	cam.roll(180);
+	cam.cacheMatrices(true);
+	
+	
+	//viewPort variables
+	
+	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
+	
+	trans.set(0,0);
+	for(int i = 0; i < 3; i++){
+		targetRots[i] = 0;
+		rots[i] = 0;
+	}
 	
 	isFixed = false;
 	pauseFollow = false;
 	isPreview = false;
-	trans.set(0,0);
 	direction.set(1,0);
-	
-	rotX = 0;
-
-	transZ = 0;
 	lagCount = 0;
 	
+	for(int i =0; i < 4; i++)VPW_coords.push_back(ofVec3f(0,0,0));
+	VP_coords.push_back(ofVec2f(1,1));
+	VP_coords.push_back(ofVec2f(ofGetScreenWidth()-1,0));
+	VP_coords.push_back(ofVec2f(0,ofGetScreenHeight()));
+	VP_coords.push_back(ofVec2f(ofGetScreenWidth(),ofGetScreenHeight()));
+	
+	for(int i = 0; i < 3; i ++){
+		for(int j = 0; j < 3; j++){
+			ofColor t;
+			t.setHsb((i * 3 + j) * 230/9, 100, 255, 255);
+			testCols.push_back(t);
+		}
+	}
+	
 
+	//interface stuff
+	
 	isMouseDown = false;
 	isOptionKey = false;
 	mouseMode = MODE_NONE;
 	currentAction = ACTION_NONE;
 	buttonMode = 0;
+	
+	//preset stuff
 	
 	blipPreset::thisSynthDef.loadDictionary();
 	
@@ -53,18 +84,15 @@ void testApp::setup(){
 	selectedPreset[0] = 0;
 	selectedPreset[1] = 0;
 	
-	layer tmpLyr;
-	layers.push_back(tmpLyr);
+	//the world
 	
-	layers[0].setWorldDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
-	currentReader = layers[0].getReaderRef();
+	world.setWorldDims(ofVec2f(1500,1500));
+	currentReader = world.getReaderRef();
 	currentReader->setOscSender(&sender);
+	world.beginTrack(ofVec2f(0,0));
+	world.calcTrack(ofVec2f(1,0),ofVec2f(1,0), 1);
+	world.endTrack();
 	
-	layers[0].beginTrack(ofVec2f(0,0));
-	layers[0].calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
-	layers[0].endTrack();
-	
-	currentLayer = 0;
 	
 }
 
@@ -282,13 +310,21 @@ void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
 //--------------------------------------------------------------
 void testApp::update(){
 	
-	for(int i = 0; i < layers.size(); i ++){layers[i].update();}
+	//refactor
+	
+	world.update();
+	
+	//handle camera following reader
+	//todo - maybe use the projected screen position rather than world space so works for tilts
+	//also make choose the nearest reader position first
+	
 	if(currentReader->getIsNewDirection())lagCount = kLagFrames;
+	ofVec2f t_pos(cam.getPosition().x, cam.getPosition().y);
 	
 	if(!isFixed && !pauseFollow){
 		
-		viewPort.x = currentReader->getPos().x + trans.x;
-		viewPort.y = currentReader->getPos().y + trans.y;
+		t_pos.x = currentReader->getPos().x + trans.x;
+		t_pos.y = currentReader->getPos().y + trans.y;
 		
 		if(lagCount > 1){
 			trans -= currentReader->getIncrement() * (float)(lagCount/kLagFrames)  * currentReader->getDirection();
@@ -299,138 +335,110 @@ void testApp::update(){
 			lagCount = 0;
 		}
 
-		
-		if(abs(trans.x) > 2){ 
-			float incr = (trans.x > 0)? max(1.0,trans.x * 0.02):min(-1.0,trans.x * 0.02);
-			trans.x -= floor(incr);
+		if(abs(trans.x) > kMinIncr * 2){ 
+			float incr = (trans.x > 0)? max(kMinIncr,trans.x * 0.02f):min(-kMinIncr,trans.x * 0.02f);
+			trans.x -= incr;
 		}else{
 			trans.x = 0;
 		}
 		
-		if(abs(trans.y) > 2){ 
-			float incr = (trans.y > 0)? max(1.0,trans.y * 0.02):min(-1.0,trans.y * 0.02);
-			trans.y -= floor(incr);
+		if(abs(trans.y) > kMinIncr * 2){ 
+			float incr = (trans.y > 0)? max(kMinIncr,trans.y * 0.02f):min(-kMinIncr,trans.y * 0.02f);
+			trans.y -= incr;
 		}else{
 			trans.y = 0;
 		}
 		
-		
 	}
 	
-	moduloViewPort();
+	t_pos = moduloPoint(t_pos, world.getWorldDims());
+	cam.setPosition(t_pos.x, t_pos.y, cam.getPosition().z);
+	
+	//handle rotations
+	
+	if(abs(rots[2] - targetRots[2]) > 0){
+		
+		if(rots[2] < targetRots[2]){ 
+			cam.roll(-1);
+			rots[2] += 1;
+		}else{
+			rots[2] -= 1;
+			cam.roll(1);
+		}
+	
+	}else{
+		
+		rots[2] = targetRots[2];
+	}
+	
+	//coordinate picking
+	
+	cam.begin(viewPort);
+	mouseP_prev.set(mouseP);
+	mouseP.set(mouseX, mouseY);
+	mousePick = cam.getZPlaneProjection(mouseP, viewPort);
+	for(int i = 0; i < VP_coords.size(); i++){
+		VPW_coords[i] = cam.getZPlaneProjection(VP_coords[i],viewPort);
+	}
+	cam.end();
+	
+	//for roi : find smallest x, largest x, smallest y, largest y
+	//to create a bounding box
+	
+	ofVec2f world_dims(world.getWorldDims());
+	
+	ofVec2f tl(world_dims.x * 1.5, world_dims.y * 1.5);
+	ofVec2f br(-world_dims.y * 1.5, -world_dims.y * 1.5);
+	
+	for(int i = 0; i < VP_coords.size(); i++){
+		if(VPW_coords[i].x < tl.x)tl.x = VPW_coords[i].x;
+		if(VPW_coords[i].y < tl.y)tl.y = VPW_coords[i].y;
+		if(VPW_coords[i].x > br.x)br.x = VPW_coords[i].x;
+		if(VPW_coords[i].y > br.y)br.y = VPW_coords[i].y;
+	}
+	
+	roi.set(tl.x, tl.y, abs(br.x-tl.x), abs(br.y-tl.y)); 
+	
+	//mouseW used for all interaction
+	
+	mouseW.set(moduloPoint(mousePick, world.getWorldDims()));
 	
 	if(!isMouseDown){
 		
 		if(mouseMode == MODE_ADD_BLIP || mouseMode == MODE_ADD_TRACK){
-			layers[currentLayer].selectSomething(getWorldCoordinate(ofVec2f(mouseX, mouseY)));
+			world.selectSomething(ofVec2f(mouseW.x,mouseW.y));
 		}
 		
 	}
-	
-	updateDummyViews();
+
 	
 }
 
-void testApp::updateDummyViews(){
-	
-	ofVec2f t_dims = layers[currentLayer].getWorldDims();
-	
-	ofxRotRect rotPort(viewPort,layers[currentLayer].getRot(2));
-	ofRectangle b_rect = rotPort.getBoundingRect();
-	
-	
-	float y_over = viewPort.y + b_rect.height/2.0f - t_dims.y/2.0f;
-	float y_under = -viewPort.y + b_rect.height/2.0f - t_dims.y/2.0f;
-	float x_over = viewPort.x + b_rect.width/2.0f - t_dims.x/2.0f;
-	float x_under = -viewPort.x + b_rect.width/2.0f - t_dims.x/2.0f;
-	
-	dummy_views.clear();
-	ofRectangle dummy_view(viewPort.x,viewPort.y,b_rect.width,b_rect.height);
-	
-	//theres a better optimisation for this 
-	
-	if( y_over > 0 ){ 
-		dummy_view.y = -t_dims.y + viewPort.y;
-		dummy_views.push_back(dummy_view);
-	}
-	if( y_under > 0 ){ 
-		dummy_view.y = t_dims.y +  viewPort.y;
-		dummy_views.push_back(dummy_view);
-	}
-	
-	dummy_view.set(viewPort.x,viewPort.y,b_rect.width,b_rect.height);
-	
-	if( x_over > 0 ){ 
-		dummy_view.x = -t_dims.x + viewPort.x;
-		dummy_views.push_back(dummy_view);
-	}
-	if( x_under > 0 ){ 
-		dummy_view.x = t_dims.x + viewPort.x;
-		dummy_views.push_back(dummy_view);
-	}
-	
-	if( x_over > 0 && y_over > 0){
-		dummy_view.y = -t_dims.y + viewPort.y;
-		dummy_view.x = -t_dims.x + viewPort.x;
-		dummy_views.push_back(dummy_view);
-	}
-	
-	if( x_over > 0 && y_under > 0){
-		dummy_view.x = -t_dims.x + viewPort.x;
-		dummy_view.y = t_dims.y +  viewPort.y;
-		dummy_views.push_back(dummy_view);
-	}
-	
-	if( x_under > 0 && y_under > 0){
-		dummy_view.y = t_dims.y +  viewPort.y;
-		dummy_view.x = t_dims.x + viewPort.x;
-		dummy_views.push_back(dummy_view);
-	}
-	
-	if( x_under > 0 && y_over > 0){
-		dummy_view.x = t_dims.x + viewPort.x;
-		dummy_view.y = -t_dims.y + viewPort.y;
-		dummy_views.push_back(dummy_view);
-	}
-	
-	
-}
+
 
 //--------------------------------------------------------------
 void testApp::draw(){
 	
 	ofBackground(255);
 	
-	if(layers.size() > 1){ //very confusing indeed !
-		glPushMatrix();
-		glTranslatef(viewPort.width/2, viewPort.height/2, 0);
-		glRotatef(layers[(currentLayer+1)%layers.size()].getRot(2),0,0,1);
-		glTranslatef(-viewPort.width/2, -viewPort.height/2, -100);
-		
-		ofxRotRect rotPort(viewPort,layers[(currentLayer+1)%layers.size()].getRot(2));
-		ofRectangle b_rect = rotPort.getBoundingRect();
-		ofRectangle t(0, 0, b_rect.width, b_rect.height);
-		layers[(currentLayer+1)%layers.size()].draw(t);
-		
-		glPopMatrix();
-		
+	cam.begin(viewPort);
+	
+	ofSetColor(255, 0, 0);
+	
+	ofVec2f world_dims = world.getWorldDims();
+	for(int i = 0; i < 3; i ++){
+		for(int j = 0; j < 3; j++){
+			
+			ofVec2f p(-world_dims.x + world_dims.x * i,
+					  -world_dims.y + world_dims.y * j);
+				   
+			
+			world.draw(p, roi, testCols[i * 3 + j]);
+		}
 	}
 	
-	glPushMatrix();
-	glTranslatef(viewPort.width/2, viewPort.height/2, 0);
-	glRotatef(rotX,1,0,0);
-	glRotatef(layers[currentLayer].getRot(2),0,0,1);
-	glTranslatef(-viewPort.width/2, -viewPort.height/2, transZ);
+	cam.end();
 	
-	ofxRotRect rotPort(viewPort,layers[currentLayer].getRot(2));
-	ofRectangle b_rect = rotPort.getBoundingRect();
-	ofRectangle t(viewPort.x, viewPort.y, b_rect.width, b_rect.height);
-	
-	layers[currentLayer].draw(t);
-	for(int i = 0; i < dummy_views.size(); i ++){layers[currentLayer].draw(dummy_views[i], true);}
-	
-	
-	glPopMatrix();
 	
 	ofSetColor(0);
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 900,20);
@@ -446,10 +454,12 @@ void testApp::draw(){
 	ofSetColor(0);
 	
 	if(isMouseDown && currentAction == ACTION_ADD_BLIP){
-		ofLine(mouse_a,mouse_b);
-		ofVec2f dir(mouse_b - mouse_a);
+		ofLine(mouseP_down,mouseP);
+		ofVec2f dir(mouseP - mouseP_down);
 		dir.normalize();
-		ofDrawBitmapString(layers[currentLayer].getPreviewParams(), mouse_b + dir * 20);
+		vector<string> pstring = world.getPreviewParams();
+		
+		for(int i = 0; i <pstring.size(); i ++)ofDrawBitmapString( pstring[i], mouseP + ofVec2f(dir.x * 20, dir.y * 20 + i * 20));
 	}
 	
 }
@@ -469,148 +479,94 @@ string testApp::getModeString(e_mouseMode temp){
 	
 }
 
-void testApp::moduloViewPort(){
-	
-	ofVec2f t_dims = layers[currentLayer].getWorldDims();
-	
-	if(viewPort.y < -t_dims.y/2 -viewPort.height/2 ){
-		mouse_offset.y += viewPort.y;	
-		viewPort.y += t_dims.y; 
-		mouse_offset.y -= viewPort.y;
-	}else if(viewPort.y > t_dims.y/2 + viewPort.height/2 ){
-		mouse_offset.y += viewPort.y;	
-		viewPort.y -= t_dims.y; 
-		mouse_offset.y -= viewPort.y;
-	}
-	
-	if(viewPort.x < -t_dims.x/2 -viewPort.width/2 ){
-		mouse_offset.x += viewPort.x;	
-		viewPort.x += t_dims.x; 
-		mouse_offset.x -= viewPort.x;
-	}else if(viewPort.x > t_dims.x/2 + viewPort.width/2 ){
-		mouse_offset.x += viewPort.x;	
-		viewPort.x -= t_dims.x; 
-		mouse_offset.x -= viewPort.x;
-	}
-	
-	
-}
 
-
-
-ofVec2f testApp::getWorldCoordinate(ofVec2f t_point){
+ofVec2f testApp::moduloPoint(ofVec2f t_point, ofVec2f t_dims){
 	
-	t_point.x -= ofGetScreenWidth()/2;
-	t_point.y -= ofGetScreenHeight()/2;
-	
-	t_point.rotate(-layers[currentLayer].getRot(2));
-	
-	ofVec2f point(t_point);
-	
-	point.x += viewPort.x;
-	point.y += viewPort.y;
-	
-	ofVec2f t_dims = layers[currentLayer].getWorldDims();
-	
-	ofRectangle scr(-t_dims.x/2,-t_dims.y/2,t_dims.x,t_dims.y);
-	
-	if(!scr.inside(point)){
-		
-		
-		for(int i = 0; i < dummy_views.size(); i++){
-			
-			
-			ofRectangle d;
-			d.setFromCenter(-dummy_views[i].x, -dummy_views[i].y, t_dims.x, t_dims.y);
-			
-			if(d.inside(t_point)){
-				
-				point = t_point + ofVec2f(dummy_views[i].x, dummy_views[i].y);
-			}
-			
-		}
-		
-		
-	}
+	ofVec3f point(t_point.x, t_point.y, 0);
+	point = moduloPoint(point, t_dims);
 	
 	return point;
 	
 }
 
-void testApp::prepPauseFollow(){
+ofVec3f testApp::moduloPoint(ofVec3f t_point, ofVec2f t_dims){
 	
-	if(!isFixed){
-		pauseFollow = true;
-		trans += currentReader->getPos();
-		moduloViewPort();
-		viewPort.x = trans.x;
-		viewPort.y = trans.y;
+	ofVec3f point(t_point);
+	
+	if(t_point.x < -t_dims.x/2){
+		point.set(t_point.x + t_dims.x, t_point.y, t_point.z);
+	}else if(t_point.x > t_dims.x/2){
+		point.set(t_point.x - t_dims.x, t_point.y, t_point.z);
 	}
 	
+	if(t_point.y < -t_dims.y/2){
+		point.set(t_point.x, t_point.y + t_dims.y, t_point.z);
+	}else if(t_point.y > t_dims.y/2){
+		point.set(t_point.x, t_point.y - t_dims.y, t_point.z);
+	}
+	
+	return point;
 }
+
 
 void testApp::startAction(){
 	
 	ofVec2f p(mouseX,mouseY);
-	p.rotate(-layers[currentLayer].getRot(2));
-	prepPauseFollow();
+	if(!isFixed)pauseFollow = true;
 	
 	if(currentAction == ACTION_DRAG){
 		
-		mouse_offset.x = -p.x - viewPort.x;
-		mouse_offset.y = -p.y - viewPort.y;
+		//nothing to do here
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK ||currentAction == ACTION_ADD_LONG_TRACK){
 		
-		layers[currentLayer].beginTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)));
+		world.beginTrack(ofVec2f(mouseW.x,mouseW.y));
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		selectedPreset[1] = (isOptionKey)? buttonMode + 2: buttonMode;
-		layers[currentLayer].beginBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)), presets[selectedPreset[1]][selectedPreset[0]]);
+		world.beginBlip(ofVec2f(mouseW.x,mouseW.y), presets[selectedPreset[1]][selectedPreset[0]]);
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
-		ofVec2f orientation = (layers[currentLayer].getRot(2) == 0)? ofVec2f(1,0):ofVec2f(0,1);
-		layers[currentLayer].beginInsertion(getWorldCoordinate(ofVec2f(mouseX,mouseY)), orientation);
+		ofVec2f orientation = (rots[2] == 0)? ofVec2f(1,0):ofVec2f(0,1);
+		world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
 	
 	}
 	
 }
 
-void testApp::continueAction(ofVec2f t_dir){
+void testApp::continueAction(){
 	
-	ofVec2f p(mouseX,mouseY);
-	p.rotate(-layers[currentLayer].getRot(2));
+	ofVec2f w_dir(mousePick - mousePick_down);
 	
 	if(currentAction == ACTION_DRAG){
-		
-		viewPort.x = -mouse_offset.x - p.x;
-		viewPort.y = -mouse_offset.y - p.y;
-		
-		trans.x = -mouse_offset.x - p.x;
-		trans.y = -mouse_offset.y - p.y;
+		if(mouseP != mouseP_prev){
+			cam.drag(mouseP_prev, mouseP, mouseW);
+		}
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
 		
-		t_dir.rotate(-layers[currentLayer].getRot(2));
-		layers[currentLayer].calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,0);
+		world.calcTrack(ofVec2f(mouseW.x,mouseW.y), w_dir, 0);
 		
 	}else if(currentAction == ACTION_ADD_LONG_TRACK){
 		
-		t_dir.rotate(-layers[currentLayer].getRot(2));
-		layers[currentLayer].calcTrack(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir,1);
+		world.calcTrack(ofVec2f(mouseW.x,mouseW.y),w_dir, 1);
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
-		layers[currentLayer].calcBlip(getWorldCoordinate(ofVec2f(mouseX,mouseY)),t_dir);
-		if(t_dir.length() > 1){
-			presets[selectedPreset[1]][selectedPreset[0]].setUserVals(t_dir.length(), abs(t_dir.angle(ofVec2f(0,1)))); //store the current user vals in the preset
+		//nb s_dir is not rotated with the camera
+		ofVec2f s_dir(mouseP - mouseP_down);
+		float s_angle = abs(s_dir.angle(ofVec2f(0,1)));
+		world.calcBlip(ofVec2f(mouseW.x,mouseW.y),w_dir, s_angle);
+		if(s_dir.length() > 1){
+			presets[selectedPreset[1]][selectedPreset[0]].setUserVals(w_dir.length(),s_angle); 
+			//store the current user vals in the preset
 		}
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
-		layers[currentLayer].resizeInsertion(t_dir.length());
+		world.resizeInsertion(w_dir.length());
 														 
 	}
 														 
@@ -622,7 +578,7 @@ void testApp::endAction(){
 		
 		if(!isFixed){
 			pauseFollow = false;
-			trans -= currentReader->getPos();
+			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
 		}
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK || currentAction == ACTION_ADD_LONG_TRACK){
@@ -630,49 +586,33 @@ void testApp::endAction(){
 		isPreview = false;
 		if(!isFixed){
 			pauseFollow = false;
-			trans -= currentReader->getPos();
+			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
 		}
-		layers[currentLayer].endTrack();
+		world.endTrack();
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		isPreview = false;
 		if(!isFixed){
 			pauseFollow = false;
-			trans -= currentReader->getPos();
+			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
 		}
 		
-		layers[currentLayer].endBlip();
+		world.endBlip();
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
 		if(!isFixed){
 			pauseFollow = false;
-			trans -= currentReader->getPos();
+			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
 		}		
 		
-		layers[currentLayer].endInsertion();
+		world.endInsertion();
 		
 	}
 	
 }
 
-void testApp::addLayer(){
-
-	layer tmpLyr;
-	layers.push_back(tmpLyr);
-	layer * lyPtr = &layers.back();
-	
-	lyPtr->setWorldDims(ofVec2f(ofGetScreenWidth() * 1, ofGetScreenWidth() * 1));
-	currentReader = lyPtr->getReaderRef();
-	currentReader->setOscSender(&sender);
-	
-	lyPtr->beginTrack(ofVec2f(0,0));
-	lyPtr->calcTrack(ofVec2f(100,0),ofVec2f(100,0), 1);
-	lyPtr->endTrack();
-	
-	currentLayer += 1;
-}
 
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
@@ -681,22 +621,13 @@ void testApp::keyPressed  (int key){
 	for(int i = 1; i < MODE_COUNT; i ++){
 		if(key == 48 + i ){
 			mouseMode = e_mouseMode(i);
-			layers[currentLayer].deselectAll();	
+			world.deselectAll();	
 		}
 	}
 	
 	if(key == ' '){
-		
-		
-		if(isFixed){
-			trans -= currentReader->getPos();
-		}else{
-			trans += currentReader->getPos();
-			moduloViewPort();
-			viewPort.x = trans.x;
-			viewPort.y = trans.y;
-		}
-		
+
+		trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
 		isFixed = !isFixed;
 	}
 	
@@ -707,26 +638,14 @@ void testApp::keyPressed  (int key){
 	if(key == 'r' || key == 'R')currentReader->incrementMode();
 	
 	if(key == 'f')ofToggleFullscreen();
-	if(key == 's')layers[currentLayer].toggleScreenData();
-	if(key == 'n')layers[currentLayer].toggleNodeData();
-	if(key == 't')layers[currentLayer].toggleTrackData();
-	if(key == 'b')layers[currentLayer].toggleBlipData();
+	if(key == 's')world.toggleScreenData();
+	if(key == 'n')world.toggleNodeData();
+	if(key == 't')world.toggleTrackData();
+	if(key == 'b')world.toggleBlipData();
 	
-	if(key == 'z'){layers[currentLayer].rotate(2);}
-	if(key == 'x'){rotX += 1; fmod(rotX,360);}
-	
-	/*if(key == ',')transZ -= 10;
-	if(key == '.')transZ += 10;
-	
-	if(key == 'l'){
-		addLayer();
-	}
-	
-	if(key == 'm'){
-		currentLayer = (currentLayer + 1)%layers.size();
-		currentReader = layers[currentLayer].getReaderRef();
-		
-	}*/
+	if(key == 'z'){targetRots[2] = (targetRots[2] > 0)? 0 : 90;}
+	if(key == 'x'){targetRots[0] = (targetRots[0] > 0)? 0 : 45;} //not implemented yet	
+
 }
 
 //--------------------------------------------------------------
@@ -741,14 +660,12 @@ void testApp::mouseMoved(int x, int y ){
 	
 }
 
-
-
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
 	
 	isMouseDown = true;
-	mouse_a.set(x,y);
-	mouse_b.set(mouse_a);
+	mouseP_down.set(mouseP);
+	mousePick_down.set(mousePick);
 	
 	switch (button) {
 		case 0:buttonMode = 0;break;
@@ -772,10 +689,8 @@ void testApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
 	
-	mouse_b.set(x,y);
-	ofVec2f dir = mouse_b - mouse_a;
-	continueAction(dir);
-	
+	continueAction();
+
 }
 
 
@@ -787,8 +702,8 @@ void testApp::mouseReleased(int x, int y, int button){
 	isMouseDown = false;
 	currentAction = ACTION_NONE;
 	
-	mouse_a.set(0,0);
-	mouse_b.set(0,0);
+	mouseP_down.set(0,0);
+	mouseP.set(0,0);
 }
 
 

@@ -44,9 +44,9 @@ class reader{
 	void setOscSender(ofxOscSender * t);
 	string getModeString();
 	ofVec2f getDirection();
-	int getIncrement();
-	void setSpeed(int t);
-	int getSpeed();
+	float getIncrement();
+	void setSpeed(float t);
+	float getSpeed();
 	bool getIsNewDirection();
 	
 	private:
@@ -68,9 +68,8 @@ class reader{
 	ofVec2f insertPoint;
 	ofVec2f insertDir;
 	float insertSize;
-
 	
-	int mSpeed, mIncrement;
+	float mSpeed, mIncrement;
 	bool isStuck, isNewDirection;
 	
 };

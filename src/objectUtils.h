@@ -12,11 +12,13 @@
 
 #include "ofMain.h"
 #include "segment.h"
+#include "constants.h"
 
 class objectUtils{
 	
 public:
 	
+	objectUtils();
 	//getters and setters
 	void setWorldDims(ofVec2f t_dims);
 	ofVec2f getWorldDims()const;
@@ -35,6 +37,8 @@ protected:
 	void quantizeDirection(ofVec2f & t_dir);
 	
 	ofVec2f world_dims;
+	
+	static float kTestSize;
 	
 };
 

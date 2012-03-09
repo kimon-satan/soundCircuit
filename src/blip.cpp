@@ -213,8 +213,8 @@ bool blip::getInside(ofVec2f t_pos, int bufferZone){
 		ofRectangle n_wrapTestArea;
 		
 		n_testArea.setFromCenter(testArea.getCenter(), 
-								 testArea.width + bufferZone * 2,
-								 testArea.height + bufferZone * 2);
+								 testArea.width + (float)bufferZone * WORLD_UNIT * 2,
+								 testArea.height + (float)bufferZone * WORLD_UNIT * 2);
 	
 		
 		if(!isWrapped){
@@ -223,8 +223,8 @@ bool blip::getInside(ofVec2f t_pos, int bufferZone){
 		}else{
 			
 			n_wrapTestArea.setFromCenter(wrapTestArea.getCenter(), 
-									 wrapTestArea.width + bufferZone * 2,
-									 wrapTestArea.height + bufferZone * 2);
+									 wrapTestArea.width + bufferZone * WORLD_UNIT * 2,
+									 wrapTestArea.height + bufferZone * WORLD_UNIT * 2);
 			
 			if(n_testArea.inside(t_pos))return true;
 			if(n_wrapTestArea.inside(t_pos))return true;

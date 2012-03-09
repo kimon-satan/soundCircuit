@@ -76,7 +76,7 @@ void bean1::update(){
 	width = length/2;
 	height = params[1];
 	
-	blankRect.setFromCenter(0, 0, length -2, 2);
+	blankRect.setFromCenter(0, 0, length - WORLD_UNIT * 2, WORLD_UNIT * 2);
 	
 	float swing = (postVal > 0) ? decayRatio * envVal + (1-decayRatio) * postVal: envVal;
 	
@@ -115,15 +115,11 @@ void bean1::draw(int t_wrap){
 	//figure out craziness on preview draw
 	
 	glPushMatrix();
-	
-	if(t_wrap == 0){
-		glTranslatef(centre.x, centre.y, 0);
-	}else if(t_wrap == 1){
-		glTranslatef(wrapCoords.x, centre.y, 0); 
-	}else if(t_wrap == 2){
-		glTranslatef(centre.x, wrapCoords.y, 0); 
-	}
+
+	glTranslatef(centre.x, centre.y, 0);
+
 	glRotatef(angle, 0, 0, 1);
+	
 	
 	if(params[11] > 0){
 		ofFill();
@@ -131,8 +127,9 @@ void bean1::draw(int t_wrap){
 		ofRect(blankRect);
 	}
 	
-	glTranslatef(0, params[1] * params[10], 0);
 	
+	glTranslatef(0, params[1] * params[10], 0);
+	glDepthFunc(GL_LEQUAL); //prevents visible segments
 	ofNoFill();
 	ofSetColor(0);
 	
@@ -150,6 +147,8 @@ void bean1::draw(int t_wrap){
 	ofEndShape(true);
 	
 	ofDisableSmoothing();
+	glDepthFunc(GL_LESS);
+	
 	
 	glPopMatrix();
 	
@@ -172,7 +171,7 @@ vector<paramAttributes> bean1::getParamDefs(){
 	numV.name = "numV"; numV.min_val = 3; numV.max_val = 12; numV.abs_value = 6; //p0
 	def.push_back(numV);
 	
-	height.name = "height"; height.min_val = 10; height.max_val = 100; height.abs_value = 20; //p1
+	height.name = "height"; height.min_val = WORLD_UNIT * 10; height.max_val = WORLD_UNIT * 100; height.abs_value = WORLD_UNIT * 20; //p1
 	def.push_back(height);
 	
 	//displace_l p2

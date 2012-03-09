@@ -24,15 +24,15 @@ public:
 	//accessible functions
 	
 	void beginTrack(ofVec2f w_pos);
-	void calcTrack(ofVec2f w_pos, ofVec2f t_dir, int mode);
+	void calcTrack(ofVec2f w_pos, ofVec2f w_dir, int mode);
 	void endTrack();
 	
 	void beginBlip(ofVec2f w_pos, blipPreset bp);
-	void calcBlip(ofVec2f w_pos, ofVec2f dir);
+	void calcBlip(ofVec2f w_pos, ofVec2f dir, float s_angle);
 	void endBlip();
 	
 	void setParam(paramAttributes * p, float userA, float userB, float m_val);
-	string getPreviewParams();
+	vector<string> getPreviewParams();
 	
 	virtual void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
 	virtual void resizeInsertion(float size);

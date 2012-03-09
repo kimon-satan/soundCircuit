@@ -13,7 +13,7 @@ bool nodeSuperfluous(node n){return n.getSuperfluous();} //used in endTrack
 segment objectManager::DSEG = segment();
 vector<ofVec2f> objectManager::DPOINTS = vector<ofVec2f>();
 
-objectManager::objectManager(){
+objectManager::objectManager():objectUtils(){
 	
 	isPreview = false;
 	isInsert = false;
@@ -43,14 +43,14 @@ void objectManager::beginTrack(ofVec2f w_pos){
 	s_pos[0] = w_pos;
 }
 
-void objectManager::calcTrack(ofVec2f w_pos, ofVec2f t_dir, int mode){
+void objectManager::calcTrack(ofVec2f w_pos, ofVec2f w_dir, int mode){
 	
-	if(t_dir.length() > 10){
+	if(w_dir.length() > 0.1){ //t_dir is a pixel value
 		
 		if(mode == 0){
-			calcTrack_0(w_pos, t_dir);
+			calcTrack_0(w_pos, w_dir);
 		}else{
-			calcTrack_1(w_pos, t_dir);
+			calcTrack_1(w_pos, w_dir);
 		}
 		
 	}
@@ -71,7 +71,6 @@ void objectManager::endTrack(){
 		tracks.back().aquireIndex();
 		
 		for(int i = 0; i < 2; i ++){
-			
 			
 			ofVec2f pos = (i == 0)? previewTracks[j].getStartPos():previewTracks[j].getEndPos();
 			int mul = (i == 0) ? 1 : -1;
@@ -121,7 +120,6 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 	
 	s_tracks[0] = selectTrackPoint(w_pos);
 	
-	
 	if(!s_tracks[0]){
 		return;
 	}else if(selectBlip(w_pos, 3)){
@@ -130,14 +128,14 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 		s_pos[0] = s_tracks[0]->getSelectPos();
 		previewBlip.setPreset(bp);
 		previewBlip.createDrawer(world_dims);
-		calcBlip(s_pos[0], ofVec2f(0,0));
+		calcBlip(s_pos[0], ofVec2f(0,0), 0);
 		previewBlip.getPresetRef().setIsRandSet(true);
 	}
 	
 	
 }
 
-void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
+void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir, float s_angle){
 
 	if(!s_tracks[0]){
 		previewBlip.setIsValid(false);
@@ -153,7 +151,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	//preset parameter sorting
 
 	float userA = t_dir.length();
-	float userB = t_dir.angle(ofVec2f(0,1));
+	float userB = s_angle;
 	userB = abs(userB);
 	
 	if(userA == 0){
@@ -163,7 +161,7 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir){
 	
 	blipPreset & p = previewBlip.getPresetRef();
 	
-	float m_val = ofVec2f(ofGetScreenWidth()/2, ofGetScreenHeight()/2).length()/2;
+	float m_val = WORLD_UNIT * 1000; //make into a constant
 	
 	setParam(p.getLength(),userA, userB, m_val);
 	setParam(p.getAttackSecs(),userA, userB, m_val);
@@ -306,7 +304,6 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	
 	ofVec2f t_pos_0(s_pos[0]); //copied to local so as not lose original sp
 	
-	
 	s_nodes[1] = selectNode(w_pos);
 
 	if(!s_nodes[1])s_tracks[1] = selectTrackPoint(w_pos);
@@ -329,7 +326,7 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 		
 		if(!recalc)recalc = findNodeIntersects(previewTracks[0]);
 		
-		if(previewTracks[0].getLength() < 20)recalc = true;
+		if(previewTracks[0].getLength() < 0.2)recalc = true;
 		
 		if(recalc){
 			for(int j = 0; j < 2; j ++)previewTracks[j].setIsValid(false);
@@ -360,18 +357,18 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	q.normalize();
 	
 	//wrapping adjustment for lengths
-	if(q.x < 0 && abs(t_dir.x) > 10){
+	if(q.x < 0 && abs(t_dir.x) > 0.1){
 		if(size.x > 0){size.x -= world_dims.x;}else{size.x += world_dims.x;}
 	}
 	
-	if(q.y < 0 && abs(t_dir.y) > 10){
+	if(q.y < 0 && abs(t_dir.y) > 0.1){
 		if(size.y > 0){size.y -= world_dims.y;}else{size.y += world_dims.y;}
 	}
 	
 	dirs[0].set(0, size.y); 
 	dirs[1].set(size.x,0);
 	
-	if(abs(size.x) < 10 || abs(size.y) < 10){ //if nearly aligned try a single track first
+	if(abs(size.x) < 0.1 || abs(size.y) < 0.1){ //if nearly aligned try a single track first
 		
 		if(!s_nodes[1]){
 			
@@ -748,8 +745,8 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 					
 				}
 				
-			}else if( s.getStartPos().distanceSquared(nodes[i].getPos()) < 144 ||
-					 s.getEndPos().distanceSquared(nodes[i].getPos()) < 144
+			}else if( s.getStartPos().distance(nodes[i].getPos()) < kTestSize * WORLD_UNIT/2 ||
+					 s.getEndPos().distance(nodes[i].getPos()) < kTestSize * WORLD_UNIT/2
 					 ){
 				
 				if(&t_points != &DPOINTS){
@@ -789,7 +786,7 @@ node * objectManager::selectNode(ofVec2f t_pos){
 	
 	for(int i = 0; i < nodes.size(); i++){
 		
-		if( t_pos.distanceSquared(nodes[i].getPos()) < 144){
+		if( t_pos.distance(nodes[i].getPos()) < kTestSize * WORLD_UNIT/2 ){
 			n = &nodes[i];
 			nodes[i].setSelected(true);
 			break;
@@ -828,30 +825,33 @@ segment * objectManager::selectBlip(ofVec2f t_pos, int bZone){
 }
 
 
-string objectManager::getPreviewParams(){
+vector<string> objectManager::getPreviewParams(){
 	
-	string paramString = "";
+	vector<string> paramString;
 	blipPreset p = previewBlip.getPreset();
 	
 	if(p.getAttackSecs()->setType == PSET_USERA || p.getAttackSecs()->setType == PSET_USERB){
-		paramString = paramString + p.getAttackSecs()->name;
-		paramString +=  " : " + ofToString(p.getAttackSecs()->abs_value, 2);
-		paramString += "\n";
+		string t;
+		t = p.getAttackSecs()->name;
+		t +=  " : " + ofToString(p.getAttackSecs()->abs_value, 2);
+		paramString.push_back(t);
 	}
 	
 	if(p.getDecaySecs()->setType == PSET_USERA || p.getDecaySecs()->setType == PSET_USERB){
-		paramString = paramString + p.getDecaySecs()->name;
-		paramString +=  " : " + ofToString(p.getDecaySecs()->abs_value, 2);
-		paramString += "\n";
+		string t;
+		t =  p.getDecaySecs()->name;
+		t +=  " : " + ofToString(p.getDecaySecs()->abs_value, 2);
+		paramString.push_back(t);
 	}
 	
 	
 	for(int i = 0; i < p.getSoundParams()->size(); i++){
 		
 		if(p.getSoundParam(i)->setType == PSET_USERA || p.getSoundParam(i)->setType == PSET_USERB){
-			paramString = paramString + p.getSoundParams()->at(i).name;
-			paramString +=  " : " + ofToString(p.getSoundParams()->at(i).abs_value, 2);
-			paramString += "\n";
+			string t;
+			t =  p.getSoundParams()->at(i).name;
+			t +=  " : " + ofToString(p.getSoundParams()->at(i).abs_value, 2);
+			paramString.push_back(t);
 		}
 	}
 	

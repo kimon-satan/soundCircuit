@@ -67,13 +67,8 @@ void belch::draw(int t_wrap){
 
 	glPushMatrix();
 	
-	if(t_wrap == 0){
-		glTranslatef(centre.x, centre.y, 0);
-	}else if(t_wrap == 1){
-		glTranslatef(wrapCoords.x, centre.y, 0); 
-	}else if(t_wrap == 2){
-		glTranslatef(centre.x, wrapCoords.y, 0); 
-	}
+	glTranslatef(centre.x, centre.y, 0);
+
 	glRotatef(angle, 0, 0, 1);
 	
 	ofFill();

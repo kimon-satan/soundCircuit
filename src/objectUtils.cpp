@@ -10,6 +10,13 @@
 #include "objectUtils.h"
 
 
+float objectUtils::kTestSize = 16;
+
+objectUtils::objectUtils(){
+
+
+}
+
 void objectUtils::limitStartPointFromMid(ofVec2f origin, vector<ofVec2f> & t_points, segment & s){
 	
 	vector<ofVec2f> bounds = getPlanarNeighbours(origin, t_points);
@@ -50,11 +57,11 @@ void objectUtils::limitEndPointFromStart(ofVec2f origin, vector<ofVec2f> & t_poi
 	bool spIsStart = (s.getStartPos() == origin)? true : false; 
 	
 	//create a dummy bound at the start of the track
-	ofVec2f dummy_point = origin + ofVec2f((spIsStart)? s.getDirection() : -s.getDirection());
+	ofVec2f dummy_point = origin + ofVec2f((spIsStart)? s.getDirection() * WORLD_UNIT: -s.getDirection()) * WORLD_UNIT;
 	t_points.push_back(dummy_point);
 	
 	//make an origin inside the track
-	ofVec2f n_origin = origin + ofVec2f((spIsStart)? s.getDirection() * 2 : -s.getDirection() * 2);
+	ofVec2f n_origin = origin + ofVec2f((spIsStart)? s.getDirection() * WORLD_UNIT * 2 : -s.getDirection() * WORLD_UNIT * 2);
 	
 	vector<ofVec2f> bounds = getPlanarNeighbours(n_origin, t_points);
 	sortNeighboursToSegment(n_origin, bounds, s);
@@ -221,11 +228,11 @@ void objectUtils::updateTestAreas(segment & t){
 		t.setIsWrapped(false);
 		
 		if(t.getDirection().x > 0){
-			tlc.set(t.getStartPos().x + 1,t.getStartPos().y -8);
-			dims.set(t.getLength() - 2, 16);
+			tlc.set(t.getStartPos().x + WORLD_UNIT,t.getStartPos().y -WORLD_UNIT * kTestSize/2);
+			dims.set(t.getLength() - WORLD_UNIT * 2, WORLD_UNIT * kTestSize);
 		}else{
-			tlc.set(t.getStartPos().x - 8, t.getStartPos().y + 2);
-			dims.set(16, t.getLength() - 2);
+			tlc.set(t.getStartPos().x - WORLD_UNIT * kTestSize/2, t.getStartPos().y + WORLD_UNIT * 2);
+			dims.set(WORLD_UNIT * kTestSize, t.getLength() - WORLD_UNIT * 2);
 		}
 		
 		t.setTestArea(ofRectangle(tlc.x, tlc.y, dims.x, dims.y));
@@ -249,10 +256,10 @@ void objectUtils::updateTestAreas(segment & t){
 			ofVec2f left_i(-world_dims.x/2, wsp.y);
 			ofVec2f right_i(world_dims.x/2, wsp.y);
 			
-			dims.set((right_i - wsp).length() +1,16);
-			w_dims.set((wp - left_i).length() ,16);
-			tlc.set(wsp.x + 1, wsp.y -8);
-			w_tlc.set(left_i.x - 1,left_i.y -8);
+			dims.set((right_i - wsp).length() + WORLD_UNIT,WORLD_UNIT * kTestSize);
+			w_dims.set((wp - left_i).length() ,WORLD_UNIT * kTestSize);
+			tlc.set(wsp.x + WORLD_UNIT, wsp.y -WORLD_UNIT * kTestSize/2);
+			w_tlc.set(left_i.x - WORLD_UNIT,left_i.y -WORLD_UNIT * kTestSize/2);
 			
 			
 		}else{
@@ -268,11 +275,11 @@ void objectUtils::updateTestAreas(segment & t){
 			ofVec2f top_i(t.getStartPos().x, -world_dims.y/2);
 			ofVec2f bottom_i(t.getStartPos().x, world_dims.y/2);
 			
-			dims.set(16,(bottom_i - wsp).length()+1);
-			w_dims.set(16,(wp - top_i).length());
+			dims.set(WORLD_UNIT * kTestSize,(bottom_i - wsp).length()+WORLD_UNIT);
+			w_dims.set(WORLD_UNIT * kTestSize,(wp - top_i).length());
 			
-			tlc.set(wsp.x - 8, wsp.y + 1);
-			w_tlc.set(top_i.x - 8,top_i.y - 1);
+			tlc.set(wsp.x - WORLD_UNIT * kTestSize/2, wsp.y + WORLD_UNIT);
+			w_tlc.set(top_i.x - WORLD_UNIT * kTestSize/2,top_i.y - WORLD_UNIT);
 			
 			
 		}

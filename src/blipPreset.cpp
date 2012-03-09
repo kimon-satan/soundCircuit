@@ -27,10 +27,10 @@ blipPreset::blipPreset(){
 	postDecay[1].name = "postDecayProp";
 	
 	length.name = "length";
-	length.abs_value = 100;
+	length.abs_value = 10 * WORLD_UNIT;
 	length.setType = PSET_USERA;
-	length.min_val = 10;
-	length.max_val = 300;
+	length.min_val = 10 * WORLD_UNIT;
+	length.max_val = 300 * WORLD_UNIT;
 	
 	envType = ENV_ASR;
 	isRandsSet = false;

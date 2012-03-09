@@ -9,11 +9,12 @@
 
 #include "reader.h"
 #include "layer.h"
+#include "constants.h"
 
 reader::reader(){
 	
-	body.set(0,0,21,21);
-	mSpeed = 200;
+	body.set(0,0,WORLD_UNIT * 21, WORLD_UNIT * 21);
+	mSpeed = WORLD_UNIT * 200;
 	direction.set(1,0);
 	isStuck =false;
 	mode = READER_WANDER;
@@ -229,11 +230,15 @@ ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
 
 void reader::draw(){
 	
+	ofPushMatrix();
+	glDepthFunc(GL_ALWAYS);
 	ofSetRectMode(OF_RECTMODE_CENTER);
 	ofNoFill();
 	ofSetColor(0);
 	ofRect(body);
 	ofSetRectMode(OF_RECTMODE_CORNER);
+	glDepthFunc(GL_LESS);
+	ofPopMatrix();
 	
 }
 
@@ -293,8 +298,8 @@ ofVec2f reader::getPos(){return ofVec2f(body.x,body.y);}
 void reader::setPos(ofVec2f t_pos){body.x = t_pos.x; body.y = t_pos.y;}
 void reader::setOscSender(ofxOscSender * t){sender = t;}
 ofVec2f reader::getDirection(){return direction;}
-int reader::getIncrement(){return mIncrement;}
+float reader::getIncrement(){return mIncrement;}
 
-void reader::setSpeed(int t){mSpeed = t;}
-int reader::getSpeed(){return mSpeed;}
+void reader::setSpeed(float t){mSpeed = t;}
+float reader::getSpeed(){return mSpeed;}
 

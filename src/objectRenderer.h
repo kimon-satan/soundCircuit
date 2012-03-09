@@ -18,7 +18,7 @@ public:
 	
 	objectRenderer();
 	
-	void render(ofRectangle t_view);
+	void render(ofVec2f t_pos, ofRectangle roi);
 
 	void drawTracks();
 	void drawBlips();
@@ -32,14 +32,15 @@ public:
 	
 private:
 	
+	void drawTrack(segment * t);
 	bool checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir);
 	bool checkIsVisible(vector<ofVec2f> t_corners);
-	void drawTrack(segment * t);
 	
 	ofRectangle viewPort;
 	bool isTrackData;
 	bool isNodeData;
 	bool isBlipData;
+	ofVec2f center;
 	
 	vector<ofVec2f> selected;
 	

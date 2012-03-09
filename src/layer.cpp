@@ -15,12 +15,8 @@ layer::layer():objectRenderer(){
 	mReader.setLayer(this);
 	incr = mReader.getIncrement();
 
-	for(int i =0; i < 3; i++){
-		rots.push_back(0);
-		targetRots.push_back(0);
-		trans.push_back(0);
-		targetTrans.push_back(0);
-	}
+
+	
 
 }
 
@@ -38,11 +34,7 @@ layer::layer(const layer &src):objectRenderer(){
 	mReader = src.getReader();
 	mReader.setLayer(this);
 	
-	trans = src.getTrans();
-	rots = src.getRots();
-	targetTrans = src.getTargetTrans();
-	targetRots = src.getTargetRots();
-	
+
 	isScreenData = false;
 
 }
@@ -52,67 +44,42 @@ void layer::update(){
 	mReader.update();
 	for(vector<blip>::iterator it = blips.begin(); it != blips.end(); it++)it->update();
 	
-	if(abs(rots[2] - targetRots[2]) > 2){
-		
-		if(rots[2] < targetRots[2]){ 
-			rots[2] += 1;
-		}else{
-			rots[2] -= 1;
-		}
-		
-	}else{
-		rots[2] = targetRots[2];
-	}
+	
 }
 
-void layer::draw(ofRectangle &vp, bool isDummy){
+void layer::draw(ofVec2f pos, ofRectangle roi, ofColor col){
+	
 	
 	glPushMatrix();
-	glTranslatef(ofGetScreenWidth()/2, ofGetScreenHeight()/2, 0);
-	glPushMatrix();
-	glTranslatef(-vp.x, -vp.y,0); //centred coordinates
+	ofNoFill();
+
+	glTranslatef(pos.x,pos.y,0); //centred coordinates
 	
-	//for wrapping debugging 
+	//draw background for coordinate picking
+	
 	if(isScreenData){
-		glPushMatrix();
-		//glTranslatef(0, 0, -3);
-		ofEnableAlphaBlending();
-		(isDummy)?ofSetColor(255,0,0,100) : ofSetColor(0, 255, 0, 100);
+		ofPushMatrix();
+		ofTranslate(0, 0, 0);
+		ofSetColor(col);
 		ofFill();
 		ofSetRectMode(OF_RECTMODE_CENTER);
 		ofRect(0,0,world_dims.x, world_dims.y);
 		ofSetRectMode(OF_RECTMODE_CORNER);
-		ofDisableAlphaBlending();
 		ofNoFill();
 		ofSetColor(0);
-		glPopMatrix();
+		ofPopMatrix();
 	}
+
 	
 	//calculate area that will be viewed
 	
-	ofRectangle viewable;
+	render(pos, roi);
 	
-	viewable.x = max(-world_dims.x/2 - 2,-vp.width/2 + vp.x);
-	viewable.x = min(world_dims.x/2 + 2,viewable.x);
-	viewable.y = max(-world_dims.y/2 - 2,-vp.height/2 + vp.y);
-	viewable.y = min(world_dims.y/2 + 2,viewable.y);
-	
-	ofVec2f br;
-	br.x = max(-world_dims.x/2 - 2,vp.width/2  +vp.x);
-	br.x = min(world_dims.x/2 + 2,br.x);
-	br.y = max(-world_dims.y/2 - 2,vp.height/2  +vp.y);
-	br.y = min(world_dims.y/2 + 2,br.y);
-	
-	viewable.width  = abs(viewable.x - br.x) + 5;
-	viewable.height = abs(viewable.y - br.y) + 5;
-	
-	render(viewable);
-	
-	mReader.draw(); // will need to draw in a separate method for drawing orders
+	mReader.draw();
 	
 	glPopMatrix();
 	
-	glPopMatrix();
+
 }
 
 
@@ -153,16 +120,7 @@ void layer::endInsertion(){
 	
 }
 
-void layer::rotate(int plane){
-	
-	switch (plane) {
-		case 2:
-			targetRots[2] = (targetRots[2] == 0)? -90 : 0;
-			break;
-	}
-	
-	
-}
+
 
 void layer::toggleScreenData(){isScreenData = !isScreenData;}
 
@@ -179,11 +137,4 @@ vector<segment> layer::getTracks()const{return tracks;}
 reader * layer::getReaderRef(){return &mReader;}
 reader layer::getReader()const{return mReader;}
 
-vector<float> layer::getTrans()const{return trans;}
-vector<float> layer::getRots()const{return rots;}
-vector<float> layer::getTargetTrans()const{return targetTrans;}
-vector<float> layer::getTargetRots()const{return targetRots;}
 
-float layer::getRot(int i){return rots[i];}
-void layer::setRot(int i, float t_rot){rots[i] = t_rot; }
-void layer::setTrans(int i, float t_trans){trans[i] = t_trans; }

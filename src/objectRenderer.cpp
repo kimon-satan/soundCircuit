@@ -17,17 +17,66 @@ objectRenderer::objectRenderer():objectManager(){
 
 }
 
-void objectRenderer::render(ofRectangle t_view){
+void objectRenderer::render(ofVec2f t_pos, ofRectangle roi){
 	
-	viewPort = t_view;
+	viewPort = roi;
+	center.set(t_pos);
+	
+	//adjust the viewport for which tile is being drawn
+	viewPort.x -= center.x;
+	viewPort.y -= center.y;
 	
 	drawTracks();
 	drawNodes();
 	drawBlips();
 	drawSelected();
 	
+	
 }
 
+
+bool objectRenderer::checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir){
+	
+	
+	if(t_dir.x > 0){
+		
+		if(viewPort.inside(viewPort.x + viewPort.width/2, a.y)){
+			if(a.x < viewPort.x + viewPort.width && b.x > viewPort.x){
+				return true;
+			}
+		}
+		
+	}else if(t_dir.y > 0){
+		
+		if(viewPort.inside(a.x, viewPort.y + viewPort.height/2)){
+			if(a.y < viewPort.y + viewPort.height && b.y > viewPort.y)return true;
+		}
+		
+	}
+	
+	return false; 
+}
+
+
+bool objectRenderer::checkIsVisible(vector<ofVec2f> t_corners){
+	
+	vector<ofVec2f> points;
+	points.push_back(t_corners[0]);
+	points.push_back(t_corners[1]);
+	points.push_back(ofVec2f(t_corners[0].x, t_corners[1].y));
+	points.push_back(ofVec2f(t_corners[1].x, t_corners[0].y));
+	
+	for(int i = 0; i < points.size(); i++){
+		points[i].x = min(points[i].x, world_dims.x);
+		points[i].x = max(points[i].x, -world_dims.x);
+		points[i].y = min(points[i].y, world_dims.y);
+		points[i].y = max(points[i].y, -world_dims.y);
+		if(viewPort.inside(points[i]))return true;
+		
+	}
+	
+	return false; 
+}
 
 void objectRenderer::drawTracks(){
 	
@@ -48,20 +97,20 @@ void objectRenderer::drawTracks(){
 void objectRenderer::drawTrack(segment * t){
 	
 	glPushMatrix();
-	
+	glTranslatef(0, 0, -WORLD_UNIT/2.0f);
 	ofVec2f sp(t->getStartPos());
 	ofVec2f lp;
 	
 	if(t->getDirection().x > 0){
-		lp.set(t->getTestArea().x + t->getTestArea().width + 2, sp.y);
+		lp.set(t->getTestArea().x + t->getTestArea().width + WORLD_UNIT * 2, sp.y);
 	}else{
-		lp.set(sp.x, t->getTestArea().y + t->getTestArea().height + 2);
+		lp.set(sp.x, t->getTestArea().y + t->getTestArea().height + WORLD_UNIT * 2);
 	}
+	
 	
 	if(checkIsVisible(sp, lp, t->getDirection())){
 		ofSetColor(100);
 		ofLine(sp.x,sp.y,lp.x,lp.y);
-		
 	}
 	
 	if(t->getIsWrapped()){
@@ -70,11 +119,11 @@ void objectRenderer::drawTrack(segment * t){
 		ofVec2f wlp;
 		
 		if(t->getDirection().x > 0){
-			wsp.set(t->getWrapTestArea().x - 1, sp.y);
-			wlp.set(t->getWrapTestArea().x + t->getWrapTestArea().width + 1, sp.y);
+			wsp.set(t->getWrapTestArea().x - WORLD_UNIT, sp.y);
+			wlp.set(t->getWrapTestArea().x + t->getWrapTestArea().width + WORLD_UNIT, sp.y);
 		}else{
-			wsp.set(sp.x,t->getWrapTestArea().y - 1);
-			wlp.set(sp.x, t->getWrapTestArea().y + t->getWrapTestArea().height + 1);
+			wsp.set(sp.x,t->getWrapTestArea().y - WORLD_UNIT);
+			wlp.set(sp.x, t->getWrapTestArea().y + t->getWrapTestArea().height + WORLD_UNIT);
 		}
 		
 		if(checkIsVisible(wsp, wlp, t->getDirection())){
@@ -82,18 +131,6 @@ void objectRenderer::drawTrack(segment * t){
 			ofLine(wsp.x, wsp.y, wlp.x, wlp.y);
 		}
 		
-		if(t->getIsSelected()){
-			ofVec2f l_pos1 =  t->getSelectPos() - t->getStartPos(); 
-			if(l_pos1.x + l_pos1.y < 0){
-				l_pos1 += world_dims * t->getDirection(); // when on other side of wrap border
-				
-			}
-			ofVec2f l_pos2 =  t->getDirection() * t->getLength() -  l_pos1;
-			selected.push_back(sp + l_pos1);
-			selected.push_back(wlp - l_pos2);
-			
-			//cout << sp + l_pos1 << ":" << wlp - l_pos2 << endl;
-		}
 		
 	}
 		
@@ -121,61 +158,22 @@ void objectRenderer::drawSelected(){
 
 	for(int i = 0; i < selected.size(); i++){
 		
-		ofSetColor(255);
-		ofFill();
-		ofCircle(selected[i], 5);
-		
+		ofPushMatrix();
+		glDepthFunc(GL_ALWAYS);
 		ofEnableAlphaBlending();
 		ofSetColor(255, 0, 0, 100);
 		ofFill();
-		ofCircle(selected[i], 5);
+		ofCircle(selected[i], kTestSize * WORLD_UNIT/2);
 		ofDisableAlphaBlending();
-		//ofSetColor(0);
-		//ofDrawBitmapString(ofToString(selected[i].x,0) + "," + ofToString(selected[i].y,0), selected[i]);
+		glDepthFunc(GL_LESS);
+		ofPopMatrix();
+
 	}
 	
 	selected.clear();
 
 }
 
-bool objectRenderer::checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir){
-	
-	if(t_dir.x > 0){
-		
-		if(viewPort.inside(viewPort.x + viewPort.width/2, a.y)){
-			if(a.x < viewPort.x + viewPort.width && b.x > viewPort.x)return true;
-		}
-		
-	}else if(t_dir.y > 0){
-		
-		if(viewPort.inside(a.x, viewPort.y + viewPort.height/2)){
-			if(a.y < viewPort.y + viewPort.height && b.y > viewPort.y)return true;
-		}
-		
-	}
-	
-	return false;
-}
-
-
-bool objectRenderer::checkIsVisible(vector<ofVec2f> t_corners){
-
-	vector<ofVec2f> points;
-	points.push_back(t_corners[0]);
-	points.push_back(t_corners[1]);
-	points.push_back(ofVec2f(t_corners[0].x, t_corners[1].y));
-	points.push_back(ofVec2f(t_corners[1].x, t_corners[0].y));
-	
-	for(int i = 0; i < points.size(); i++){
-		points[i].x = min(points[i].x, world_dims.x/2);
-		points[i].x = max(points[i].x, -world_dims.x/2);
-		points[i].y = min(points[i].y, world_dims.y/2);
-		points[i].y = max(points[i].y, -world_dims.y/2);
-		if(viewPort.inside(points[i]))return true;
-	}
-	
-	return false;
-}
 
 void objectRenderer::drawNodes(){
 	
@@ -183,18 +181,15 @@ void objectRenderer::drawNodes(){
 		
 		ofVec2f pos(it->getPos());
 		
-		if(viewPort.inside(pos)){
+		if(it->getIsSelected())selected.push_back(it->getPos());
 			
-			if(it->getIsSelected())selected.push_back(it->getPos());
-				
-			
-			if(isNodeData){
-				ofNoFill();
-				ofSetColor(0, 0, 255);
-				ofCircle(pos, 5);
-				ofDrawBitmapString(ofToString(it->getIndex()), pos -3);
-			}
+		if(isNodeData){
+			ofNoFill();
+			ofSetColor(0, 0, 255);
+			ofCircle(pos, kTestSize * WORLD_UNIT/2);
+			ofDrawBitmapString(ofToString(it->getIndex()), pos - 0.03);
 		}
+		
 	}
 	
 
@@ -205,20 +200,13 @@ void objectRenderer::drawBlips(){
 
 	glPushMatrix();
 	
+	glTranslatef(0, 0, -WORLD_UNIT); //for z buffering
+	
 	for(vector<blip>::iterator it = blips.begin(); it != blips.end(); it++){
 		
-		if(checkIsVisible(it->getDrawer()->getCorners()))it->draw(0);
-		
-		if(it->getDrawer()->getIsXWrapped()){
-			if(checkIsVisible(it->getDrawer()->getWrapXCorners()))it->draw(1);
+		if(checkIsVisible(it->getDrawer()->getCorners())){
+			it->draw(0);
 		}
-		
-		if(it->getDrawer()->getIsYWrapped()){
-			
-			if(checkIsVisible(it->getDrawer()->getWrapYCorners())){
-				it->draw(2);
-			}
-		}	
 		
 		if(isBlipData){
 			ofSetColor(255,0,0);
@@ -242,20 +230,8 @@ void objectRenderer::drawBlips(){
 	
 		if(previewBlip.getDrawer()){
 			
-			if(checkIsVisible(previewBlip.getDrawer()->getCorners()))previewBlip.draw(0);
+			previewBlip.draw(0);
 		
-		
-			if(previewBlip.getDrawer()->getIsXWrapped()){
-			
-			if(checkIsVisible(previewBlip.getDrawer()->getWrapXCorners())){
-					previewBlip.draw(1);
-					
-				}
-			}
-			
-			if(previewBlip.getDrawer()->getIsYWrapped()){
-				if(checkIsVisible(previewBlip.getDrawer()->getWrapYCorners()))previewBlip.draw(2);
-			}
 		}
 	
 		if(isBlipData){
