@@ -2,7 +2,7 @@
 
 bool testApp::drawData = false;
 
-testApp::testApp():kLagFrames(120),kMinIncr(1){
+testApp::testApp(){
 
 
 }
@@ -20,33 +20,10 @@ void testApp::setup(){
 	ofSetVerticalSync(true);
 	ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
 	
-	//set up camera
-	
-	cam.setPosition(0, 0, 800);
-	cam.setFarClip(2000);
-	cam.setNearClip(200);
-	
-	ofVec3f c(0,0,0);
-	cam.orbit(180,0, cam.getPosition().z, c);
-	cam.roll(180);
-	cam.cacheMatrices(true);
-	
-	
 	//viewPort variables
 	
 	viewPort.set(0,0,ofGetScreenWidth(),ofGetScreenHeight());
-	
-	trans.set(0,0);
-	for(int i = 0; i < 3; i++){
-		targetRots[i] = 0;
-		rots[i] = 0;
-	}
-	
-	isFixed = false;
-	pauseFollow = false;
 	isPreview = false;
-	direction.set(1,0);
-	lagCount = 0;
 	
 	for(int i =0; i < 4; i++)VPW_coords.push_back(ofVec3f(0,0,0));
 	VP_coords.push_back(ofVec2f(1,1));
@@ -314,62 +291,8 @@ void testApp::update(){
 	
 	world.update();
 	
-	//handle camera following reader
-	//todo - maybe use the projected screen position rather than world space so works for tilts
-	//also make choose the nearest reader position first
-	
-	if(currentReader->getIsNewDirection())lagCount = kLagFrames;
-	ofVec2f t_pos(cam.getPosition().x, cam.getPosition().y);
-	
-	if(!isFixed && !pauseFollow){
-		
-		t_pos.x = currentReader->getPos().x + trans.x;
-		t_pos.y = currentReader->getPos().y + trans.y;
-		
-		if(lagCount > 1){
-			trans -= currentReader->getIncrement() * (float)(lagCount/kLagFrames)  * currentReader->getDirection();
-			trans += currentReader->getIncrement()  * (float)(lagCount/kLagFrames) * direction;
-			lagCount -= 1;
-		}else if(lagCount ==  1){
-			direction = currentReader->getDirection();
-			lagCount = 0;
-		}
-
-		if(abs(trans.x) > kMinIncr * 2){ 
-			float incr = (trans.x > 0)? max(kMinIncr,trans.x * 0.02f):min(-kMinIncr,trans.x * 0.02f);
-			trans.x -= incr;
-		}else{
-			trans.x = 0;
-		}
-		
-		if(abs(trans.y) > kMinIncr * 2){ 
-			float incr = (trans.y > 0)? max(kMinIncr,trans.y * 0.02f):min(-kMinIncr,trans.y * 0.02f);
-			trans.y -= incr;
-		}else{
-			trans.y = 0;
-		}
-		
-	}
-	
-	t_pos = moduloPoint(t_pos, world.getWorldDims());
-	cam.setPosition(t_pos.x, t_pos.y, cam.getPosition().z);
-	
-	//handle rotations
-	
-	if(abs(rots[2] - targetRots[2]) > 0){
-		
-		if(rots[2] < targetRots[2]){ 
-			cam.roll(-1);
-			rots[2] += 1;
-		}else{
-			rots[2] -= 1;
-			cam.roll(1);
-		}
-	
-	}else{
-		
-		rots[2] = targetRots[2];
-	}
+	cam.followReader(currentReader, world.getWorldDims());
+	cam.incrementRotations();
 	
 	//coordinate picking
 	
@@ -401,7 +324,7 @@ void testApp::update(){
 	
 	//mouseW used for all interaction
 	
-	mouseW.set(moduloPoint(mousePick, world.getWorldDims()));
+	mouseW.set(constants::moduloPoint(mousePick, world.getWorldDims()));
 	
 	if(!isMouseDown){
 		
@@ -413,7 +336,6 @@ void testApp::update(){
 
 	
 }
-
 
 
 //--------------------------------------------------------------
@@ -480,39 +402,11 @@ string testApp::getModeString(e_mouseMode temp){
 }
 
 
-ofVec2f testApp::moduloPoint(ofVec2f t_point, ofVec2f t_dims){
-	
-	ofVec3f point(t_point.x, t_point.y, 0);
-	point = moduloPoint(point, t_dims);
-	
-	return point;
-	
-}
-
-ofVec3f testApp::moduloPoint(ofVec3f t_point, ofVec2f t_dims){
-	
-	ofVec3f point(t_point);
-	
-	if(t_point.x < -t_dims.x/2){
-		point.set(t_point.x + t_dims.x, t_point.y, t_point.z);
-	}else if(t_point.x > t_dims.x/2){
-		point.set(t_point.x - t_dims.x, t_point.y, t_point.z);
-	}
-	
-	if(t_point.y < -t_dims.y/2){
-		point.set(t_point.x, t_point.y + t_dims.y, t_point.z);
-	}else if(t_point.y > t_dims.y/2){
-		point.set(t_point.x, t_point.y - t_dims.y, t_point.z);
-	}
-	
-	return point;
-}
-
 
 void testApp::startAction(){
 	
 	ofVec2f p(mouseX,mouseY);
-	if(!isFixed)pauseFollow = true;
+	cam.pauseFollow();
 	
 	if(currentAction == ACTION_DRAG){
 		
@@ -529,7 +423,7 @@ void testApp::startAction(){
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
-		ofVec2f orientation = (rots[2] == 0)? ofVec2f(1,0):ofVec2f(0,1);
+		ofVec2f orientation = (cam.getRotation(2) > 0)? ofVec2f(0,1):ofVec2f(1,0);
 		world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
 	
 	}
@@ -576,37 +470,23 @@ void testApp::endAction(){
 	
 	if(currentAction == ACTION_DRAG){
 		
-		if(!isFixed){
-			pauseFollow = false;
-			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
-		}
+		cam.restartFollow();
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK || currentAction == ACTION_ADD_LONG_TRACK){
 		
 		isPreview = false;
-		if(!isFixed){
-			pauseFollow = false;
-			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
-		}
+		cam.restartFollow();
 		world.endTrack();
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		isPreview = false;
-		if(!isFixed){
-			pauseFollow = false;
-			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
-		}
-		
+		cam.restartFollow();
 		world.endBlip();
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
-		if(!isFixed){
-			pauseFollow = false;
-			trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
-		}		
-		
+		cam.restartFollow();	
 		world.endInsertion();
 		
 	}
@@ -625,16 +505,12 @@ void testApp::keyPressed  (int key){
 		}
 	}
 	
-	if(key == ' '){
-
-		trans = ofVec2f(cam.getPosition().x, cam.getPosition().y)- currentReader->getPos();
-		isFixed = !isFixed;
-	}
-	
+	if(key == ' ')cam.toggleFollow();
 	
 	if(key == 9)isOptionKey = true;
 	if(key == OF_KEY_UP)selectedPreset[0] = min(selectedPreset[0] + 1, (int)presets[0].size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset[0] = max(selectedPreset[0] - 1, 0);
+	
 	if(key == 'r' || key == 'R')currentReader->incrementMode();
 	
 	if(key == 'f')ofToggleFullscreen();
@@ -643,8 +519,7 @@ void testApp::keyPressed  (int key){
 	if(key == 't')world.toggleTrackData();
 	if(key == 'b')world.toggleBlipData();
 	
-	if(key == 'z'){targetRots[2] = (targetRots[2] > 0)? 0 : 90;}
-	if(key == 'x'){targetRots[0] = (targetRots[0] > 0)? 0 : 45;} //not implemented yet	
+	if(key == 'z'){cam.setTargetRotation((cam.getRotation(2) > 0)? 0: 90, 2);}
 
 }
 

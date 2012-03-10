@@ -3,14 +3,10 @@
 #include "ofMain.h"
 #include "layer.h"
 #include "ofxOsc.h"
-#include "ofxRotRect.h"
 #include "ofxGrabCam.h"
-
 
 #define HOST "localhost"
 #define PORT 57120
-
-
 
 //--------------------------------------------------------
 class testApp : public ofBaseApp{
@@ -40,15 +36,9 @@ private:
 	void loadParamAttribute(ofxXmlSettings XML, paramAttributes * p);
 	void loadTimeAttributes(ofxXmlSettings XML, blipPreset & bp);
 	
-	ofVec2f moduloPoint(ofVec2f t_point, ofVec2f t_dims);
-	ofVec3f moduloPoint(ofVec3f t_point, ofVec2f t_dims);
-	void prepPauseFollow();
-	
 	void startAction();
 	void continueAction();
 	void endAction();
-	
-	void addLayer();
 	
 	enum e_mouseMode {
 		MODE_NONE,
@@ -69,10 +59,7 @@ private:
 		ACTION_COUNT
 	};
 	
-
-	int lagCount;
-	const float kLagFrames;
-	const float kMinIncr;
+	
 	ofxGrabCam cam;
 	ofRectangle viewPort;
 	
@@ -89,19 +76,12 @@ private:
 	ofRectangle roi;
 	vector<ofColor> testCols;
 	
-	float rots[3];
-	float targetRots[3];
-	
 	vector<vector<blipPreset> > presets;
 	
 	int selectedPreset[2];
 	
 	ofxOscSender sender;
 	reader * currentReader;
-	
-	bool isFixed, pauseFollow;
-	ofVec2f trans;
-	ofVec2f direction;
 	
 	e_mouseMode mouseMode;
 	e_Action currentAction;
