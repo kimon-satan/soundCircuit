@@ -106,7 +106,7 @@ void ofxGrabCam::followReader(reader * currentReader, ofVec2f world_dims){
 		
 	}
 	
-	t_pos = constants::moduloPoint(t_pos, world_dims);
+	t_pos = utils::moduloPoint(t_pos, world_dims);
 	setPosition(t_pos.x, t_pos.y, getPosition().z);
 	
 }

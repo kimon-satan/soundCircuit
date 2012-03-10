@@ -9,7 +9,7 @@
 
 #include "reader.h"
 #include "layer.h"
-#include "constants.h"
+#include "utils.h"
 
 reader::reader(){
 	
@@ -39,19 +39,11 @@ void reader::update(){
 void reader::moduloPosition(){
 	
 	ofVec2f t_dims = currentLayer->getWorldDims();
-	
-	//reader position wrapping
-	if(body.x > t_dims.x/2){
-		body.x = -t_dims.x/2;
-	}else if(body.x < -t_dims.x/2){
-		body.x = t_dims.x/2;
-	}
+	ofVec2f t_pos(body.x, body.y);
+	t_pos = utils::moduloPoint(t_pos, t_dims);
+	body.x = t_pos.x;
+	body.y = t_pos.y;
 
-	if(body.y > t_dims.y/2){
-		body.y = -t_dims.y/2;
-	}else if(body.y < -t_dims.y/2){
-		body.y = t_dims.y/2;
-	}
 }
 
 void reader::move(){

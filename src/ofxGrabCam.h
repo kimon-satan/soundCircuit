@@ -1,6 +1,6 @@
 #pragma once
 
-#include "constants.h"
+#include "utils.h"
 #include "reader.h"
 
 class ofxGrabCam : public ofCamera {

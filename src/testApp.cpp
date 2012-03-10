@@ -324,7 +324,7 @@ void testApp::update(){
 	
 	//mouseW used for all interaction
 	
-	mouseW.set(constants::moduloPoint(mousePick, world.getWorldDims()));
+	mouseW.set(utils::moduloPoint(mousePick, world.getWorldDims()));
 	
 	if(!isMouseDown){
 		

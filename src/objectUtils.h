@@ -12,7 +12,7 @@
 
 #include "ofMain.h"
 #include "segment.h"
-#include "constants.h"
+#include "utils.h"
 
 class objectUtils{
 	
