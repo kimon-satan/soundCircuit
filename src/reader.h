@@ -17,22 +17,10 @@ class layer;
 class reader{
 	
 	public:
-	
-	enum e_readerMode{
-		
-		READER_STRAIGHT,
-		READER_PERSIST,
-		READER_LOOP,
-		READER_FREE,
-		READER_WANDER,
-		READER_COUNT
-	};
-	
+
 	reader();
 	void update();
 	void draw();
-	
-	void incrementMode();
 
 	void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
 	void resizeInsertion(float size);
@@ -60,10 +48,8 @@ class reader{
 	ofRectangle body, testBody;
 	ofVec2f direction, oldDirection;
 	ofVec2f pDir, lDir;
-	vector<ofVec2f>socketDirections;
 	layer * currentLayer;
 	ofxOscSender * sender;
-	e_readerMode mode;
 	
 	ofVec2f insertPoint;
 	ofVec2f insertDir;

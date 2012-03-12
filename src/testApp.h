@@ -43,9 +43,9 @@ private:
 	enum e_mouseMode {
 		MODE_NONE,
 		MODE_DRAG,
-		MODE_ADD_BLIP,
-		MODE_ADD_TRACK,
-		MODE_INSERT_SPACE,
+		MODE_BLIP,
+		MODE_WORLD,
+		MODE_TRACK,
 		MODE_COUNT
 	};
 	
@@ -56,6 +56,7 @@ private:
 		ACTION_ADD_LONG_TRACK,
 		ACTION_ADD_BLIP,
 		ACTION_INSERT_SPACE,
+		ACTION_ADJUST_NODE,
 		ACTION_COUNT
 	};
 	
@@ -84,6 +85,8 @@ private:
 	reader * currentReader;
 	
 	e_mouseMode mouseMode;
+	e_mouseMode overrideMode;
+	e_objectType currentSelection;
 	e_Action currentAction;
 	int buttonMode;
 	bool isOptionKey, isMouseDown;

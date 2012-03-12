@@ -18,6 +18,7 @@ void testApp::setup(){
 	sender.sendMessage(m);
 	ofSetFrameRate(60);
 	ofSetVerticalSync(true);
+	ofSetCircleResolution(50);
 	ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
 	
 	//viewPort variables
@@ -45,6 +46,7 @@ void testApp::setup(){
 	isMouseDown = false;
 	isOptionKey = false;
 	mouseMode = MODE_NONE;
+	overrideMode = MODE_NONE;
 	currentAction = ACTION_NONE;
 	buttonMode = 0;
 	
@@ -328,8 +330,8 @@ void testApp::update(){
 	
 	if(!isMouseDown){
 		
-		if(mouseMode == MODE_ADD_BLIP || mouseMode == MODE_ADD_TRACK){
-			world.selectSomething(ofVec2f(mouseW.x,mouseW.y));
+		if(mouseMode == MODE_BLIP || mouseMode == MODE_WORLD){
+			currentSelection = world.selectSomething(ofVec2f(mouseW.x,mouseW.y));
 		}
 		
 	}
@@ -366,7 +368,6 @@ void testApp::draw(){
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 900,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
 	ofDrawBitmapString("blipPreset: " + presets[selectedPreset[1]][selectedPreset[0]].getName(), 400,20);
-	ofDrawBitmapString("readerMode: " + currentReader->getModeString(), 700,20);
 	ofEnableAlphaBlending();
 	ofSetColor(0, 20);
 	ofFill();
@@ -392,9 +393,9 @@ string testApp::getModeString(e_mouseMode temp){
 	switch(temp){
 			
 		case MODE_DRAG:return "drag";break;
-		case MODE_ADD_BLIP:return "add_blip";break;
-		case MODE_ADD_TRACK:return "add_track";break;
-		case MODE_INSERT_SPACE:return "insert_space";break;
+		case MODE_BLIP:return "blip";break;
+		case MODE_WORLD: return "world"; break;
+		case MODE_TRACK: return "track"; break;
 		default:return "none";break;
 			
 	}
@@ -426,7 +427,12 @@ void testApp::startAction(){
 		ofVec2f orientation = (cam.getRotation(2) > 0)? ofVec2f(0,1):ofVec2f(1,0);
 		world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
 	
+	}else if(currentAction == ACTION_ADJUST_NODE){
+		
+		world.beginNode(ofVec2f(mouseW.x,mouseW.y), buttonMode);
+		
 	}
+
 	
 }
 
@@ -462,6 +468,9 @@ void testApp::continueAction(){
 		
 		world.resizeInsertion(w_dir.length());
 														 
+	}else if(currentAction == ACTION_ADJUST_NODE){
+	
+		world.calcNode(ofVec2f(mouseW.x,mouseW.y));
 	}
 														 
 }
@@ -489,6 +498,9 @@ void testApp::endAction(){
 		cam.restartFollow();	
 		world.endInsertion();
 		
+	}else if(currentAction == ACTION_ADJUST_NODE){
+	
+		world.endNode();
 	}
 	
 }
@@ -510,14 +522,14 @@ void testApp::keyPressed  (int key){
 	if(key == 9)isOptionKey = true;
 	if(key == OF_KEY_UP)selectedPreset[0] = min(selectedPreset[0] + 1, (int)presets[0].size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset[0] = max(selectedPreset[0] - 1, 0);
+	if(key == 't')overrideMode = MODE_TRACK;
 	
-	if(key == 'r' || key == 'R')currentReader->incrementMode();
-	
-	if(key == 'f')ofToggleFullscreen();
+	//debug keys
+	/*if(key == 'f')ofToggleFullscreen();
 	if(key == 's')world.toggleScreenData();
 	if(key == 'n')world.toggleNodeData();
 	if(key == 't')world.toggleTrackData();
-	if(key == 'b')world.toggleBlipData();
+	if(key == 'b')world.toggleBlipData();*/
 	
 	if(key == 'z'){cam.setTargetRotation((cam.getRotation(2) > 0)? 0: 90, 2);}
 
@@ -527,6 +539,7 @@ void testApp::keyPressed  (int key){
 void testApp::keyReleased(int key){
 	
 	if(isOptionKey)isOptionKey = false;
+	if(key == 't')overrideMode = MODE_NONE;
 }
 
 //--------------------------------------------------------------
@@ -549,12 +562,20 @@ void testApp::mousePressed(int x, int y, int button){
 	
 	if(mouseMode == MODE_DRAG){
 		currentAction = ACTION_DRAG;
-	}else if(mouseMode == MODE_ADD_BLIP){
+	}else if(mouseMode == MODE_BLIP){
 		currentAction =  ACTION_ADD_BLIP;
-	}else if(mouseMode == MODE_ADD_TRACK){
-		currentAction = (button == 0 )? ACTION_ADD_SHORT_TRACK: ACTION_ADD_LONG_TRACK;
-	}else if(mouseMode == MODE_INSERT_SPACE){
-		currentAction = ACTION_INSERT_SPACE;
+	}else if(mouseMode == MODE_WORLD){
+		if(currentSelection == OT_NODE){
+			currentAction = ACTION_ADJUST_NODE;
+		}else{
+			currentAction = ACTION_INSERT_SPACE;
+		}
+	}
+	
+	//overrides
+	
+	if(overrideMode == MODE_TRACK){
+			currentAction = (button == 0 )? ACTION_ADD_SHORT_TRACK: ACTION_ADD_LONG_TRACK;
 	}
 	
 	startAction();

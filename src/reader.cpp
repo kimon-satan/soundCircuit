@@ -17,13 +17,7 @@ reader::reader(){
 	mSpeed = WORLD_UNIT * 200;
 	direction.set(1,0);
 	isStuck =false;
-	mode = READER_WANDER;
 	pDir.set(1,0);
-	
-	socketDirections.push_back(ofVec2f(0,-1)); // NORTH
-	socketDirections.push_back(ofVec2f(1,0)); // EAST
-	socketDirections.push_back(ofVec2f(0,1)); // SOUTH
-	socketDirections.push_back(ofVec2f(-1,0)); // WEST
 	
 	
 }
@@ -68,7 +62,7 @@ void reader::move(){
 			
 			if(!it->getIsActive()){
 				
-				ofVec2f t_dir(nextDirection(direction, it->getSockets()));
+				ofVec2f t_dir(nextDirection(direction, it->getNowSockets()));
 				nodeFound = true;
 				
 				if(t_dir != ofVec2f(0,0)){
@@ -80,7 +74,6 @@ void reader::move(){
 					isNewDirection = true;
 					break;
 				}else{
-					
 					isStuck = true;
 					break;
 				}
@@ -91,8 +84,6 @@ void reader::move(){
 			it->setIsActive(false);
 		}
 	}
-	
-	isStuck = nodeFound;
 	
 	vector<blip> * t_blips = currentLayer->getBlipsRef();
 	
@@ -147,8 +138,8 @@ ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
 	vector<ofVec2f> available;
 	
 	for(int i = 0; i < 4 ; i++){
-		if(socketDirections[i] != -c_dir && t_bools[i] != false){
-			available.push_back(socketDirections[i]);
+		if(i != node::getSocketIndex(-c_dir) && t_bools[i] != false){
+			available.push_back(node::getSocketDirection(i));
 		}
 	}
 	
@@ -160,61 +151,9 @@ ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
 		
 	}
 	
-	if(mode == READER_WANDER){
-		
-		for(int i = 0; i < available.size() ; i++){
-			if(available[i] == c_dir){
-				available.erase(available.begin() + i);
-				break;
-			}
-		}
-		
-		int choice = floor(ofRandom(0, 1) * available.size());
-		return available[choice];
-	
-	}else if(mode == READER_STRAIGHT){
-			
-		for(int i = 0; i < available.size() ; i++){
-			if(available[i] == c_dir){
-				return available[i];
-			}
-		}
-		
-		int choice = floor(ofRandom(0, 1) * available.size());
-		return available[choice];
-		
-	}else if(mode == READER_PERSIST){
-		
-		for(int i = 0; i < available.size() ; i++){
-			if(available[i] == pDir){
-				available.erase(available.begin() + i);
-				break;
-			}
-		}
-			
-		int choice = floor(ofRandom(0, 1) * available.size());
-		return available[choice];
-		
-	}else if(mode == READER_LOOP){
-		
-		for(int i = 0; i < available.size() ; i++){
-			if(available[i] == -lDir){
-				lDir = c_dir;
-				return available[i];
-				break;
-			}
-		}
-		
-		int choice = floor(ofRandom(0, 1) * available.size());
-		return available[choice];
-			
-	}else{		
 
-		int choice = floor(ofRandom(0, 1) * available.size());
-		return available[choice];
-		
-	}
-	
+	int choice = floor(ofRandom(0, 1) * available.size());
+	return available[choice];
 	
 	
 }
@@ -234,29 +173,6 @@ void reader::draw(){
 	
 }
 
-void reader::incrementMode(){
-
-	mode = e_readerMode(mode + 1);
-	mode = e_readerMode((mode)%READER_COUNT);
-	if(mode == READER_PERSIST)pDir.set(-direction);
-	if(mode == READER_LOOP)lDir.set(direction);
-}
-
-
-string reader::getModeString(){
-	
-	string modeString = "";
-	
-	switch (mode) {
-		case READER_FREE: modeString = "free"; break;
-		case READER_PERSIST: modeString = "persist"; break;
-		case READER_WANDER: modeString = "wander"; break;
-		case READER_STRAIGHT: modeString = "straight"; break;
-		case READER_LOOP: modeString = "loop"; break;
-	}
-	
-	return modeString;
-}
 
 
 void reader::beginInsertion(ofVec2f t_point, ofVec2f t_dir){
@@ -278,9 +194,7 @@ void reader::resizeInsertion(float size){
 	t_pos += (testPos > testInsert)? diff * insertDir: -diff * insertDir;
 	body.x = t_pos.x; body.y = t_pos.y;
 		
-
 }
-
 
 //getters and setters
 

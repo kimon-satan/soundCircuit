@@ -35,6 +35,12 @@ void objectRenderer::render(ofVec2f t_pos, ofRectangle roi){
 }
 
 
+bool objectRenderer::checkIsVisible(ofVec2f t_pos){
+	
+	return(viewPort.inside(t_pos));
+	
+}
+
 bool objectRenderer::checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir){
 	
 	
@@ -181,8 +187,66 @@ void objectRenderer::drawNodes(){
 		
 		ofVec2f pos(it->getPos());
 		
-		if(it->getIsSelected())selected.push_back(it->getPos());
+		if(checkIsVisible(pos)){
 			
+			if(it->getIsShown()){
+				
+				float radius = kTestSize * (float)WORLD_UNIT/2.0f;
+				
+				glPushMatrix();
+				glTranslatef(pos.x, pos.y, -WORLD_UNIT);
+				if(it->getIsAdjusting())glScalef(3, 3, 0);
+				glDepthFunc(GL_LEQUAL);
+				ofFill();
+				ofSetColor(255);
+				ofCircle(0,0, kTestSize * (float)WORLD_UNIT/2.0f);
+				
+				ofEnableSmoothing();
+				
+				ofSetColor(180);
+				vector<bool> sockets = it->getNowSockets();
+				float innerRad = radius - (WORLD_UNIT * 3);
+				
+				for(int i = 0; i < 4; i ++){
+					if(!sockets[i]){
+						
+						ofBeginShape();
+						ofVertex(0,0);
+						ofVec2f o_pos(-innerRad, -innerRad);
+						o_pos.rotate(90 * i);
+						ofVertex(o_pos.x, o_pos.y);
+						
+						for(int i = 0; i < 30; i ++){
+							o_pos.rotate(3);
+							ofVertex(o_pos.x, o_pos.y);
+						}
+						
+						ofVertex(0,0);
+						ofEndShape(true);
+						
+					}
+				}
+			
+				
+				ofSetColor(100);
+				ofNoFill();
+				ofCircle(0,0, radius);
+				ofLine( - innerRad,  - innerRad, innerRad, innerRad);
+				ofLine( innerRad,  - innerRad, - innerRad, innerRad);
+				
+				glDepthFunc(GL_LESS);
+				ofDisableSmoothing();
+				
+				glPopMatrix();
+				
+			}
+		
+			
+			if(it->getIsSelected() && !it->getIsAdjusting())selected.push_back(it->getPos());
+			
+		}
+		
+		
 		if(isNodeData){
 			ofNoFill();
 			ofSetColor(0, 0, 255);

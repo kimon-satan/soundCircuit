@@ -14,10 +14,20 @@
 #include "objectRenderer.h"
 #include "reader.h"
 
+enum e_objectType{
+	OT_WORLD,
+	OT_NODE,
+	OT_TRACK,
+	OT_BLIP,
+	OT_READER,
+	OT_COUNT
+};
 
 class layer : public objectRenderer{
 
 public:
+	
+
 	
 	layer();
 	layer(const layer &src);
@@ -26,7 +36,7 @@ public:
 	void update();
 	void draw(ofVec2f pos, ofRectangle roi, ofColor col);
 	
-	void selectSomething(ofVec2f w_pos);
+	e_objectType selectSomething(ofVec2f w_pos);
 	void deselectAll();
 	
 	void beginInsertion(ofVec2f t_pos, ofVec2f t_dir);

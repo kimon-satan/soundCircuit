@@ -80,18 +80,22 @@ void objectManager::endTrack(){
 			
 			if(!n){
 				node t(pos);
+				t.addSocket(previewTracks[j].getDirection() * mul);
 				t.openSocket(previewTracks[j].getDirection() * mul);
 				nodes.push_back(t);
 				n = &nodes.back();
 				
 			}else{
+				n->addSocket(previewTracks[j].getDirection() * mul);
 				n->openSocket(previewTracks[j].getDirection() * mul);
 			}
 			
 			//in case new node lies on an existing track
 			segment * s = selectTrackPoint(n->getPos());
 			if(s){
-				n->openSocket(s->getDirection()); //potential risk of reader skipping off track ? 
+				n->addSocket(s->getDirection()); //potential risk of reader skipping off track ? 
+				n->openSocket(s->getDirection());
+				n->addSocket(-s->getDirection());
 				n->openSocket(-s->getDirection());
 			}
 			
@@ -285,6 +289,63 @@ void objectManager::endBlip(){
 	previewBlip.destroyDrawer();
 	
 }
+
+void objectManager::beginNode(ofVec2f w_pos ,int mode){
+
+	deselectNodes();
+	deselectTracks();
+	s_nodes[0] = selectNode(w_pos);
+	if(s_nodes[0])s_nodes[0]->setIsAdjusting(true);
+	for(int i = 0; i < 4; i++)nodeSet[i]=false;
+	
+	if(s_nodes[0]){ //open the node entirely
+		if(mode != 0){
+			for(int i = 0; i < 4; i++)s_nodes[0]->openSocket(i);
+		}	
+	}
+	
+}
+
+
+void objectManager::calcNode(ofVec2f w_pos){
+	
+	if(!s_nodes[0])return;
+	
+	float dist = w_pos.distance(s_nodes[0]->getPos());
+	
+	if(dist < kTestSize * WORLD_UNIT * 1.5f && 
+	   dist > kTestSize * WORLD_UNIT * 0.5
+	   ){
+		
+		ofVec2f w_dir(w_pos - s_nodes[0]->getPos());
+		quantizeDirection(w_dir);
+		int i = node::getSocketIndex(w_dir);
+		
+		if(s_nodes[0] && !nodeSet[i]){
+			
+			if(s_nodes[0]->getNowSocket(i)){
+				s_nodes[0]->closeSocket(i);
+			}else {
+				s_nodes[0]->openSocket(i);
+			}
+			
+			nodeSet[i] = true;
+			for(int j = i + 1; j < i + 4; j++)nodeSet[j%4]=false; //set all the others to false
+		}
+	}else{
+		
+		for(int i = 0; i < 4; i++)nodeSet[i]=false;
+	
+	}
+	
+}
+
+void objectManager::endNode(){
+	
+	deselectNodes();
+	
+}
+
 
 //protected constructors
 
@@ -769,7 +830,10 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 
 void objectManager::deselectNodes(){
 	
-	for(int i = 0; i < nodes.size(); i ++)nodes[i].setSelected(false);
+	for(int i = 0; i < nodes.size(); i ++){
+		nodes[i].setSelected(false);
+		nodes[i].setIsAdjusting(false);
+	}
 	s_nodes[0] = NULL; s_nodes[1] = NULL;
 	
 }
@@ -786,7 +850,7 @@ node * objectManager::selectNode(ofVec2f t_pos){
 	
 	for(int i = 0; i < nodes.size(); i++){
 		
-		if( t_pos.distance(nodes[i].getPos()) < kTestSize * WORLD_UNIT/2 ){
+		if( t_pos.distance(nodes[i].getPos()) < kTestSize * 1.5f * (float)WORLD_UNIT/2.0f ){
 			n = &nodes[i];
 			nodes[i].setSelected(true);
 			break;

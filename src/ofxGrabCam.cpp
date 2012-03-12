@@ -77,6 +77,7 @@ void ofxGrabCam::followReader(reader * currentReader, ofVec2f world_dims){
 	if(!isFixed && !isPaused){
 		
 		//needs t_pos
+		if(currentReader->getIsNewDirection())lagCount = kLagFrames;
 		
 		t_pos.x = followPoint.x + trans.x;
 		t_pos.y = followPoint.y + trans.y;

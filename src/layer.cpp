@@ -83,13 +83,14 @@ void layer::draw(ofVec2f pos, ofRectangle roi, ofColor col){
 }
 
 
-void layer::selectSomething(ofVec2f w_pos){
+e_objectType layer::selectSomething(ofVec2f w_pos){
 
 	deselectTracks();
 	deselectNodes();
-	if(!selectNode(w_pos)){
-		selectTrackPoint(w_pos);
-	}
+	if(selectNode(w_pos))return OT_NODE;
+	if(selectTrackPoint(w_pos))return OT_TRACK;
+		
+	return OT_WORLD;
 
 }
 

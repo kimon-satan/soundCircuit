@@ -10,21 +10,34 @@
 #include "node.h"
 
 int node::tCounter = 0;
+ofVec2f node::socketDirections[4] = {ofVec2f(0,-1),ofVec2f(1,0),ofVec2f(0,1),ofVec2f(-1,0)};
+
+//static method
+int node::getSocketIndex(ofVec2f t_dir){
+
+	for(int i = 0; i < 4; i++){
+		if(t_dir == socketDirections[i])return i;
+	}
+	
+	return -99;
+}
+
+ofVec2f node::getSocketDirection(int i){return socketDirections[i];}
 
 node::node(ofVec2f t_pos) : pos(t_pos){
 	
-	for(int i = 0; i < 4; i ++)socketBools.push_back(false);
+	for(int i = 0; i < 4; i ++){
+		nowSockets.push_back(false);
+		allSockets.push_back(false);
+	}
 	
 	isSelected = false;
-	
-	socketDirections.push_back(ofVec2f(0,-1)); // NORTH
-	socketDirections.push_back(ofVec2f(1,0)); // EAST
-	socketDirections.push_back(ofVec2f(0,1)); // SOUTH
-	socketDirections.push_back(ofVec2f(-1,0)); // WEST
+	isShown = false;
+	isAdjusting = false;
+	numSockets = 0;
+	numOpen = 0;
 	
 	aquireIndex();
-	
-	
 
 
 }
@@ -37,25 +50,62 @@ void node::aquireIndex(){
 }
 
 
-
 void node::openSocket(ofVec2f t_dir){
 	
-	for(int i = 0; i < 4 ; i++){
-		if(socketDirections[i] == t_dir){
-			socketBools[i] = true;
-			break;
-		}
-	}
-	
+	openSocket(getSocketIndex(t_dir));
 
 }
 
+void node::closeSocket(ofVec2f t_dir){
+
+	closeSocket(getSocketIndex(t_dir));
+	
+}
+
+void node::openSocket(int t){
+	
+	if(allSockets[t])nowSockets[t] = true;
+	
+}
+
+void node::closeSocket(int t){
+	
+	if(allSockets[t])nowSockets[t] = false;
+	
+}
+
+void node::addSocket(ofVec2f t_dir){
+	
+	int i = getSocketIndex(t_dir);
+			
+	if(!allSockets[i]){
+		allSockets[i] = true;
+		numSockets += 1;
+	}
+	
+	if(numSockets > 2){isShown = true;}
+	
+}
+
+void node::removeSocket(ofVec2f t_dir){
+	
+	int i = getSocketIndex(t_dir);
+		
+	if(allSockets[i]){
+		allSockets[i] = false;
+		nowSockets[i] = false;
+		numSockets -= 1;
+	}
+	
+	if(numSockets < 3){isShown = false;}
+	
+}
 
 bool node::getSuperfluous(){
 	
 	for(int i = 0; i< 2; i ++){
-		if(socketBools[i] == true && socketBools[i+2] == true){
-			if(socketBools[i+1] == false && socketBools[(i+3)%4] == false){
+		if(allSockets[i] == true && allSockets[i+2] == true){
+			if(allSockets[i+1] == false && allSockets[(i+3)%4] == false){
 				return true;
 			}
 		}
@@ -73,4 +123,29 @@ bool node::getIsActive(){return isActive;}
 void node::setSelected(bool t){isSelected = t;}
 int node::getIndex(){return index;}
 bool node::getIsSelected(){return isSelected;}
-vector<bool> node::getSockets(){return socketBools;}
+
+vector<bool> node::getNowSockets(){return nowSockets;}
+
+bool node::getNowSocket(ofVec2f t_dir){
+	
+	return nowSockets[getSocketIndex(t_dir)];
+	
+}
+
+bool node::getNowSocket(int i){
+	return nowSockets[i];
+}
+
+vector<bool> node::getAllSockets(){return allSockets;}
+
+bool node::getAllSocket(ofVec2f t_dir){
+	
+	for(int i = 0; i < 4; i++)if(socketDirections[i] == t_dir){
+		return allSockets[i];
+	}
+}
+
+bool node::getIsShown(){return isShown;}
+
+bool node::getIsAdjusting(){return isAdjusting;}
+void node::setIsAdjusting(bool t){isAdjusting = t;}

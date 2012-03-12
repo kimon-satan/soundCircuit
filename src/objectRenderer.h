@@ -35,6 +35,7 @@ private:
 	void drawTrack(segment * t);
 	bool checkIsVisible(ofVec2f a, ofVec2f b, ofVec2f t_dir);
 	bool checkIsVisible(vector<ofVec2f> t_corners);
+	bool checkIsVisible(ofVec2f t_pos);
 	
 	ofRectangle viewPort;
 	bool isTrackData;
