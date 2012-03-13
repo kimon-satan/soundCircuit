@@ -51,7 +51,6 @@ public:
 	segment * selectTrackPoint(ofVec2f t_pos);
 	segment * selectBlip(ofVec2f t_pos, int bZone = 0);
 	
-	void setIncr(float t);
 	
 protected:
 	
@@ -63,8 +62,6 @@ protected:
 	void constrainFromMidPoint(ofVec2f origin, segment & s, bool isTracks = false, bool isNodes = true, bool isBlips = false);
 	void constrainEndPoint(ofVec2f origin, segment & s, bool isTracks = true, bool isNodes = false, bool isBlips = false);
 	void repositionFromMidPoint(ofVec2f origin, segment & s, bool isTracks = false, bool isNodes = true, bool isBlips = false);
-	
-	void blipLengthToDuration(blip & bTmp); 
 	
 	
 	//searches

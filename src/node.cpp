@@ -118,8 +118,32 @@ bool node::getSuperfluous(){
 
 ofVec2f node::getPos(){return pos;}
 void node::setPos(ofVec2f p){pos = p;}
+
 void node::setIsActive(bool t){isActive = t;}
 bool node::getIsActive(){return isActive;}
+
+
+void node::addReader(reader * r){
+	readerPtrs.push_back(r);
+}
+
+bool node::getReaderPresent(reader * r){
+	
+	for(int i = 0; i < readerPtrs.size(); i++){
+		if(readerPtrs[i] == r)return true;
+	}
+	
+	return false;
+	
+}
+
+void node::removeReader(reader * r){
+
+	vector<reader*>::iterator it;
+	it = remove(readerPtrs.begin(), readerPtrs.end(), r);
+	readerPtrs.erase(it, readerPtrs.end());
+}
+
 void node::setSelected(bool t){isSelected = t;}
 int node::getIndex(){return index;}
 bool node::getIsSelected(){return isSelected;}

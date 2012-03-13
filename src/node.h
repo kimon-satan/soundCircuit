@@ -11,6 +11,7 @@
 #define node_h
 
 #include "ofMain.h"
+class reader;
 
 
 class node{
@@ -42,6 +43,11 @@ public:
 	bool getIsSelected();
 	void setIsActive(bool t);
 	bool getIsActive();
+	
+	void addReader(reader * r);
+	bool getReaderPresent(reader * r);
+	void removeReader(reader * r);
+	
 	vector<bool> getNowSockets();
 	bool getNowSocket(ofVec2f t_dir);
 	bool getNowSocket(int i);
@@ -59,6 +65,7 @@ private:
 	vector<bool> allSockets;
 	bool isSelected, isActive, isShown, isAdjusting;
 	int numSockets, numOpen;
+	vector<reader*> readerPtrs;
 	
 	int index;
 	static int tCounter;

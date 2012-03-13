@@ -12,15 +12,15 @@
 layer::layer():objectRenderer(){
 
 	isScreenData = false;
-	mReader.setLayer(this);
-	incr = mReader.getIncrement();
-
-
+	reader t;
+	t.setLayer(this);
+	mReaders.push_back(t);
+	incr = mReaders[0].getIncrement();
 	
 
 }
 
-layer::layer(const layer &src):objectRenderer(){
+/*layer::layer(const layer &src):objectRenderer(){ //only one layer so no need for this atm
 	
 	mReader.setLayer(this);
 	world_dims = src.getWorldDims();
@@ -37,11 +37,11 @@ layer::layer(const layer &src):objectRenderer(){
 
 	isScreenData = false;
 
-}
+}*/
 
 void layer::update(){
-
-	mReader.update();
+	
+	for(vector<reader>::iterator it = mReaders.begin(); it != mReaders.end(); it++)it->update();
 	for(vector<blip>::iterator it = blips.begin(); it != blips.end(); it++)it->update();
 	
 	
@@ -75,7 +75,7 @@ void layer::draw(ofVec2f pos, ofRectangle roi, ofColor col){
 	
 	render(pos, roi);
 	
-	mReader.draw();
+	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].draw();
 	
 	glPopMatrix();
 	
@@ -103,14 +103,14 @@ void layer::deselectAll(){
 
 void layer::beginInsertion(ofVec2f t_pos, ofVec2f t_dir){
 
-	mReader.beginInsertion(t_pos, t_dir);
+	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].beginInsertion(t_pos, t_dir);
 	objectManager::beginInsertion(t_pos, t_dir);
 	
 }
 
 void layer::resizeInsertion(float size){
 	
-	mReader.resizeInsertion(size);
+	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].resizeInsertion(size);
 	objectManager::resizeInsertion(size);
 
 }
@@ -135,7 +135,7 @@ vector<node> layer::getNodes()const{return nodes;}
 vector<blip> layer::getBlips()const{return blips;}
 vector<segment> layer::getTracks()const{return tracks;}
 
-reader * layer::getReaderRef(){return &mReader;}
-reader layer::getReader()const{return mReader;}
+reader * layer::getReaderRef(int i){return &mReaders[i];}
+reader layer::getReader(int i)const{return mReaders[i];}
 
 

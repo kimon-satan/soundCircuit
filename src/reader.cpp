@@ -67,6 +67,7 @@ void reader::move(){
 				
 				if(t_dir != ofVec2f(0,0)){
 					it->setIsActive(true);
+					it->addReader(this);
 					direction.set(t_dir);
 					body.x = it->getPos().x;
 					body.y = it->getPos().y;
@@ -82,6 +83,7 @@ void reader::move(){
 			
 		}else{
 			it->setIsActive(false);
+			it->removeReader(this);
 		}
 	}
 	

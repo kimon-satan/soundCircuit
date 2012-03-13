@@ -66,7 +66,7 @@ void testApp::setup(){
 	//the world
 	
 	world.setWorldDims(ofVec2f(1500,1500));
-	currentReader = world.getReaderRef();
+	currentReader = world.getReaderRef(0);
 	currentReader->setOscSender(&sender);
 	world.beginTrack(ofVec2f(0,0));
 	world.calcTrack(ofVec2f(1,0),ofVec2f(1,0), 1);

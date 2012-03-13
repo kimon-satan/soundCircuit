@@ -17,7 +17,6 @@ objectManager::objectManager():objectUtils(){
 	
 	isPreview = false;
 	isInsert = false;
-	incr = 200;
 	
 }
 
@@ -282,7 +281,6 @@ void objectManager::endBlip(){
 	if(previewBlip.getIsValid()){
 		blips.push_back(previewBlip);
 		blips.back().createDrawer(world_dims, previewBlip.getDrawer());
-		blipLengthToDuration(blips.back());
 		blips.back().aquireIndex();
 	}
 	previewBlip.setIsValid(false);
@@ -590,12 +588,7 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 
 
 
-void objectManager::blipLengthToDuration(blip & t_b){
-	
-	float t_dur = t_b.getPreset().getLength()->abs_value /(incr * ofGetFrameRate());
-	t_b.setDuration(t_dur);
-	
-}
+
 
 
 void objectManager::beginInsertion(ofVec2f t_point, ofVec2f t_dir){
@@ -926,4 +919,3 @@ vector<string> objectManager::getPreviewParams(){
 //getters and setters
 
 
-void objectManager::setIncr(float t){incr = t;}

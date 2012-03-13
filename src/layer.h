@@ -30,7 +30,7 @@ public:
 
 	
 	layer();
-	layer(const layer &src);
+	//layer(const layer &src); only one layer so no need currently
 	
 	void setup();
 	void update();
@@ -54,12 +54,12 @@ public:
 	vector<segment> getTracks() const;
 	
 	void toggleScreenData();
-	reader * getReaderRef();
-	reader getReader()const;
+	reader * getReaderRef(int i = 0);
+	reader getReader(int i = 0)const;
 	
 private:
 	
-	reader mReader;
+	vector<reader> mReaders;
 	bool isScreenData;
 
 	
