@@ -76,4 +76,4 @@ bool segment::getIsValid(){return isValid;}
 bool segment::getIsSelected(){return isSelected;}
 ofVec2f segment::getSelectPos(){return selectPos;}
 
-int segment::getIndex(){return index;}
+int segment::getIndex()const{return index;}

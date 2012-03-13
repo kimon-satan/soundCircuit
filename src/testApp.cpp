@@ -2,10 +2,6 @@
 
 bool testApp::drawData = false;
 
-testApp::testApp(){
-
-
-}
 
 //--------------------------------------------------------------
 void testApp::setup(){
@@ -66,11 +62,13 @@ void testApp::setup(){
 	//the world
 	
 	world.setWorldDims(ofVec2f(1500,1500));
-	currentReader = world.getReaderRef(0);
-	currentReader->setOscSender(&sender);
-	world.beginTrack(ofVec2f(0,0));
+	world.setOSC(&sender);
+	currentReader = NULL;
+	
+	/*world.beginTrack(ofVec2f(0,0));
 	world.calcTrack(ofVec2f(1,0),ofVec2f(1,0), 1);
 	world.endTrack();
+	currentReader = world.addReader(ofVec2f(5,0));*/
 	
 	
 }
@@ -293,7 +291,7 @@ void testApp::update(){
 	
 	world.update();
 	
-	cam.followReader(currentReader, world.getWorldDims());
+	if(currentReader)cam.followReader(currentReader, world.getWorldDims());
 	cam.incrementRotations();
 	
 	//coordinate picking
@@ -330,7 +328,7 @@ void testApp::update(){
 	
 	if(!isMouseDown){
 		
-		if(mouseMode == MODE_BLIP || mouseMode == MODE_WORLD){
+		if(mouseMode != MODE_DRAG){
 			currentSelection = world.selectSomething(ofVec2f(mouseW.x,mouseW.y));
 		}
 		
@@ -396,6 +394,7 @@ string testApp::getModeString(e_mouseMode temp){
 		case MODE_BLIP:return "blip";break;
 		case MODE_WORLD: return "world"; break;
 		case MODE_TRACK: return "track"; break;
+		case MODE_READER: return "reader"; break;
 		default:return "none";break;
 			
 	}
@@ -431,6 +430,9 @@ void testApp::startAction(){
 		
 		world.beginNode(ofVec2f(mouseW.x,mouseW.y), buttonMode);
 		
+	}else if(currentAction == ACTION_ADD_READER){
+	
+		currentReader = world.addReader(ofVec2f(mouseW.x, mouseW.y));
 	}
 
 	
@@ -479,23 +481,19 @@ void testApp::endAction(){
 	
 	if(currentAction == ACTION_DRAG){
 		
-		cam.restartFollow();
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK || currentAction == ACTION_ADD_LONG_TRACK){
 		
 		isPreview = false;
-		cam.restartFollow();
 		world.endTrack();
 		
 	}else if(currentAction == ACTION_ADD_BLIP){
 		
 		isPreview = false;
-		cam.restartFollow();
 		world.endBlip();
 		
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
-		cam.restartFollow();	
 		world.endInsertion();
 		
 	}else if(currentAction == ACTION_ADJUST_NODE){
@@ -503,6 +501,7 @@ void testApp::endAction(){
 		world.endNode();
 	}
 	
+	cam.restartFollow();	
 }
 
 
@@ -523,13 +522,16 @@ void testApp::keyPressed  (int key){
 	if(key == OF_KEY_UP)selectedPreset[0] = min(selectedPreset[0] + 1, (int)presets[0].size() - 1);
 	if(key == OF_KEY_DOWN)selectedPreset[0] = max(selectedPreset[0] - 1, 0);
 	if(key == 't')overrideMode = MODE_TRACK;
+	if(key == 'r')overrideMode = MODE_READER;
 	
 	//debug keys
-	/*if(key == 'f')ofToggleFullscreen();
-	if(key == 's')world.toggleScreenData();
-	if(key == 'n')world.toggleNodeData();
-	if(key == 't')world.toggleTrackData();
-	if(key == 'b')world.toggleBlipData();*/
+	if(key == 'f')ofToggleFullscreen();
+
+	if(key == 'd'){
+		world.toggleNodeData();
+		world.toggleTrackData();
+		world.toggleBlipData();
+	}
 	
 	if(key == 'z'){cam.setTargetRotation((cam.getRotation(2) > 0)? 0: 90, 2);}
 
@@ -570,12 +572,18 @@ void testApp::mousePressed(int x, int y, int button){
 		}else{
 			currentAction = ACTION_INSERT_SPACE;
 		}
+	}else if(mouseMode == MODE_READER){
+		currentAction = ACTION_ADD_READER;
+	}else if(mouseMode == MODE_TRACK){
+		currentAction = (button == 0 )? ACTION_ADD_SHORT_TRACK: ACTION_ADD_LONG_TRACK;
 	}
 	
 	//overrides
 	
 	if(overrideMode == MODE_TRACK){
-			currentAction = (button == 0 )? ACTION_ADD_SHORT_TRACK: ACTION_ADD_LONG_TRACK;
+		currentAction = (button == 0 )? ACTION_ADD_SHORT_TRACK: ACTION_ADD_LONG_TRACK;
+	}else if(overrideMode == MODE_READER){
+		currentAction = ACTION_ADD_READER;	
 	}
 	
 	startAction();

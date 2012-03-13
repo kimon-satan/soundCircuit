@@ -44,6 +44,7 @@ private:
 	ofVec2f center;
 	
 	vector<ofVec2f> selected;
+	static float kCircleRadius;
 	
 };
 

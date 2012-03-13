@@ -12,7 +12,18 @@
 
 #include "ofMain.h"
 #include "ofxOsc.h"
+#include "blip.h"
+
 class layer;
+
+//search predicate for blip
+struct blipIndex:public binary_function<blip, int, bool> {
+	
+	bool operator()(const blip &t_blip, const int &t_index)const{
+		return t_blip.getIndex() == t_index;
+	}
+	
+};
 
 class reader{
 	
@@ -32,10 +43,14 @@ class reader{
 	void setOscSender(ofxOscSender * t);
 	string getModeString();
 	ofVec2f getDirection();
+	void setDirection(ofVec2f dir);
 	float getIncrement();
 	void setSpeed(float t);
 	float getSpeed();
 	bool getIsNewDirection();
+	
+	int getIndex();
+	void aquireIndex();
 	
 	private:
 	
@@ -43,6 +58,9 @@ class reader{
 	void moduloPosition();
 	
 	ofVec2f nextDirection(ofVec2f t_dir, vector<bool> t_bools);
+	void handleBlips();
+	void blipOff(vector<blip>::iterator it);
+	void blipOff(int tIndex);
 
 	
 	ofRectangle body, testBody;
@@ -57,6 +75,12 @@ class reader{
 	
 	float mSpeed, mIncrement;
 	bool isStuck, isNewDirection;
+	
+	int currentNodeIndex;
+	int currentBlipIndex;
+	
+	int index;
+	static int tCounter;
 	
 };
 

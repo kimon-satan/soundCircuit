@@ -12,12 +12,7 @@
 layer::layer():objectRenderer(){
 
 	isScreenData = false;
-	reader t;
-	t.setLayer(this);
-	mReaders.push_back(t);
-	incr = mReaders[0].getIncrement();
 	
-
 }
 
 /*layer::layer(const layer &src):objectRenderer(){ //only one layer so no need for this atm
@@ -122,6 +117,26 @@ void layer::endInsertion(){
 }
 
 
+reader* layer::addReader(ofVec2f w_pos){
+
+	deselectAll();
+	s_tracks[0] = selectTrackPoint(w_pos);
+	
+	if(s_tracks[0]){
+		reader r;
+		r.setOscSender(sender);
+		r.aquireIndex();
+		r.setLayer(this);
+		r.setPos(s_tracks[0]->getSelectPos());
+		r.setDirection(s_tracks[0]->getDirection());
+		mReaders.push_back(r);
+		deselectAll();
+		return &mReaders.back();
+	}
+	
+	return NULL;
+}
+
 
 void layer::toggleScreenData(){isScreenData = !isScreenData;}
 
@@ -138,4 +153,5 @@ vector<segment> layer::getTracks()const{return tracks;}
 reader * layer::getReaderRef(int i){return &mReaders[i];}
 reader layer::getReader(int i)const{return mReaders[i];}
 
+void layer::setOSC(ofxOscSender * s){sender = s;}
 

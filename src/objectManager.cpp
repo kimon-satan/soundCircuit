@@ -44,7 +44,7 @@ void objectManager::beginTrack(ofVec2f w_pos){
 
 void objectManager::calcTrack(ofVec2f w_pos, ofVec2f w_dir, int mode){
 	
-	if(w_dir.length() > 0.1){ //t_dir is a pixel value
+	if(w_dir.length() > WORLD_UNIT * 5){ //t_dir is a pixel value
 		
 		if(mode == 0){
 			calcTrack_0(w_pos, w_dir);
@@ -311,8 +311,8 @@ void objectManager::calcNode(ofVec2f w_pos){
 	
 	float dist = w_pos.distance(s_nodes[0]->getPos());
 	
-	if(dist < kTestSize * WORLD_UNIT * 1.5f && 
-	   dist > kTestSize * WORLD_UNIT * 0.5
+	if(dist < kTestSize * (float)WORLD_UNIT * 0.75f && 
+	   dist > kTestSize * (float)WORLD_UNIT * 0.25f
 	   ){
 		
 		ofVec2f w_dir(w_pos - s_nodes[0]->getPos());
@@ -385,7 +385,7 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 		
 		if(!recalc)recalc = findNodeIntersects(previewTracks[0]);
 		
-		if(previewTracks[0].getLength() < 0.2)recalc = true;
+		if(previewTracks[0].getLength() < WORLD_UNIT * 20)recalc = true;
 		
 		if(recalc){
 			for(int j = 0; j < 2; j ++)previewTracks[j].setIsValid(false);
@@ -416,18 +416,18 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	q.normalize();
 	
 	//wrapping adjustment for lengths
-	if(q.x < 0 && abs(t_dir.x) > 0.1){
+	if(q.x < 0 && abs(t_dir.x) > WORLD_UNIT * 10){
 		if(size.x > 0){size.x -= world_dims.x;}else{size.x += world_dims.x;}
 	}
 	
-	if(q.y < 0 && abs(t_dir.y) > 0.1){
+	if(q.y < 0 && abs(t_dir.y) > WORLD_UNIT * 10){
 		if(size.y > 0){size.y -= world_dims.y;}else{size.y += world_dims.y;}
 	}
 	
 	dirs[0].set(0, size.y); 
 	dirs[1].set(size.x,0);
 	
-	if(abs(size.x) < 0.1 || abs(size.y) < 0.1){ //if nearly aligned try a single track first
+	if(abs(size.x) < 10 * WORLD_UNIT || abs(size.y) < 10 * WORLD_UNIT){ //if nearly aligned try a single track first
 		
 		if(!s_nodes[1]){
 			
@@ -799,8 +799,8 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 					
 				}
 				
-			}else if( s.getStartPos().distance(nodes[i].getPos()) < kTestSize * WORLD_UNIT/2 ||
-					 s.getEndPos().distance(nodes[i].getPos()) < kTestSize * WORLD_UNIT/2
+			}else if( s.getStartPos().distance(nodes[i].getPos()) < kTestSize * (float)WORLD_UNIT/2 ||
+					 s.getEndPos().distance(nodes[i].getPos()) < kTestSize * (float)WORLD_UNIT/2
 					 ){
 				
 				if(&t_points != &DPOINTS){
@@ -843,7 +843,7 @@ node * objectManager::selectNode(ofVec2f t_pos){
 	
 	for(int i = 0; i < nodes.size(); i++){
 		
-		if( t_pos.distance(nodes[i].getPos()) < kTestSize * 1.5f * (float)WORLD_UNIT/2.0f ){
+		if( t_pos.distance(nodes[i].getPos()) < kTestSize * (float)WORLD_UNIT/2){
 			n = &nodes[i];
 			nodes[i].setSelected(true);
 			break;

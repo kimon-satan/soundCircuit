@@ -10,7 +10,8 @@
 #include "objectUtils.h"
 
 
-float objectUtils::kTestSize = 16;
+float objectUtils::kTestSize = 32;
+
 
 objectUtils::objectUtils(){
 

@@ -9,6 +9,8 @@
 
 #include "objectRenderer.h"
 
+float objectRenderer::kCircleRadius = WORLD_UNIT * 7;
+
 objectRenderer::objectRenderer():objectManager(){
 
 	isTrackData = false;
@@ -169,7 +171,7 @@ void objectRenderer::drawSelected(){
 		ofEnableAlphaBlending();
 		ofSetColor(255, 0, 0, 100);
 		ofFill();
-		ofCircle(selected[i], kTestSize * WORLD_UNIT/2);
+		ofCircle(selected[i], kCircleRadius);
 		ofDisableAlphaBlending();
 		glDepthFunc(GL_LESS);
 		ofPopMatrix();
@@ -191,7 +193,7 @@ void objectRenderer::drawNodes(){
 			
 			if(it->getIsShown()){
 				
-				float radius = kTestSize * (float)WORLD_UNIT/2.0f;
+				float radius = kCircleRadius;
 				
 				glPushMatrix();
 				glTranslatef(pos.x, pos.y, -WORLD_UNIT);
@@ -199,7 +201,7 @@ void objectRenderer::drawNodes(){
 				glDepthFunc(GL_LEQUAL);
 				ofFill();
 				ofSetColor(255);
-				ofCircle(0,0, kTestSize * (float)WORLD_UNIT/2.0f);
+				ofCircle(0,0, radius);
 				
 				ofEnableSmoothing();
 				

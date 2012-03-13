@@ -41,7 +41,7 @@ public:
 	
 	void setIsValid(bool t_valid);
 	bool getIsValid();
-	int getIndex();
+	int getIndex()const;
 	virtual void aquireIndex();
 	
 	bool getIsSelected();

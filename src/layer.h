@@ -43,6 +43,8 @@ public:
 	void resizeInsertion(float size);
 	void endInsertion();
 
+	reader * addReader(ofVec2f w_pos);
+	void setOSC(ofxOscSender * s);
 	
 	//getters and setters
 
@@ -61,8 +63,7 @@ private:
 	
 	vector<reader> mReaders;
 	bool isScreenData;
-
-	
+	ofxOscSender * sender;
 	ofColor testCol;
 	
 };

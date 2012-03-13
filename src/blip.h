@@ -38,14 +38,17 @@ public:
 	//getters and setters
 	bool getIsActive();
 	void setIsActive(bool t);
-	void setIsOccupied(bool t);
-	bool getIsOccupied();
+	void addOccupant();
+	void subtractOccupant();
+	
 	void setPreset(blipPreset t);
 	void setDuration(float t);
 	blipPreset& getPresetRef();
 	blipPreset getPreset();
 	baseBlipDraw * getDrawer();
-
+	
+	void aquireIndex();
+	
 	static int bCounter;
 	
 private:
@@ -56,7 +59,8 @@ private:
 	blipPreset preset;
 	baseBlipDraw * drawer;
 	
-	bool isActive, isOccupied;
+	bool isActive;
+	int numOccupants;
 	
 	int attackCount, decayCount, postDecayCount;
 	int totalAttack, totalDecay, totalPostDecay;

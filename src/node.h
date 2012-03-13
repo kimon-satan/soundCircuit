@@ -41,8 +41,6 @@ public:
 	void setPos(ofVec2f p);
 	void setSelected(bool t);
 	bool getIsSelected();
-	void setIsActive(bool t);
-	bool getIsActive();
 	
 	void addReader(reader * r);
 	bool getReaderPresent(reader * r);
@@ -63,7 +61,7 @@ private:
 	vector<bool> nowSockets;
 	static ofVec2f socketDirections[4];
 	vector<bool> allSockets;
-	bool isSelected, isActive, isShown, isAdjusting;
+	bool isSelected, isShown, isAdjusting;
 	int numSockets, numOpen;
 	vector<reader*> readerPtrs;
 	

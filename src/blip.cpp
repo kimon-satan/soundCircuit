@@ -15,7 +15,6 @@ int blip::bCounter = 0;
 blip::blip(){
 
 	isActive = false;
-	isOccupied = false;
 	totalAttack = 0;
 	totalDecay = 0;
 	attackCount = 0;
@@ -23,6 +22,7 @@ blip::blip(){
 	postDecayCount =0;
 	envVal = 0;
 	postVal = 0;
+	numOccupants = 0;
 	
 	drawer = NULL;
 
@@ -35,7 +35,7 @@ void blip::update(){
 	
 	if(preset.getEnvType() == ENV_ASR){
 		
-		if(isOccupied){
+		if(numOccupants > 0){
 			
 			postVal = 0;
 			
@@ -103,6 +103,7 @@ void blip::update(){
 	}
 	
 	updateDrawer();
+
 	
 }
 
@@ -114,27 +115,26 @@ void blip::draw(int t_wrap){
 
 bool blip::react(float incr){
 	
-	if(!isOccupied){
-		isOccupied = true;
-		isActive = true;
-		
-		paramAttributes * p = preset.getAttackProp();
-		if(p)preset.getAttackSecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
-		p = preset.getDecayProp();
-		if(p)preset.getDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
-		p = preset.getPostDecayProp();
-		if(p)preset.getPostDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
-		
-		attackCount = preset.getAttackSecs()->abs_value * ofGetFrameRate();
-		decayCount = preset.getDecaySecs()->abs_value * ofGetFrameRate();
-		postDecayCount = preset.getPostDecaySecs()->abs_value * ofGetFrameRate();
-		totalPostDecay = postDecayCount;
-		totalDecay = decayCount;
-		totalAttack = attackCount;
-		return true;
-	}
+
+	isActive = true;
 	
-	return false;
+	paramAttributes * p = preset.getAttackProp();
+	if(p)preset.getAttackSecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
+	p = preset.getDecayProp();
+	if(p)preset.getDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
+	p = preset.getPostDecayProp();
+	if(p)preset.getPostDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
+	
+	attackCount = preset.getAttackSecs()->abs_value * ofGetFrameRate();
+	decayCount = preset.getDecaySecs()->abs_value * ofGetFrameRate();
+	postDecayCount = preset.getPostDecaySecs()->abs_value * ofGetFrameRate();
+	totalPostDecay = postDecayCount;
+	totalDecay = decayCount;
+	totalAttack = attackCount;
+	return true;
+	
+	
+
 }
 
 
@@ -207,42 +207,46 @@ void blip::destroyDrawer(){
 
 bool blip::getInside(ofVec2f t_pos, int bufferZone){
 	
+	ofRectangle n_testArea;
+	ofRectangle n_wrapTestArea;
+	
+	n_testArea.setFromCenter(testArea.getCenter(), 
+							 testArea.width + (float)bufferZone * WORLD_UNIT * 2,
+							 testArea.height + (float)bufferZone * WORLD_UNIT * 2);
 
+	
+	if(!isWrapped){
+
+		return (n_testArea.inside(t_pos));
+	}else{
 		
-		ofRectangle n_testArea;
-		ofRectangle n_wrapTestArea;
+		n_wrapTestArea.setFromCenter(wrapTestArea.getCenter(), 
+								 wrapTestArea.width + bufferZone * WORLD_UNIT * 2,
+								 wrapTestArea.height + bufferZone * WORLD_UNIT * 2);
 		
-		n_testArea.setFromCenter(testArea.getCenter(), 
-								 testArea.width + (float)bufferZone * WORLD_UNIT * 2,
-								 testArea.height + (float)bufferZone * WORLD_UNIT * 2);
-	
-		
-		if(!isWrapped){
-	
-			return (n_testArea.inside(t_pos));
-		}else{
-			
-			n_wrapTestArea.setFromCenter(wrapTestArea.getCenter(), 
-									 wrapTestArea.width + bufferZone * WORLD_UNIT * 2,
-									 wrapTestArea.height + bufferZone * WORLD_UNIT * 2);
-			
-			if(n_testArea.inside(t_pos))return true;
-			if(n_wrapTestArea.inside(t_pos))return true;
-			return false;
-		}
-	
-	
-	
+		if(n_testArea.inside(t_pos))return true;
+		if(n_wrapTestArea.inside(t_pos))return true;
+		return false;
+	}
 	
 
 }
 
+
+void blip::aquireIndex(){
+	
+	index = bCounter;
+	bCounter += 1;
+	
+}
+
 //getters and setters
+void blip::addOccupant(){numOccupants += 1;}
+void blip::subtractOccupant(){numOccupants -= 1;}
 
 bool blip::getIsActive(){return isActive;}
 void blip::setIsActive(bool t){isActive = t;}
-void blip::setIsOccupied(bool t){isOccupied = t;}
-bool blip::getIsOccupied(){return isOccupied;}
+
 void blip::setPreset(blipPreset t){preset = t;}
 
 void blip::setDuration(float t){duration = t;}

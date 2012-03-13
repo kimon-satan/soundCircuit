@@ -11,6 +11,8 @@
 #include "layer.h"
 #include "utils.h"
 
+int reader::tCounter = 0;
+
 reader::reader(){
 	
 	body.set(0,0,WORLD_UNIT * 21, WORLD_UNIT * 21);
@@ -18,6 +20,8 @@ reader::reader(){
 	direction.set(1,0);
 	isStuck =false;
 	pDir.set(1,0);
+	currentNodeIndex = -99;
+	currentBlipIndex = -99;
 	
 	
 }
@@ -25,6 +29,7 @@ reader::reader(){
 void reader::update(){
 	
 	move();
+	handleBlips();
 	
 }
 
@@ -60,14 +65,15 @@ void reader::move(){
 	for(vector<node>::iterator it = t_nodes->begin(); it != t_nodes->end(); it++){
 		if(testBody.inside(it->getPos())){ 
 			
-			if(!it->getIsActive()){
+			nodeFound = true;
+			
+			if(currentNodeIndex != it->getIndex()){
 				
 				ofVec2f t_dir(nextDirection(direction, it->getNowSockets()));
-				nodeFound = true;
 				
 				if(t_dir != ofVec2f(0,0)){
-					it->setIsActive(true);
-					it->addReader(this);
+		
+					currentNodeIndex = it->getIndex();
 					direction.set(t_dir);
 					body.x = it->getPos().x;
 					body.y = it->getPos().y;
@@ -81,24 +87,37 @@ void reader::move(){
 				
 			}
 			
-		}else{
-			it->setIsActive(false);
-			it->removeReader(this);
 		}
 	}
 	
+	if(!nodeFound)currentNodeIndex = -99;
+	
+	
+		
+}
+
+void reader::handleBlips(){
+
 	vector<blip> * t_blips = currentLayer->getBlipsRef();
 	
 	for(vector<blip>::iterator it = t_blips->begin(); it != t_blips->end(); it++){
-	
+		
 		if(it->getInside(ofVec2f(body.x,body.y)) || testBody.inside(it->getStartPos())){
-			if(it->react(mIncrement)){
-
+			
+			if(currentBlipIndex != it->getIndex()){
+				
+				if(currentBlipIndex != -99)blipOff(currentBlipIndex); //first turn off old synths
+				currentBlipIndex = it->getIndex();
+				
+				it->addOccupant(); 
+				it->react(mIncrement);
+				
 				blipPreset p = it->getPreset();
 				
 				ofxOscMessage m;
 				
 				m.setAddress("/blipOn");
+				m.addIntArg(index);
 				m.addIntArg(it->getIndex());
 				m.addStringArg(p.getSynthDef());
 				m.addIntArg(p.getEnvType());
@@ -110,28 +129,46 @@ void reader::move(){
 				}
 				
 				sender->sendMessage(m);
+				
 			}
 			
 		}else{
-			if(it->getIsOccupied()){				
-				it->setIsOccupied(false);
-				
-				blipPreset p = it->getPreset();
-				
-				if(p.getEnvType() == ENV_ASR){
-					ofxOscMessage m;
-					
-					m.setAddress("/blipOff");
-					m.addIntArg(it->getIndex());
-					
-					sender->sendMessage(m);
-				}
-				
-			}
+			
+			blipOff(it);
 		}
 	}
+}
+
+
+void reader::blipOff(int tIndex){
 	
+	vector<blip> * t_blips = currentLayer->getBlipsRef();
+	vector<blip>::iterator it = find_if(t_blips->begin(), t_blips->end(),bind2nd(blipIndex(), tIndex));
+	if(it == t_blips->end())return;
+	blipOff(it);
+	
+}
+
+void reader::blipOff(vector<blip>::iterator it){
+
+	if(currentBlipIndex == it->getIndex()){				
 		
+		it->subtractOccupant();
+		
+		currentBlipIndex = -99;
+		blipPreset p = it->getPreset();
+		
+		if(p.getEnvType() == ENV_ASR){
+			ofxOscMessage m;
+			
+			m.setAddress("/blipOff");
+			m.addIntArg(index);
+			m.addIntArg(it->getIndex());
+			
+			sender->sendMessage(m);
+		}
+		
+	}
 }
 
 ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
@@ -198,6 +235,13 @@ void reader::resizeInsertion(float size){
 		
 }
 
+void reader::aquireIndex(){
+	
+	index = tCounter;
+	tCounter += 1;
+	
+}
+
 //getters and setters
 
 bool reader::getIsNewDirection(){return isNewDirection;}
@@ -206,8 +250,9 @@ ofVec2f reader::getPos(){return ofVec2f(body.x,body.y);}
 void reader::setPos(ofVec2f t_pos){body.x = t_pos.x; body.y = t_pos.y;}
 void reader::setOscSender(ofxOscSender * t){sender = t;}
 ofVec2f reader::getDirection(){return direction;}
+void reader::setDirection(ofVec2f dir){direction = dir;}
 float reader::getIncrement(){return mIncrement;}
 
 void reader::setSpeed(float t){mSpeed = t;}
 float reader::getSpeed(){return mSpeed;}
-
+int reader::getIndex(){return index;}

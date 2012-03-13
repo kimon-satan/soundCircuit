@@ -119,22 +119,12 @@ bool node::getSuperfluous(){
 ofVec2f node::getPos(){return pos;}
 void node::setPos(ofVec2f p){pos = p;}
 
-void node::setIsActive(bool t){isActive = t;}
-bool node::getIsActive(){return isActive;}
 
-
-void node::addReader(reader * r){
-	readerPtrs.push_back(r);
-}
+void node::addReader(reader * r){readerPtrs.push_back(r);}
 
 bool node::getReaderPresent(reader * r){
-	
-	for(int i = 0; i < readerPtrs.size(); i++){
-		if(readerPtrs[i] == r)return true;
-	}
-	
+	for(int i = 0; i < readerPtrs.size(); i++)if(readerPtrs[i] == r)return true;
 	return false;
-	
 }
 
 void node::removeReader(reader * r){
@@ -150,24 +140,11 @@ bool node::getIsSelected(){return isSelected;}
 
 vector<bool> node::getNowSockets(){return nowSockets;}
 
-bool node::getNowSocket(ofVec2f t_dir){
-	
-	return nowSockets[getSocketIndex(t_dir)];
-	
-}
-
-bool node::getNowSocket(int i){
-	return nowSockets[i];
-}
+bool node::getNowSocket(ofVec2f t_dir){return nowSockets[getSocketIndex(t_dir)];}
+bool node::getNowSocket(int i){return nowSockets[i];}
 
 vector<bool> node::getAllSockets(){return allSockets;}
-
-bool node::getAllSocket(ofVec2f t_dir){
-	
-	for(int i = 0; i < 4; i++)if(socketDirections[i] == t_dir){
-		return allSockets[i];
-	}
-}
+bool node::getAllSocket(ofVec2f t_dir){return allSockets[getSocketIndex(t_dir)];}
 
 bool node::getIsShown(){return isShown;}
 

@@ -39,6 +39,7 @@ protected:
 	ofVec2f world_dims;
 	
 	static float kTestSize;
+
 	
 };
 

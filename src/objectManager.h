@@ -86,7 +86,6 @@ protected:
 	node * s_nodes[2];
 	segment * s_tracks[2];
 	ofVec2f s_pos[2];
-	float incr;
 	bool nodeSet[4];
 	
 	ofVec2f insertPoint;

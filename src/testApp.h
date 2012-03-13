@@ -13,7 +13,6 @@ class testApp : public ofBaseApp{
 	
 public:
 	
-	testApp();
 	void setup();
 	void update();
 	void draw();
@@ -46,6 +45,7 @@ private:
 		MODE_BLIP,
 		MODE_WORLD,
 		MODE_TRACK,
+		MODE_READER,
 		MODE_COUNT
 	};
 	
@@ -57,6 +57,7 @@ private:
 		ACTION_ADD_BLIP,
 		ACTION_INSERT_SPACE,
 		ACTION_ADJUST_NODE,
+		ACTION_ADD_READER,
 		ACTION_COUNT
 	};
 	
