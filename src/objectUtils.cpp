@@ -21,7 +21,9 @@ objectUtils::objectUtils(){
 void objectUtils::limitStartPointFromMid(ofVec2f origin, vector<ofVec2f> & t_points, segment & s){
 	
 	vector<ofVec2f> bounds = getPlanarNeighbours(origin, t_points);
+	
 	sortNeighboursToSegment(origin, bounds, s);
+	
 	if(bounds[0] != origin){
 		makeSegment(bounds[0], s.getDirection() * s.getLength(), s);
 	}
@@ -166,6 +168,8 @@ void objectUtils::sortNeighboursToSegment(ofVec2f origin, vector<ofVec2f> &t_poi
 		
 		ofVec2f t_bound(t_points[i]);
 		
+		//make adjustments for wrapping
+		
 		if((s.getTestArea().inside(origin) && !s.getTestArea().inside(t_points[i]))||
 		   (s.getIsWrapped() && s.getWrapTestArea().inside(origin) && !s.getWrapTestArea().inside(t_points[i]))
 		   ){
@@ -178,17 +182,21 @@ void objectUtils::sortNeighboursToSegment(ofVec2f origin, vector<ofVec2f> &t_poi
 			
 		}
 		
+		//check that the bound is on the correct side of the origin
+		
 		if(i == 0){
-			if(ofVec2f(origin - t_bound).normalize() != s.getDirection()){
+			if(ofVec2f(origin - t_bound).normalize() * norm_dir != s.getDirection()){
 				t_points[0] = origin;
 			}
 		}else{
-			if(ofVec2f(t_bound - origin).normalize() != s.getDirection()){
+			if(ofVec2f(t_bound - origin).normalize() * norm_dir != s.getDirection()){
 				t_points[1] = origin;
 			}
 		}
 		
-		if(!s.getInside(t_points[i])){t_points[i] = origin;}
+		if(!s.getInside(t_points[i])){
+			t_points[i] = origin;
+		}
 		
 	}
 	
@@ -232,7 +240,7 @@ void objectUtils::updateTestAreas(segment & t){
 			tlc.set(t.getStartPos().x + WORLD_UNIT,t.getStartPos().y -WORLD_UNIT * kTestSize/2);
 			dims.set(t.getLength() - WORLD_UNIT * 2, WORLD_UNIT * kTestSize);
 		}else{
-			tlc.set(t.getStartPos().x - WORLD_UNIT * kTestSize/2, t.getStartPos().y + WORLD_UNIT * 2);
+			tlc.set(t.getStartPos().x - WORLD_UNIT * kTestSize/2, t.getStartPos().y + WORLD_UNIT);
 			dims.set(WORLD_UNIT * kTestSize, t.getLength() - WORLD_UNIT * 2);
 		}
 		

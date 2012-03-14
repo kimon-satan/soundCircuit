@@ -72,9 +72,9 @@ void ofxGrabCam::followReader(reader * currentReader, ofVec2f world_dims){
 	
 	ofVec2f t_pos(getPosition().x , getPosition().y);
 	
-	followPoint.set(currentReader->getPos());
+	if(currentReader)followPoint.set(currentReader->getPos());
 	
-	if(!isFixed && !isPaused){
+	if(!isFixed && !isPaused && currentReader){
 		
 		//needs t_pos
 		if(currentReader->getIsNewDirection())lagCount = kLagFrames;

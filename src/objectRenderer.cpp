@@ -250,10 +250,12 @@ void objectRenderer::drawNodes(){
 		
 		
 		if(isNodeData){
+			glDepthFunc(GL_ALWAYS);
 			ofNoFill();
 			ofSetColor(0, 0, 255);
 			ofCircle(pos, kTestSize * WORLD_UNIT/2);
-			ofDrawBitmapString(ofToString(it->getIndex()), pos - 0.03);
+			ofDrawBitmapString(ofToString(it->getIndex()), pos - WORLD_UNIT *3);
+			glDepthFunc(GL_LESS);
 		}
 		
 	}

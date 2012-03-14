@@ -68,7 +68,7 @@ protected:
 	
 	bool findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<ofVec2f> & t_points = DPOINTS, segment & s = DSEG, bool isTracks = true , bool isBlips = false);
 	bool findParalellIntersects(segment & s = DSEG, vector<ofVec2f> & t_points = DPOINTS, bool isTracks = true , bool isBlips = false);
-	bool findNodeIntersects(segment & s, vector<ofVec2f> & t_points = DPOINTS);
+	bool findNodeIntersects(segment & s, vector<ofVec2f> & t_points = DPOINTS, bool includeTestArea = false);
 	
 	
 	//member variables

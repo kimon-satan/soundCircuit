@@ -127,6 +127,8 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 		return;
 	}else if(selectBlip(w_pos, 3)){
 		return;
+	}else if(selectNode(w_pos)){
+		return;
 	}else{
 		s_pos[0] = s_tracks[0]->getSelectPos();
 		previewBlip.setPreset(bp);
@@ -199,7 +201,8 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir, float s_angle){
 	
 			for(int i = 0; i < points.size(); i ++){
 				if(points[i] != previewBlip.getStartPos() || points[i] != previewBlip.getEndPos()){
-					recalc = true; break;
+					recalc = true; 
+					break;
 				}
 			}
 			
@@ -546,14 +549,14 @@ void objectManager::constrainFromMidPoint(ofVec2f origin, segment & s, bool isTr
 	
 	vector<ofVec2f> points;
 	
-	if(isNodes)findNodeIntersects(s, points);
+	if(isNodes)findNodeIntersects(s, points, true);
 	if(isBlips)findParalellIntersects(s, points, false, true);
 	
 	if(points.size() > 0){limitStartPointFromMid(origin, points, s);}
 	
 	points.clear();
 	
-	if(isNodes)findNodeIntersects(s, points);
+	if(isNodes)findNodeIntersects(s, points, true);
 	if(isBlips)findParalellIntersects(s, points, false, true);
 	
 	if(points.size() > 0){limitEndPointFromMid(origin, points, s);}
@@ -564,7 +567,7 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 
 	vector<ofVec2f> points;
 	
-	if(isNodes)findNodeIntersects(s, points);
+	if(isNodes)findNodeIntersects(s, points, true);
 	if(isBlips)findParalellIntersects(s, points, false, true);
 	
 	ofVec2f old_sp(s.getStartPos());
@@ -575,7 +578,7 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 	
 		points.clear();
 		
-		if(isNodes)findNodeIntersects(s, points);
+		if(isNodes)findNodeIntersects(s, points, true);
 		if(isBlips)findParalellIntersects(s, points, false, true);
 		
 		if(points.size() > 0){
@@ -781,9 +784,10 @@ bool objectManager::findParalellIntersects(segment & s, vector<ofVec2f> & t_poin
 	
 }
 
-bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
+bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points, bool includeTestArea){
 	
 	bool isIntersect = false;
+	float rad =  kTestSize * (float)WORLD_UNIT/2;
 	
 	for(int i = 0; i < nodes.size(); i++){
 		
@@ -792,22 +796,40 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points){
 			if(s.getInside(nodes[i].getPos())){
 				
 				if(&t_points != &DPOINTS){
-					t_points.push_back(nodes[i].getPos());
+					
+					if(includeTestArea){
+						
+						ofVec2f tmp(nodes[i].getPos() +  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+						tmp.set(nodes[i].getPos() -  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+						
+					}else{
+					   t_points.push_back(nodes[i].getPos());
+					}
 					isIntersect = true;
 				}else{
 					return true;
 					
 				}
 				
-			}else if( s.getStartPos().distance(nodes[i].getPos()) < kTestSize * (float)WORLD_UNIT/2 ||
-					 s.getEndPos().distance(nodes[i].getPos()) < kTestSize * (float)WORLD_UNIT/2
+			}else if( s.getStartPos().distance(nodes[i].getPos()) < rad ||
+					  s.getEndPos().distance(nodes[i].getPos()) < rad
 					 ){
 				
 				if(&t_points != &DPOINTS){
 					isIntersect = true;
+					
+					if(includeTestArea){
+						ofVec2f tmp(nodes[i].getPos() +  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+						tmp.set(nodes[i].getPos() -  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+					}
 				}else{
 					return true;
 				}
+				
 			}
 		}
 	}

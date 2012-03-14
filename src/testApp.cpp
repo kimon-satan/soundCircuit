@@ -291,7 +291,7 @@ void testApp::update(){
 	
 	world.update();
 	
-	if(currentReader)cam.followReader(currentReader, world.getWorldDims());
+	cam.followReader(currentReader, world.getWorldDims());
 	cam.incrementRotations();
 	
 	//coordinate picking
@@ -356,11 +356,24 @@ void testApp::draw(){
 				   
 			
 			world.draw(p, roi, testCols[i * 3 + j]);
+			
+			
+			glPushMatrix();
+			glTranslated(p.x, p.y, 0);
+			glDepthFunc(GL_ALWAYS);
+			ofSetColor(0);
+			ofNoFill();
+			ofCircle(mouseW.x, mouseW.y, 5);
+			ofDrawBitmapString(ofToString(mouseW.x,1) + ", " + ofToString(mouseW.y,1), mouseW.x, mouseW.y);
+			glDepthFunc(GL_LESS);
+			glPopMatrix();
+			
+			
 		}
 	}
 	
 	cam.end();
-	
+		
 	
 	ofSetColor(0);
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 900,20);
@@ -531,6 +544,7 @@ void testApp::keyPressed  (int key){
 		world.toggleNodeData();
 		world.toggleTrackData();
 		world.toggleBlipData();
+		world.toggleScreenData();
 	}
 	
 	if(key == 'z'){cam.setTargetRotation((cam.getRotation(2) > 0)? 0: 90, 2);}
@@ -541,7 +555,7 @@ void testApp::keyPressed  (int key){
 void testApp::keyReleased(int key){
 	
 	if(isOptionKey)isOptionKey = false;
-	if(key == 't')overrideMode = MODE_NONE;
+	if(key == 't' || key == 'r')overrideMode = MODE_NONE;
 }
 
 //--------------------------------------------------------------
