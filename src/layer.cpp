@@ -82,6 +82,8 @@ e_objectType layer::selectSomething(ofVec2f w_pos){
 
 	deselectTracks();
 	deselectNodes();
+	deselectReaders();
+	if(selectReader(w_pos))return OT_READER;
 	if(selectNode(w_pos))return OT_NODE;
 	if(selectTrackPoint(w_pos))return OT_TRACK;
 		
@@ -93,8 +95,44 @@ void layer::deselectAll(){
 
 	deselectNodes();
 	deselectTracks();
+	deselectReaders();
 }
 
+reader * layer::selectReader(ofVec2f w_pos){
+
+	for(int i = 0; i < mReaders.size(); i ++){
+		if(mReaders[i].getInside(w_pos)){
+			return &mReaders[i];
+		}
+	}
+	
+	return NULL;
+}
+
+
+reader * layer::getNearestReader(ofVec2f w_pos){
+
+	float dist = world_dims.x * world_dims.y;
+	reader * r_ptr = NULL;
+	
+	for(int i = 0; i < mReaders.size(); i ++){
+	
+		float td = mReaders[i].getPos().distance(w_pos);
+		if(td < dist){
+			dist = td;
+			r_ptr = &mReaders[i];
+		}
+	}
+	
+	return r_ptr;
+
+}
+
+void layer::deselectReaders(){
+
+	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].setIsSelected(false);
+	
+}
 
 void layer::beginInsertion(ofVec2f t_pos, ofVec2f t_dir){
 

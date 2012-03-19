@@ -13,7 +13,7 @@ public:
 	void	end(); // Overrides virtual end
 	void	reset();
 	
-	void followReader(reader * currentReader, ofVec2f world_dims);
+	void followReader(reader * currentReader, ofRectangle t_viewPort);
 	void pauseFollow();
 	void restartFollow();
 	void toggleFollow();
@@ -27,7 +27,12 @@ public:
 	ofVec3f	pickCoordinate(ofVec2f t_mouseP);
 	
 	void setTargetRotation(float rot, int t_axis);
+	
+	//getters and setters
 	float getRotation(int t_axis);
+	bool getIsFixed();
+	ofVec2f getTrans();
+	void setWorldDims(ofVec2f t_dims);
 	
 	
 protected:
@@ -39,7 +44,7 @@ protected:
 	const float kMinIncr;
 	int lagCount;
 	bool isFixed, isPaused;
-	ofVec2f trans, direction, followPoint;
+	ofVec2f trans, direction, followPoint, worldDims;
 
 	//rotations
 	float rots[3];

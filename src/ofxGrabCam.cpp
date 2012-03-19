@@ -64,15 +64,21 @@ void ofxGrabCam::reset() {
 }
 
 
-void ofxGrabCam::followReader(reader * currentReader, ofVec2f world_dims){
+void ofxGrabCam::followReader(reader * currentReader, ofRectangle t_viewPort){
 
 	//handle camera following reader
-	//todo - maybe use the projected screen position rather than world space so works for tilts
-	//also make choose the nearest reader position first
 	
 	ofVec2f t_pos(getPosition().x , getPosition().y);
 	
-	if(currentReader)followPoint.set(currentReader->getPos());
+	if(currentReader){
+		
+		//diff is the adjustment for when the Zplane is rotated
+		ofVec2f m_pos(utils::moduloPoint(t_pos, worldDims));
+		ofVec2f diff(getZPlaneProjection(ofVec2f(t_viewPort.width/2,t_viewPort.height/2),t_viewPort));		
+		diff -= m_pos;
+		followPoint.set(currentReader->getPos() - diff);
+		
+	}
 	
 	if(!isFixed && !isPaused && currentReader){
 		
@@ -107,7 +113,7 @@ void ofxGrabCam::followReader(reader * currentReader, ofVec2f world_dims){
 		
 	}
 	
-	t_pos = utils::moduloPoint(t_pos, world_dims);
+	t_pos = utils::moduloPoint(t_pos, worldDims);
 	setPosition(t_pos.x, t_pos.y, getPosition().z);
 	
 }
@@ -117,19 +123,32 @@ void ofxGrabCam::incrementRotations() {
 	
 	//handle rotations
 	
-	if(abs(rots[2] - targetRots[2]) > 0){
-		
-		if(rots[2] < targetRots[2]){ 
-			roll(-1);
-			rots[2] += 1;
+	for(int i = 0; i < 3; i ++){
+		if(abs(rots[i] - targetRots[i]) > 0){
+			
+			if(rots[i] < targetRots[i]){ 
+				
+				switch(i){
+					case 0: tilt(1);break;
+					case 1: pan(1); break;
+					case 2: rotate(-1,0,0,1);break;
+				}
+				rots[i] += 1;
+				
+			}else{
+				
+				switch(i){
+					case 0: tilt(-1);break;
+					case 1: pan(-1); break;
+					case 2: rotate(1,0,0,1);break;
+				}
+				rots[i] -= 1;
+			}
+			
 		}else{
-			rots[2] -= 1;
-			roll(1);
+			
+			rots[i] = targetRots[i];
 		}
-		
-	}else{
-		
-		rots[2] = targetRots[2];
 	}
 	
 }
@@ -145,6 +164,7 @@ void ofxGrabCam::restartFollow(){
 	if(!isFixed){  
 		isPaused = false;
 		trans = ofVec2f(getPosition().x, getPosition().y) - followPoint;
+		trans = utils::moduloPoint(trans, worldDims);
 	}
 
 }
@@ -152,6 +172,7 @@ void ofxGrabCam::restartFollow(){
 void ofxGrabCam::toggleFollow(){
 	
 	trans = ofVec2f(getPosition().x, getPosition().y) - followPoint;
+	trans = utils::moduloPoint(trans, worldDims);
 	isFixed = !isFixed;
 }
 
@@ -248,4 +269,7 @@ float ofxGrabCam::getRotation(int t_axis){
 }
 
 
+bool ofxGrabCam::getIsFixed(){return isFixed;}
 
+ofVec2f ofxGrabCam::getTrans(){return trans;}
+void ofxGrabCam::setWorldDims(ofVec2f t_dims){worldDims.set(t_dims);}

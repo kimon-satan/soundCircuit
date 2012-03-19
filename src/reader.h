@@ -35,8 +35,15 @@ class reader{
 
 	void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
 	void resizeInsertion(float size);
-
+	
+	void beginAdjust();
+	void adjust(ofVec2f w_pos);
+	void endAdjust();
+	
+	bool getInside(ofVec2f pos);
+	
 	//getters and setters
+	void setIsSelected(bool t);
 	void setLayer(layer * t_layer);
 	ofVec2f getPos();
 	void setPos(ofVec2f t_pos);
@@ -74,7 +81,7 @@ class reader{
 	float insertSize;
 	
 	float mSpeed, mIncrement;
-	bool isStuck, isNewDirection;
+	bool isStuck, isNewDirection, isSelected, isAdjusting;
 	
 	int currentNodeIndex;
 	int currentBlipIndex;

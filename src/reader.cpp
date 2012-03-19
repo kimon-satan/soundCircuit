@@ -22,7 +22,8 @@ reader::reader(){
 	pDir.set(1,0);
 	currentNodeIndex = -99;
 	currentBlipIndex = -99;
-	
+	isSelected = false;
+	isAdjusting = false;
 	
 }
 
@@ -203,9 +204,25 @@ void reader::draw(){
 	ofPushMatrix();
 	glDepthFunc(GL_ALWAYS);
 	ofSetRectMode(OF_RECTMODE_CENTER);
+	
 	ofNoFill();
 	ofSetColor(0);
 	ofRect(body);
+	
+	if(isAdjusting){
+		
+		ofCircle(body.x, body.y, WORLD_UNIT * 30);
+		
+	}else if(isSelected){
+		ofPushStyle();
+		ofFill();
+		ofEnableAlphaBlending();
+		ofSetColor(255, 0, 0, 100);
+		ofRect(body.x, body.y, body.width + WORLD_UNIT * 5, body.height + WORLD_UNIT * 5);
+		ofPopStyle();
+	}
+	
+	
 	ofSetRectMode(OF_RECTMODE_CORNER);
 	glDepthFunc(GL_LESS);
 	ofPopMatrix();
@@ -235,12 +252,39 @@ void reader::resizeInsertion(float size){
 		
 }
 
+void reader::beginAdjust(){
+
+	isAdjusting = true;
+} 
+
+void reader::adjust(ofVec2f w_pos){
+
+}
+
+void reader::endAdjust(){
+
+	isAdjusting = false;
+
+}
+
 void reader::aquireIndex(){
 	
 	index = tCounter;
 	tCounter += 1;
 	
 }
+
+bool reader::getInside(ofVec2f pos){
+	
+	ofRectangle selectBody;
+	selectBody.setFromCenter(body.x, body.y, body.width, body.height);
+	isSelected = selectBody.inside(pos.x, pos.y);
+	
+	return isSelected;
+
+}
+
+
 
 //getters and setters
 
@@ -252,6 +296,7 @@ void reader::setOscSender(ofxOscSender * t){sender = t;}
 ofVec2f reader::getDirection(){return direction;}
 void reader::setDirection(ofVec2f dir){direction = dir;}
 float reader::getIncrement(){return mIncrement;}
+void reader::setIsSelected(bool t){isSelected = t;}
 
 void reader::setSpeed(float t){mSpeed = t;}
 float reader::getSpeed(){return mSpeed;}

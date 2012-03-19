@@ -291,7 +291,8 @@ void testApp::update(){
 	
 	world.update();
 	
-	cam.followReader(currentReader, world.getWorldDims());
+	cam.setWorldDims(world.getWorldDims());
+	cam.followReader(currentReader, viewPort);
 	cam.incrementRotations();
 	
 	//coordinate picking
@@ -328,7 +329,13 @@ void testApp::update(){
 	
 	if(!isMouseDown){
 		
-		if(mouseMode != MODE_DRAG){
+		if(mouseMode == MODE_READER){
+			
+			world.deselectAll();
+			reader * rd_ptr = world.getNearestReader(ofVec2f(mouseW.x, mouseW.y));
+			if(rd_ptr)rd_ptr->setIsSelected(true);
+			
+		}else if(mouseMode != MODE_DRAG){
 			currentSelection = world.selectSomething(ofVec2f(mouseW.x,mouseW.y));
 		}
 		
@@ -357,16 +364,17 @@ void testApp::draw(){
 			
 			world.draw(p, roi, testCols[i * 3 + j]);
 			
-			
-			glPushMatrix();
-			glTranslated(p.x, p.y, 0);
-			glDepthFunc(GL_ALWAYS);
-			ofSetColor(0);
-			ofNoFill();
-			ofCircle(mouseW.x, mouseW.y, 5);
-			ofDrawBitmapString(ofToString(mouseW.x,1) + ", " + ofToString(mouseW.y,1), mouseW.x, mouseW.y);
-			glDepthFunc(GL_LESS);
-			glPopMatrix();
+			if(drawData){
+				glPushMatrix();
+				glTranslated(p.x, p.y, 0);
+				glDepthFunc(GL_ALWAYS);
+				ofSetColor(0);
+				ofNoFill();
+				ofCircle(mouseW.x, mouseW.y, 5);
+				ofDrawBitmapString(ofToString(mouseW.x,1) + ", " + ofToString(mouseW.y,1), mouseW.x, mouseW.y);
+				glDepthFunc(GL_LESS);
+				glPopMatrix();
+			}
 			
 			
 		}
@@ -379,6 +387,7 @@ void testApp::draw(){
 	ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate(),2), 900,20);
 	ofDrawBitmapString("mode: " + getModeString(mouseMode), 20,20);
 	ofDrawBitmapString("blipPreset: " + presets[selectedPreset[1]][selectedPreset[0]].getName(), 400,20);
+
 	ofEnableAlphaBlending();
 	ofSetColor(0, 20);
 	ofFill();
@@ -446,6 +455,21 @@ void testApp::startAction(){
 	}else if(currentAction == ACTION_ADD_READER){
 	
 		currentReader = world.addReader(ofVec2f(mouseW.x, mouseW.y));
+		
+	}else if(currentAction == ACTION_FOLLOW_READER){
+
+		currentReader = world.selectReader(ofVec2f(mouseW.x,mouseW.y));
+		if(!currentReader)currentReader = world.getNearestReader(ofVec2f(mouseW.x,mouseW.y));
+		
+	}else if(currentAction == ACTION_ADJUST_READER){
+	
+		currentReader = world.selectReader(ofVec2f(mouseW.x,mouseW.y));
+		if(!currentReader)currentReader = world.getNearestReader(ofVec2f(mouseW.x,mouseW.y));
+		currentReader->beginAdjust();
+		if(!cam.getIsFixed())cam.toggleFollow();
+		cam.restartFollow();
+		
+		
 	}
 
 	
@@ -486,6 +510,11 @@ void testApp::continueAction(){
 	}else if(currentAction == ACTION_ADJUST_NODE){
 	
 		world.calcNode(ofVec2f(mouseW.x,mouseW.y));
+		
+	}else if(currentAction == ACTION_ADJUST_READER){
+	
+		currentReader->adjust(ofVec2f(mouseW.x, mouseW.y));
+		
 	}
 														 
 }
@@ -512,6 +541,15 @@ void testApp::endAction(){
 	}else if(currentAction == ACTION_ADJUST_NODE){
 	
 		world.endNode();
+		
+	}else if(currentAction == ACTION_FOLLOW_READER){
+		
+		world.deselectReaders();
+		
+	}else if(currentAction == ACTION_ADJUST_READER){
+		
+		currentReader->endAdjust();
+		
 	}
 	
 	cam.restartFollow();	
@@ -545,9 +583,13 @@ void testApp::keyPressed  (int key){
 		world.toggleTrackData();
 		world.toggleBlipData();
 		world.toggleScreenData();
+		drawData = !drawData;
 	}
 	
 	if(key == 'z'){cam.setTargetRotation((cam.getRotation(2) > 0)? 0: 90, 2);}
+	if(key == 'x'){cam.setTargetRotation((cam.getRotation(0) > 0)? 0 : 25, 0);}
+	if(key == 'y'){cam.setTargetRotation((cam.getRotation(1) > 0)? 0 : 25, 1);}
+	
 
 }
 
@@ -583,11 +625,15 @@ void testApp::mousePressed(int x, int y, int button){
 	}else if(mouseMode == MODE_WORLD){
 		if(currentSelection == OT_NODE){
 			currentAction = ACTION_ADJUST_NODE;
+		}else if(currentSelection == OT_READER){
+			currentAction = ACTION_FOLLOW_READER;
+			//do a left button right button here
+			
 		}else{
 			currentAction = ACTION_INSERT_SPACE;
 		}
 	}else if(mouseMode == MODE_READER){
-		currentAction = ACTION_ADD_READER;
+		currentAction = (button == 0)? ACTION_ADD_READER : ACTION_FOLLOW_READER;
 	}else if(mouseMode == MODE_TRACK){
 		currentAction = (button == 0 )? ACTION_ADD_SHORT_TRACK: ACTION_ADD_LONG_TRACK;
 	}

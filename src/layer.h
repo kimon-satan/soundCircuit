@@ -38,12 +38,16 @@ public:
 	
 	e_objectType selectSomething(ofVec2f w_pos);
 	void deselectAll();
+	void deselectReaders();
 	
 	void beginInsertion(ofVec2f t_pos, ofVec2f t_dir);
 	void resizeInsertion(float size);
 	void endInsertion();
 
 	reader * addReader(ofVec2f w_pos);
+	reader * selectReader(ofVec2f w_pos);
+	reader * getNearestReader(ofVec2f w_pos);
+	
 	void setOSC(ofxOscSender * s);
 	
 	//getters and setters
