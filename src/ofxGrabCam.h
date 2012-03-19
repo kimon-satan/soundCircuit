@@ -13,10 +13,13 @@ public:
 	void	end(); // Overrides virtual end
 	void	reset();
 	
+	void calcFollowPoint(reader * currentReader,  ofRectangle t_viewPort);
 	void followReader(reader * currentReader, ofRectangle t_viewPort);
 	void pauseFollow();
 	void restartFollow();
 	void toggleFollow();
+	void calcTrans();
+	
 	
 	void incrementRotations();
 	void drag(ofVec2f p_origin, ofVec2f p_now, ofVec3f mouseW);
@@ -45,6 +48,7 @@ protected:
 	int lagCount;
 	bool isFixed, isPaused;
 	ofVec2f trans, direction, followPoint, worldDims;
+	int cReaderIndex;
 
 	//rotations
 	float rots[3];

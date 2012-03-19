@@ -44,6 +44,7 @@ class reader{
 	
 	//getters and setters
 	void setIsSelected(bool t);
+	void setIsAdjusting(bool t);
 	void setLayer(layer * t_layer);
 	ofVec2f getPos();
 	void setPos(ofVec2f t_pos);
@@ -56,7 +57,7 @@ class reader{
 	float getSpeed();
 	bool getIsNewDirection();
 	
-	int getIndex();
+	int getIndex()const;
 	void aquireIndex();
 	
 	private:
@@ -80,7 +81,7 @@ class reader{
 	ofVec2f insertDir;
 	float insertSize;
 	
-	float mSpeed, mIncrement;
+	float mSpeed, mIncrement, maxSpeed;
 	bool isStuck, isNewDirection, isSelected, isAdjusting;
 	
 	int currentNodeIndex;

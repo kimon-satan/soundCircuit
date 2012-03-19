@@ -40,12 +40,9 @@ private:
 	void endAction();
 	
 	enum e_mouseMode {
-		MODE_NONE,
-		MODE_DRAG,
-		MODE_BLIP,
-		MODE_WORLD,
-		MODE_TRACK,
-		MODE_READER,
+		MODE_ADD,
+		MODE_ADJUST,
+		MODE_DESTROY,
 		MODE_COUNT
 	};
 	
@@ -55,11 +52,14 @@ private:
 		ACTION_ADD_SHORT_TRACK,
 		ACTION_ADD_LONG_TRACK,
 		ACTION_ADD_BLIP,
+		ACTION_ADJUST_BLIP,
+		ACTION_DESTROY_BLIP,
 		ACTION_INSERT_SPACE,
 		ACTION_ADJUST_NODE,
 		ACTION_ADD_READER,
-		ACTION_FOLLOW_READER,
 		ACTION_ADJUST_READER,
+		ACTION_DESTROY_READER,
+		ACTION_FOLLOW_READER,
 		ACTION_COUNT
 	};
 	
@@ -86,9 +86,12 @@ private:
 	
 	ofxOscSender sender;
 	reader * currentReader;
+	reader * newReader;
 	
 	e_mouseMode mouseMode;
 	e_mouseMode overrideMode;
+	bool isReader, isTrack;
+	
 	e_objectType currentSelection;
 	e_Action currentAction;
 	int buttonMode;

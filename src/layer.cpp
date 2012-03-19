@@ -9,6 +9,8 @@
 
 #include "layer.h"
 
+
+
 layer::layer():objectRenderer(){
 
 	isScreenData = false;
@@ -78,14 +80,27 @@ void layer::draw(ofVec2f pos, ofRectangle roi, ofColor col){
 }
 
 
-e_objectType layer::selectSomething(ofVec2f w_pos){
+e_objectType layer::selectSomething(ofVec2f w_pos, bool isReader, bool isBlip, bool isNode, bool isTrack){
 
-	deselectTracks();
-	deselectNodes();
-	deselectReaders();
-	if(selectReader(w_pos))return OT_READER;
-	if(selectNode(w_pos))return OT_NODE;
-	if(selectTrackPoint(w_pos))return OT_TRACK;
+	deselectAll();
+	
+	if(isReader){
+		reader * rd_ptr = getNearestReader(w_pos);
+		if(rd_ptr)rd_ptr->setIsSelected(true);	
+		return OT_READER;
+	}
+	
+	//if(isBlip){
+	//	if(selectBlip(w_pos))return OT_BLIP;
+	//}
+	
+	if(isNode){
+		if(selectNode(w_pos))return OT_NODE;
+	}
+	
+	if(isTrack){
+		if(selectTrackPoint(w_pos))return OT_TRACK;
+	}
 		
 	return OT_WORLD;
 
@@ -131,6 +146,19 @@ reader * layer::getNearestReader(ofVec2f w_pos){
 void layer::deselectReaders(){
 
 	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].setIsSelected(false);
+	
+}
+
+
+
+
+void layer::destroyReader(reader * r_ptr){
+
+	if(r_ptr){
+		int t_index = r_ptr->getIndex();
+		vector<reader>::iterator it = remove_if(mReaders.begin(), mReaders.end(),bind2nd(readerIndex(), t_index));
+		mReaders.erase(it, mReaders.end());
+	}
 	
 }
 
@@ -188,8 +216,16 @@ vector<node> layer::getNodes()const{return nodes;}
 vector<blip> layer::getBlips()const{return blips;}
 vector<segment> layer::getTracks()const{return tracks;}
 
-reader * layer::getReaderRef(int i){return &mReaders[i];}
-reader layer::getReader(int i)const{return mReaders[i];}
+reader * layer::getReaderRef(int i){
+
+	vector<reader>::iterator it = find_if(mReaders.begin(), mReaders.end(), bind2nd(readerIndex(), i));
+	return &(*it);
+}
+reader layer::getReader(int i){
+
+	vector<reader>::iterator it = find_if(mReaders.begin(), mReaders.end(), bind2nd(readerIndex(), i));
+	return *it;
+}
 
 void layer::setOSC(ofxOscSender * s){sender = s;}
 

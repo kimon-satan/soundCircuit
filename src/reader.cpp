@@ -16,7 +16,8 @@ int reader::tCounter = 0;
 reader::reader(){
 	
 	body.set(0,0,WORLD_UNIT * 21, WORLD_UNIT * 21);
-	mSpeed = WORLD_UNIT * 200;
+	mSpeed = 200;
+	maxSpeed = 600;
 	direction.set(1,0);
 	isStuck =false;
 	pDir.set(1,0);
@@ -48,7 +49,7 @@ void reader::moduloPosition(){
 
 void reader::move(){
 	
-	mIncrement = mSpeed/ofGetFrameRate();
+	mIncrement = mSpeed * WORLD_UNIT/ofGetFrameRate();
 	
 	if(!isStuck){
 	body.x += direction.x * mIncrement;
@@ -191,7 +192,6 @@ ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
 		
 	}
 	
-
 	int choice = floor(ofRandom(0, 1) * available.size());
 	return available[choice];
 	
@@ -205,20 +205,46 @@ void reader::draw(){
 	glDepthFunc(GL_ALWAYS);
 	ofSetRectMode(OF_RECTMODE_CENTER);
 	
+	glTranslatef(body.x,body.y, 0);
+	
 	ofNoFill();
 	ofSetColor(0);
-	ofRect(body);
+	ofRect(0,0,body.width, body.height);
 	
 	if(isAdjusting){
 		
-		ofCircle(body.x, body.y, WORLD_UNIT * 30);
+		float radius = WORLD_UNIT * 30;
+		ofCircle(0, 0, radius);
+		
+		ofPushStyle();
+		ofFill();
+		ofEnableAlphaBlending();
+		ofSetColor(255, 0, 0, 100);
+
+		ofBeginShape();
+			
+			ofVertex(0,0);
+			ofVec2f o_pos(0, -radius);
+			ofVertex(o_pos.x, o_pos.y);
+			int degs = 360  * mSpeed/maxSpeed;
+			for(int i = 0; i < degs; i ++){
+				o_pos.rotate(1);
+				ofVertex(o_pos.x, o_pos.y);
+			}
+			
+			ofVertex(0, 0);
+		
+		ofEndShape(true);
+		
+		ofDisableAlphaBlending();
+		ofPopStyle();
 		
 	}else if(isSelected){
 		ofPushStyle();
 		ofFill();
 		ofEnableAlphaBlending();
 		ofSetColor(255, 0, 0, 100);
-		ofRect(body.x, body.y, body.width + WORLD_UNIT * 5, body.height + WORLD_UNIT * 5);
+		ofRect(0, 0, body.width + WORLD_UNIT * 5, body.height + WORLD_UNIT * 5);
 		ofPopStyle();
 	}
 	
@@ -258,7 +284,16 @@ void reader::beginAdjust(){
 } 
 
 void reader::adjust(ofVec2f w_pos){
-
+	
+	ofVec2f t_dir(w_pos - ofVec2f(body.x, body.y));
+	float ang = t_dir.angle(ofVec2f(0,1));
+	if(ang < 0){
+		ang = 180 + abs(ang);
+	}else{
+		ang = 180 - abs(ang);
+	}
+	mSpeed = maxSpeed * ang/360;
+	
 }
 
 void reader::endAdjust(){
@@ -298,6 +333,6 @@ void reader::setDirection(ofVec2f dir){direction = dir;}
 float reader::getIncrement(){return mIncrement;}
 void reader::setIsSelected(bool t){isSelected = t;}
 
-void reader::setSpeed(float t){mSpeed = t;}
+void reader::setSpeed(float t){mSpeed = t; mSpeed = max(1.0f,mSpeed); mSpeed = min(maxSpeed, mSpeed);}
 float reader::getSpeed(){return mSpeed;}
-int reader::getIndex(){return index;}
+int reader::getIndex()const{return index;}

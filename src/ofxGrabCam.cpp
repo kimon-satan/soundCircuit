@@ -19,6 +19,7 @@ ofxGrabCam::ofxGrabCam() : initialised(true),kLagFrames(120),kMinIncr(1){
 	
 	isFixed = false;
 	isPaused = false;
+	cReaderIndex = -99;
 	
 	trans.set(0,0);
 	direction.set(1,0);
@@ -64,36 +65,40 @@ void ofxGrabCam::reset() {
 }
 
 
-void ofxGrabCam::followReader(reader * currentReader, ofRectangle t_viewPort){
-
-	//handle camera following reader
+void ofxGrabCam::calcFollowPoint(reader * t_reader, ofRectangle t_viewPort){
 	
-	ofVec2f t_pos(getPosition().x , getPosition().y);
-	
-	if(currentReader){
+	if(t_reader){
 		
+		ofVec2f t_pos(getPosition().x , getPosition().y);
 		//diff is the adjustment for when the Zplane is rotated
 		ofVec2f m_pos(utils::moduloPoint(t_pos, worldDims));
 		ofVec2f diff(getZPlaneProjection(ofVec2f(t_viewPort.width/2,t_viewPort.height/2),t_viewPort));		
 		diff -= m_pos;
-		followPoint.set(currentReader->getPos() - diff);
+		followPoint.set(t_reader->getPos() - diff);
+		
 		
 	}
 	
-	if(!isFixed && !isPaused && currentReader){
+}
+
+void ofxGrabCam::followReader(reader * t_reader, ofRectangle t_viewPort){
+
+	calcFollowPoint(t_reader, t_viewPort);
+	ofVec2f t_pos(getPosition().x , getPosition().y);
+	
+	if(!isFixed && !isPaused && t_reader){
 		
-		//needs t_pos
-		if(currentReader->getIsNewDirection())lagCount = kLagFrames;
+		if(t_reader->getIsNewDirection())lagCount = kLagFrames;
 		
 		t_pos.x = followPoint.x + trans.x;
 		t_pos.y = followPoint.y + trans.y;
 		
 		if(lagCount > 1){
-			trans -= currentReader->getIncrement() * (float)(lagCount/kLagFrames)  * currentReader->getDirection();
-			trans += currentReader->getIncrement()  * (float)(lagCount/kLagFrames) * direction;
+			trans -= t_reader->getIncrement() * (float)(lagCount/kLagFrames)  * t_reader->getDirection();
+			trans += t_reader->getIncrement()  * (float)(lagCount/kLagFrames) * direction;
 			lagCount -= 1;
 		}else if(lagCount ==  1){
-			direction = currentReader->getDirection();
+			direction = t_reader->getDirection();
 			lagCount = 0;
 		}
 		
@@ -115,6 +120,7 @@ void ofxGrabCam::followReader(reader * currentReader, ofRectangle t_viewPort){
 	
 	t_pos = utils::moduloPoint(t_pos, worldDims);
 	setPosition(t_pos.x, t_pos.y, getPosition().z);
+
 	
 }
 
@@ -161,19 +167,16 @@ void ofxGrabCam::pauseFollow(){
 
 void ofxGrabCam::restartFollow(){
 	
-	if(!isFixed){  
-		isPaused = false;
-		trans = ofVec2f(getPosition().x, getPosition().y) - followPoint;
-		trans = utils::moduloPoint(trans, worldDims);
-	}
+	if(!isFixed){isPaused = false;calcTrans();}
 
 }
 
-void ofxGrabCam::toggleFollow(){
+void ofxGrabCam::toggleFollow(){calcTrans();isFixed = !isFixed;}
+
+void ofxGrabCam::calcTrans(){
 	
 	trans = ofVec2f(getPosition().x, getPosition().y) - followPoint;
 	trans = utils::moduloPoint(trans, worldDims);
-	isFixed = !isFixed;
 }
 
 void ofxGrabCam::drag(ofVec2f p_origin, ofVec2f p_now, ofVec3f mouseW){
