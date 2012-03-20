@@ -42,12 +42,15 @@ public:
 	virtual void resizeInsertion(float size);
 	virtual void endInsertion();
 	
+	void beginInsertSpace(ofVec2f t_point, ofVec2f t_dir);
+	void splitSegment(segment &s, ofVec2f s_point, float splitRadius);
+	
 	//getters and setters
 
 	
 	void deselectNodes();
 	void deselectTracks();
-	node * selectNode(ofVec2f t_pos);
+	node * selectNode(ofVec2f t_pos, int rad = 10);
 	segment * selectTrackPoint(ofVec2f t_pos);
 	segment * selectBlip(ofVec2f t_pos, int bZone = 0);
 	

@@ -23,6 +23,7 @@ public:
 	
 	void incrementRotations();
 	void drag(ofVec2f p_origin, ofVec2f p_now, ofVec3f mouseW);
+	void zoom(float t_amount);
 	
 	// convert between spaces
 	ofVec3f getZPlaneProjection(ofVec2f screenPoint, ofRectangle viewport);

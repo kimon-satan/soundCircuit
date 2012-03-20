@@ -115,9 +115,7 @@ void blip::draw(int t_wrap){
 
 bool blip::react(float incr){
 	
-
 	isActive = true;
-	
 	paramAttributes * p = preset.getAttackProp();
 	if(p)preset.getAttackSecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
 	p = preset.getDecayProp();

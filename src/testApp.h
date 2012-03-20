@@ -5,6 +5,7 @@
 #include "ofxOsc.h"
 #include "ofxGrabCam.h"
 
+
 #define HOST "localhost"
 #define PORT 57120
 
@@ -86,7 +87,7 @@ private:
 	
 	ofxOscSender sender;
 	reader * currentReader;
-	reader * newReader;
+	reader * oldReader;
 	
 	e_mouseMode mouseMode;
 	e_mouseMode overrideMode;

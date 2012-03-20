@@ -137,7 +137,7 @@ void ofxGrabCam::incrementRotations() {
 				switch(i){
 					case 0: tilt(1);break;
 					case 1: pan(1); break;
-					case 2: rotate(-1,0,0,1);break;
+					case 2: rotate(1,0,0,1);break;
 				}
 				rots[i] += 1;
 				
@@ -146,7 +146,7 @@ void ofxGrabCam::incrementRotations() {
 				switch(i){
 					case 0: tilt(-1);break;
 					case 1: pan(-1); break;
-					case 2: rotate(1,0,0,1);break;
+					case 2: rotate(-1,0,0,1);break;
 				}
 				rots[i] -= 1;
 			}
@@ -181,22 +181,35 @@ void ofxGrabCam::calcTrans(){
 
 void ofxGrabCam::drag(ofVec2f p_origin, ofVec2f p_now, ofVec3f mouseW){
 	
+	
 	ofVec2f t_dist(p_now - p_origin);
 	
 	float dx = t_dist.x / ofGetViewportWidth();
 	float dy = t_dist.y / ofGetViewportHeight();
 	
 	ofVec3f p = ofCamera::getPosition();
-	ofVec3f uy = ofCamera::getUpDir();
-	ofVec3f ux = ofCamera::getSideDir();
+	ofVec3f uy = ofCamera::getUpDir() * ofVec3f(1,1,0); //cancels out z-movement
+	ofVec3f ux = ofCamera::getSideDir() * ofVec3f(1,1,0);
 	float ar = float(ofGetViewportWidth()) / float(ofGetViewportHeight());
 	
-	//pan
-	float d = (p - mouseW).length();
-	
-	ofCamera::move(dx * -ux * d * ar);
-	ofCamera::move(dy * uy * d);
+	float dist = (p - mouseW).length();
+
+	ofCamera::move(dx * -ux * dist * ar);
+	ofCamera::move(dy * uy * dist);
 } 
+
+void ofxGrabCam::zoom(float amount){
+
+	ofVec3f t_pos(getPosition());
+	ofVec3f z_dir(0,0,1);
+	z_dir *= amount;
+	t_pos += z_dir;
+	if(t_pos.z > -600)return;
+	if(t_pos.z < -worldDims.length()/2)return;
+	setPosition(t_pos);
+
+}
+
 
 //--------------------------
 ofVec3f ofxGrabCam::pickCoordinate(ofVec2f t_mouseP) {

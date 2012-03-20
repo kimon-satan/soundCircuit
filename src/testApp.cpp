@@ -65,7 +65,7 @@ void testApp::setup(){
 	world.setWorldDims(ofVec2f(1500,1500));
 	world.setOSC(&sender);
 	currentReader = NULL;
-	newReader = NULL;
+	oldReader = NULL;
 	
 	/*world.beginTrack(ofVec2f(0,0));
 	world.calcTrack(ofVec2f(1,0),ofVec2f(1,0), 1);
@@ -343,7 +343,7 @@ void testApp::update(){
 				if(isReader){
 					currentSelection = world.selectSomething(ofVec2f(mouseW.x,mouseW.y), true, false, false, false);
 				}else{
-					currentSelection = world.selectSomething(ofVec2f(mouseW.x,mouseW.y), false, true, false, true);
+					currentSelection = world.selectSomething(ofVec2f(mouseW.x,mouseW.y), false, true, true, true);
 				}
 				break;
 			case MODE_DESTROY:
@@ -463,7 +463,8 @@ void testApp::startAction(){
 	}else if(currentAction == ACTION_INSERT_SPACE){
 		
 		ofVec2f orientation = (cam.getRotation(2) > 0)? ofVec2f(0,1):ofVec2f(1,0);
-		world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
+		//world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
+		world.beginInsertSpace(ofVec2f(mouseW.x,mouseW.y), orientation);
 	
 	}else if(currentAction == ACTION_ADJUST_NODE){
 		
@@ -472,8 +473,10 @@ void testApp::startAction(){
 	}else if(currentAction == ACTION_ADD_READER){
 		
 		int oldIndex = (currentReader)? currentReader->getIndex() : -99;
-		newReader = world.addReader(ofVec2f(mouseW.x, mouseW.y));
-		currentReader = (oldIndex == -99) ? newReader : world.getReaderRef(oldIndex);
+		currentReader = world.addReader(ofVec2f(mouseW.x, mouseW.y));
+		if(oldIndex != -99)oldReader = world.getReaderRef(oldIndex);
+		cam.calcFollowPoint(currentReader, viewPort);
+		cam.calcTrans();
 		
 	}else if(currentAction == ACTION_FOLLOW_READER){
 
@@ -484,6 +487,7 @@ void testApp::startAction(){
 		
 		int currentIndex = (currentReader) ? currentReader->getIndex() : -99;
 		reader * t = world.getNearestReader(ofVec2f(mouseW.x,mouseW.y));
+		if(!t)return;
 		if(t->getIndex() == currentIndex)currentIndex = -99;
 		world.destroyReader(t);
 		if(currentIndex == -99){ 
@@ -518,9 +522,9 @@ void testApp::continueAction(){
 	ofVec2f w_dir(mousePick - mousePick_down);
 	
 	if(currentAction == ACTION_DRAG){
-		if(mouseP != mouseP_prev){
+	//	if(mouseP != mouseP_prev){ //for some reason doesn't work when loads of blips ?
 			cam.drag(mouseP_prev, mouseP, mouseW);
-		}
+	//	}
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
 		
@@ -537,7 +541,7 @@ void testApp::continueAction(){
 		float s_angle = abs(s_dir.angle(ofVec2f(0,1)));
 		world.calcBlip(ofVec2f(mouseW.x,mouseW.y),w_dir, s_angle);
 		if(s_dir.length() > 1){
-			presets[selectedPreset[1]][selectedPreset[0]].setUserVals(w_dir.length(),s_angle); 
+			presets[selectedPreset[1]][selectedPreset[0]].setUserVals(min((float)M_VAL * WORLD_UNIT, w_dir.length()),s_angle); 
 			//store the current user vals in the preset
 		}
 		
@@ -554,14 +558,8 @@ void testApp::continueAction(){
 		if(currentReader)currentReader->adjust(ofVec2f(mouseW.x, mouseW.y));
 		
 	}else if(currentAction == ACTION_ADD_READER){
-		if(newReader){
-			
-			if(currentReader != newReader){
-				currentReader = newReader;
-				currentReader->beginAdjust();
-				cam.calcFollowPoint(currentReader, viewPort);
-				cam.calcTrans();
-			}
+		if(currentReader){
+			if(!currentReader->getIsAdjusting())currentReader->beginAdjust();
 			currentReader->adjust(ofVec2f(mouseW.x, mouseW.y));
 		}
 	}
@@ -602,8 +600,16 @@ void testApp::endAction(){
 		
 	}else if(currentAction == ACTION_ADD_READER){
 		
-		if(currentReader)currentReader->endAdjust();
-		newReader = NULL;
+		if(currentReader->getIsAdjusting()){
+			currentReader->endAdjust();
+		}else if(oldReader){
+			currentReader = oldReader;
+			cam.calcFollowPoint(currentReader, viewPort);
+			cam.calcTrans();
+		}
+		
+		oldReader = NULL;
+		
 		
 	}
 	
@@ -639,7 +645,7 @@ void testApp::keyPressed  (int key){
 
 	
 	//debug keys
-	/*if(key == 'f')ofToggleFullscreen();
+	if(key == 'f')ofToggleFullscreen();
 
 	if(key == 'D'){
 		world.toggleNodeData();
@@ -647,10 +653,12 @@ void testApp::keyPressed  (int key){
 		world.toggleBlipData();
 		world.toggleScreenData();
 		drawData = !drawData;
-	}*/
+	}
 	
 	if(key == 'z'){cam.setTargetRotation((cam.getRotation(2) > 0)? 0: 90, 2);}
 	if(key == 'x'){cam.setTargetRotation((cam.getRotation(0) > 0)? 0 : 25, 0);}
+	if(key == 'v'){cam.zoom(-5);}
+	if(key == 'c'){cam.zoom(5);}
 	//if(key == 'y'){cam.setTargetRotation((cam.getRotation(1) > 0)? 0 : 25, 1);}
 	
 
@@ -682,6 +690,8 @@ void testApp::mousePressed(int x, int y, int button){
 		case 0:buttonMode = 0;break;
 		default:buttonMode = 1;break;
 	}
+	
+	
 	
 	switch (mouseMode) {
 		case MODE_ADD:

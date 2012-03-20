@@ -102,13 +102,17 @@ void reader::handleBlips(){
 
 	vector<blip> * t_blips = currentLayer->getBlipsRef();
 	
+	if(currentBlipIndex != -99){ //first kill old blip if reader not inside
+		vector<blip>::iterator it = find_if(t_blips->begin(), t_blips->end(),bind2nd(blipIndex(),currentBlipIndex));
+		if(!it->getInside(ofVec2f(body.x,body.y)) && !testBody.inside(it->getStartPos()))blipOff(it);
+	}
+	
 	for(vector<blip>::iterator it = t_blips->begin(); it != t_blips->end(); it++){
 		
 		if(it->getInside(ofVec2f(body.x,body.y)) || testBody.inside(it->getStartPos())){
 			
-			if(currentBlipIndex != it->getIndex()){
+			if(currentBlipIndex == -99){
 				
-				if(currentBlipIndex != -99)blipOff(currentBlipIndex); //first turn off old synths
 				currentBlipIndex = it->getIndex();
 				
 				it->addOccupant(); 
@@ -133,11 +137,8 @@ void reader::handleBlips(){
 				sender->sendMessage(m);
 				
 			}
-			
-		}else{
-			
-			blipOff(it);
 		}
+		
 	}
 }
 
@@ -281,6 +282,7 @@ void reader::resizeInsertion(float size){
 void reader::beginAdjust(){
 
 	isAdjusting = true;
+	
 } 
 
 void reader::adjust(ofVec2f w_pos){
@@ -319,7 +321,11 @@ bool reader::getInside(ofVec2f pos){
 
 }
 
+void reader::endCurrentBlips(){
 
+	if(currentBlipIndex >= 0)blipOff(currentBlipIndex);
+	
+}
 
 //getters and setters
 
@@ -332,6 +338,7 @@ ofVec2f reader::getDirection(){return direction;}
 void reader::setDirection(ofVec2f dir){direction = dir;}
 float reader::getIncrement(){return mIncrement;}
 void reader::setIsSelected(bool t){isSelected = t;}
+bool reader::getIsAdjusting(){return isAdjusting;}
 
 void reader::setSpeed(float t){mSpeed = t; mSpeed = max(1.0f,mSpeed); mSpeed = min(maxSpeed, mSpeed);}
 float reader::getSpeed(){return mSpeed;}

@@ -12,6 +12,8 @@
 
 #define WORLD_UNIT 1
 #define MIN_TRACK 30
+#define M_VAL 250
+
 #include "ofMain.h"
 
 class utils{

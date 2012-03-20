@@ -41,10 +41,11 @@ class reader{
 	void endAdjust();
 	
 	bool getInside(ofVec2f pos);
+	void endCurrentBlips();
 	
 	//getters and setters
 	void setIsSelected(bool t);
-	void setIsAdjusting(bool t);
+	bool getIsAdjusting();
 	void setLayer(layer * t_layer);
 	ofVec2f getPos();
 	void setPos(ofVec2f t_pos);

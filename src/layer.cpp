@@ -95,7 +95,7 @@ e_objectType layer::selectSomething(ofVec2f w_pos, bool isReader, bool isBlip, b
 	//}
 	
 	if(isNode){
-		if(selectNode(w_pos))return OT_NODE;
+		if(selectNode(w_pos, kTestSize))return OT_NODE;
 	}
 	
 	if(isTrack){
@@ -156,9 +156,18 @@ void layer::destroyReader(reader * r_ptr){
 
 	if(r_ptr){
 		int t_index = r_ptr->getIndex();
+		r_ptr->endCurrentBlips();
 		vector<reader>::iterator it = remove_if(mReaders.begin(), mReaders.end(),bind2nd(readerIndex(), t_index));
 		mReaders.erase(it, mReaders.end());
 	}
+	
+}
+
+
+void layer::beginInsertSpace(ofVec2f t_pos, ofVec2f t_dir){
+	
+	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].beginInsertion(t_pos, t_dir);
+	objectManager::beginInsertSpace(t_pos, t_dir);
 	
 }
 

@@ -49,6 +49,7 @@ public:
 	void deselectAll();
 	void deselectReaders();
 	
+	void beginInsertSpace(ofVec2f t_pos, ofVec2f t_dir);
 	void beginInsertion(ofVec2f t_pos, ofVec2f t_dir);
 	void resizeInsertion(float size);
 	void endInsertion();

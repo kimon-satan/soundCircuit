@@ -28,7 +28,7 @@ void objectManager::beginTrack(ofVec2f w_pos){
 	
 	deselectNodes();
 	deselectTracks();
-	s_nodes[0] = selectNode(w_pos);
+	s_nodes[0] = selectNode(w_pos, kTestSize);
 	
 	if(s_nodes[0]){
 		w_pos = s_nodes[0]->getPos();
@@ -75,7 +75,7 @@ void objectManager::endTrack(){
 			int mul = (i == 0) ? 1 : -1;
 			
 			//first check if node is already created
-			node * n = selectNode(pos);
+			node * n = selectNode(pos, 7);
 			
 			if(!n){
 				node t(pos);
@@ -127,7 +127,7 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 		return;
 	}else if(selectBlip(w_pos, 3)){
 		return;
-	}else if(selectNode(w_pos)){
+	}else if(selectNode(w_pos, kTestSize)){
 		return;
 	}else{
 		s_pos[0] = s_tracks[0]->getSelectPos();
@@ -154,8 +154,8 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir, float s_angle){
 	
 	
 	//preset parameter sorting
-
-	float userA = t_dir.length();
+	float m_val = (float)WORLD_UNIT * M_VAL;
+	float userA = min(m_val,t_dir.length());
 	float userB = s_angle;
 	userB = abs(userB);
 	
@@ -165,8 +165,6 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir, float s_angle){
 	}
 	
 	blipPreset & p = previewBlip.getPresetRef();
-	
-	float m_val = WORLD_UNIT * 1000; //make into a constant
 	
 	setParam(p.getLength(),userA, userB, m_val);
 	setParam(p.getAttackSecs(),userA, userB, m_val);
@@ -295,7 +293,7 @@ void objectManager::beginNode(ofVec2f w_pos ,int mode){
 
 	deselectNodes();
 	deselectTracks();
-	s_nodes[0] = selectNode(w_pos);
+	s_nodes[0] = selectNode(w_pos, kTestSize);
 	if(s_nodes[0])s_nodes[0]->setIsAdjusting(true);
 	for(int i = 0; i < 4; i++)nodeSet[i]=false;
 	
@@ -366,7 +364,7 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	
 	ofVec2f t_pos_0(s_pos[0]); //copied to local so as not lose original sp
 	
-	s_nodes[1] = selectNode(w_pos);
+	s_nodes[1] = selectNode(w_pos,kTestSize);
 
 	if(!s_nodes[1])s_tracks[1] = selectTrackPoint(w_pos);
 	
@@ -430,7 +428,7 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	dirs[0].set(0, size.y); 
 	dirs[1].set(size.x,0);
 	
-	if(abs(size.x) < 10 * WORLD_UNIT || abs(size.y) < 10 * WORLD_UNIT){ //if nearly aligned try a single track first
+	if(abs(size.x) < kTestSize * WORLD_UNIT || abs(size.y) < kTestSize * WORLD_UNIT){ //if nearly aligned try a single track first
 		
 		if(!s_nodes[1]){
 			
@@ -590,8 +588,59 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 }
 
 
+void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir){
+
+	beginInsertion(t_point, t_dir);
+	resizeInsertion(kTestSize); // insert a minimum amount of space
+	insertSize -= kTestSize; //compensates for the extra space inserted
+	
+	for(int i = 0; i < tracks.size(); i++){
+		
+		if(tracks[i].getDirection() == insertDir){
+			
+			ofVec2f testPoint(tracks[i].getStartPos() * ofVec2f(insertDir.y,insertDir.x) + insertDir * insertPoint);
+			
+			if(tracks[i].getInside(testPoint)){
+				
+				splitSegment(tracks[i], testPoint, kTestSize);
+				
+			}
+		}
+	}
+
+}
 
 
+void objectManager::splitSegment(segment & s, ofVec2f s_point, float splitRadius){
+		
+		//select blip here
+		//if there is a blip move split point to ep + splitRadius
+	
+		//get new data for old segment
+		ofVec2f o_ep = s_point - s.getDirection() * splitRadius;
+		ofVec2f o_vec = o_ep - s.getStartPos();
+		if(o_vec.x + o_vec.y < 0){o_vec += world_dims * s.getDirection();} //wrap correction
+		float t_length = s.getLength();
+		s.setLength(o_vec.length());
+		updateTestAreas(s);
+		
+		//the new segment
+		segment n_seg = s;
+		float n_length = t_length - (o_vec.length() + splitRadius * 2); //the remainder is the new length
+		n_seg.setLength(n_length);
+		ofVec2f n_sp = s_point + s.getDirection() * splitRadius;
+		n_seg.setStartPos(n_sp);
+		updateTestAreas(n_seg);
+		
+		tracks.push_back(n_seg);
+		tracks.back().aquireIndex();
+		
+		//add extra nodes here
+		
+		//
+	
+
+}
 
 
 void objectManager::beginInsertion(ofVec2f t_point, ofVec2f t_dir){
@@ -639,6 +688,8 @@ void objectManager::resizeInsertion(float size){
 		updateTestAreas(tracks[i]);
 		
 	}
+	
+	
 	
 	for(int i = 0; i < blips.size(); i++){
 		
@@ -859,13 +910,13 @@ void objectManager::deselectTracks(){
 	s_tracks[0] = NULL; s_tracks[1] = NULL;
 }
 
-node * objectManager::selectNode(ofVec2f t_pos){
+node * objectManager::selectNode(ofVec2f t_pos, int rad){
 	
 	node * n = NULL;
 	
 	for(int i = 0; i < nodes.size(); i++){
 		
-		if( t_pos.distance(nodes[i].getPos()) < kTestSize * (float)WORLD_UNIT/2){
+		if( t_pos.distance(nodes[i].getPos()) < rad * (float)WORLD_UNIT/2){
 			n = &nodes[i];
 			nodes[i].setSelected(true);
 			break;
