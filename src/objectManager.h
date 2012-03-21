@@ -42,7 +42,7 @@ public:
 	virtual void resizeInsertion(float size);
 	virtual void endInsertion();
 	
-	void beginInsertSpace(ofVec2f t_point, ofVec2f t_dir);
+	void beginInsertSpace(ofVec2f t_point, ofVec2f t_dir, float t_size);
 	segment splitSegment(segment &s, ofVec2f s_point, float splitRadius);
 	void splitBlip(blip & b, ofVec2f t_point);
 	void splitTrack(segment & s, ofVec2f t_point);
@@ -87,6 +87,8 @@ protected:
 	//helpers
 	
 	void updateBlipDraw(blip & tb);
+	ofVec2f flipBoundaryPoint(ofVec2f t);
+	bool checkNode(node & n, ofVec2f t_pos, int rad);
 	
 	
 	//member variables

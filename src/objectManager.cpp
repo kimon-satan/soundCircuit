@@ -30,7 +30,8 @@ void objectManager::beginTrack(ofVec2f w_pos){
 	
 	deselectNodes();
 	deselectTracks();
-	s_nodes[0] = selectNode(w_pos, kTestSize);
+	
+	s_nodes[0] = selectNode(w_pos, kTestSize/2);
 	
 	if(s_nodes[0]){
 		w_pos = s_nodes[0]->getPos();
@@ -70,7 +71,7 @@ void objectManager::endTrack(){
 		
 		tracks.push_back(previewTracks[j]);
 		tracks.back().aquireIndex();
-		addNodesToTrack(previewTracks[j]);
+		addNodesToTrack(tracks.back());
 		previewTracks[j].setIsValid(false);
 		
 	}
@@ -89,6 +90,26 @@ void objectManager::endTrack(){
 
 
 
+ofVec2f objectManager::flipBoundaryPoint(ofVec2f t){
+
+	ofVec2f flipped(t);
+	
+	if(flipped.x >= world_dims.x/2 - kTestSize/2){
+		flipped.x -= world_dims.x;
+	}else if(flipped.x <= -world_dims.x/2 + kTestSize/2){
+		flipped.x += world_dims.x;
+	}
+	
+	if(flipped.y >= world_dims.y/2 - kTestSize/2){
+		flipped.y -= world_dims.y;
+	}else if(flipped.y <= -world_dims.y/2 + kTestSize/2){
+		flipped.y += world_dims.y;
+	}
+	
+	return flipped;
+	
+}
+
 
 void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 	
@@ -101,7 +122,7 @@ void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 		return;
 	}else if(selectBlip(w_pos, 3)){
 		return;
-	}else if(selectNode(w_pos, kTestSize)){
+	}else if(selectNode(w_pos, kTestSize/2)){
 		return;
 	}else{
 		s_pos[0] = s_tracks[0]->getSelectPos();
@@ -267,7 +288,7 @@ void objectManager::beginNode(ofVec2f w_pos ,int mode){
 
 	deselectNodes();
 	deselectTracks();
-	s_nodes[0] = selectNode(w_pos, kTestSize);
+	s_nodes[0] = selectNode(w_pos, kTestSize/2);
 	if(s_nodes[0])s_nodes[0]->setIsAdjusting(true);
 	for(int i = 0; i < 4; i++)nodeSet[i]=false;
 	
@@ -285,6 +306,13 @@ void objectManager::calcNode(ofVec2f w_pos){
 	if(!s_nodes[0])return;
 	
 	float dist = w_pos.distance(s_nodes[0]->getPos());
+	
+	if(dist > kTestSize){
+		//try flipping it
+		w_pos = flipBoundaryPoint(w_pos);
+		dist = w_pos.distance(s_nodes[0]->getPos());
+		
+	}
 	
 	if(dist < kTestSize * (float)WORLD_UNIT * 0.75f && 
 	   dist > kTestSize * (float)WORLD_UNIT * 0.25f
@@ -338,7 +366,7 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	
 	ofVec2f t_pos_0(s_pos[0]); //copied to local so as not lose original sp
 	
-	s_nodes[1] = selectNode(w_pos,kTestSize);
+	s_nodes[1] = selectNode(w_pos,kTestSize/2);
 
 	if(!s_nodes[1])s_tracks[1] = selectTrackPoint(w_pos);
 	
@@ -360,7 +388,9 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 		
 		if(!recalc)recalc = findNodeIntersects(previewTracks[0]);
 		
-		if(previewTracks[0].getLength() < WORLD_UNIT * 20)recalc = true;
+		if(previewTracks[0].getLength() < WORLD_UNIT * MIN_TRACK){
+			recalc = true;
+		}
 		
 		if(recalc){
 			for(int j = 0; j < 2; j ++)previewTracks[j].setIsValid(false);
@@ -384,10 +414,9 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	
 	size.set(s_pos[1] - t_pos_0);
 	
-	
 	sps[0].set(t_pos_0);
 	
-	ofVec2f q(size/t_dir);
+	ofVec2f q(size/t_dir); //negative q value indicates a wrap
 	q.normalize();
 	
 	//wrapping adjustment for lengths
@@ -402,7 +431,7 @@ void objectManager::calcTrack_0(ofVec2f w_pos, ofVec2f t_dir){
 	dirs[0].set(0, size.y); 
 	dirs[1].set(size.x,0);
 	
-	if(abs(size.x) < kTestSize * WORLD_UNIT || abs(size.y) < kTestSize * WORLD_UNIT){ //if nearly aligned try a single track first
+	if(abs(size.x) < kTestSize/2 * WORLD_UNIT || abs(size.y) < kTestSize/2 * WORLD_UNIT){ //if nearly aligned try a single track first
 		
 		if(!s_nodes[1]){
 			
@@ -515,7 +544,7 @@ void objectManager::addNodesToTrack(segment & s){
 		int mul = (i == 0) ? 1 : -1;
 		
 		//first check if node is already created
-		node * n = selectNode(pos, 7);
+		node * n = selectNode(pos, kTestSize/4);
 		
 		if(!n){
 			node t(pos);
@@ -524,29 +553,33 @@ void objectManager::addNodesToTrack(segment & s){
 			nodes.push_back(t);
 			n = &nodes.back();
 			
+			//in case new node lies on an existing track
+			segment * ts = selectTrackPoint(n->getPos());
+			if(ts){
+				if(ts->getIndex() != s.getIndex()){
+					n->addSocket(ts->getDirection()); //potential risk of reader skipping off track ? 
+					n->openSocket(ts->getDirection());
+					n->addSocket(-ts->getDirection());
+					n->openSocket(-ts->getDirection());
+					n->closeSocket(s.getDirection() * mul); //close the socket as default
+				}
+			}
+			
+			//in case new node is on a bridge point
+			ofVec2f t_pos(pos - s.getDirection() *  WORLD_UNIT * 5 * mul); // point slightly outside the track
+			ts = selectTrackPoint(t_pos);
+			if(ts){
+				n->addSocket(-ts->getDirection() * mul);
+				n->openSocket(-ts->getDirection() * mul);
+			}
+			
+			
 		}else{
 			n->addSocket(s.getDirection() * mul);
-			n->openSocket(s.getDirection() * mul);
+			if(n->getNumSockets() < 3)n->openSocket(s.getDirection() * mul); //otherwise leave as is
 		}
 		
-		//in case new node lies on an existing track
-		segment * ts = selectTrackPoint(n->getPos());
-		if(ts){
-			if(ts->getIndex() != s.getIndex()){
-				n->addSocket(ts->getDirection()); //potential risk of reader skipping off track ? 
-				n->openSocket(ts->getDirection());
-				n->addSocket(-ts->getDirection());
-				n->openSocket(-ts->getDirection());
-			}
-		}
 		
-		//in case new node is on a bridge point
-		ofVec2f t_pos(pos - s.getDirection() *  WORLD_UNIT * 5 * mul); // point slightly outside the track
-		ts = selectTrackPoint(t_pos);
-		if(ts){
-			n->addSocket(-ts->getDirection() * mul);
-			n->openSocket(-ts->getDirection() * mul);
-		}
 
 		
 	}
@@ -608,7 +641,7 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 }
 
 
-void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir){
+void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir, float t_size){
 
 	beginInsertion(t_point, t_dir);
 	
@@ -622,7 +655,7 @@ void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir){
 			
 			if(tracks[i].getInside(testPoint)){
 				
-				blip * tb = selectBlip(testPoint, kTestSize/2);
+				blip * tb = selectBlip(testPoint, kTestSize);
 				if(tb)splitBlip(*tb, testPoint);
 				segment n_seg = splitSegment(tracks[i], testPoint, 1);
 				if(n_seg.getLength() > MIN_TRACK * WORLD_UNIT){
@@ -630,19 +663,18 @@ void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir){
 					n_seg.setIsValid(true);
 					newTracks.push_back(n_seg);
 				}else{
-					node * n = selectNode(n_seg.getEndPos(), kTestSize/2);
+					node * n = selectNode(n_seg.getEndPos(), (float)kTestSize/4);
 					if(n)n->removeSocket(-n_seg.getDirection());
 				}
 				
 				if(tracks[i].getLength() > MIN_TRACK * WORLD_UNIT){
 					newTracks.push_back(tracks[i]);
 				}else{
-					node * n = selectNode(tracks[i].getStartPos(), kTestSize/2);
+					node * n = selectNode(tracks[i].getStartPos(), (float)kTestSize/4);
 					if(n)n->removeSocket(tracks[i].getDirection());
 				}
 				
 				tracks[i].setIsValid(false);
-				
 				
 			}
 		}
@@ -653,13 +685,12 @@ void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir){
 	
 	vector<segment>::iterator it = remove_if(tracks.begin(), tracks.end(), trackIsInvalid);
 	tracks.erase(it, tracks.end());
+	for(it = newTracks.begin(); it != newTracks.end(); it++)tracks.push_back(*it);
 	
-	int i = tracks.size(); // the last of the old tracks
-	for(vector<segment>::iterator it2 = newTracks.begin(); it2 != newTracks.end(); it2++)tracks.push_back(*it2);
-	
-	resizeInsertion(kTestSize/2);
+	resizeInsertion(t_size);
+	insertSize = 0;
 
-	for(i; i < tracks.size(); i ++)addNodesToTrack(tracks[i]);
+	for(int i = 0; i < tracks.size(); i ++)addNodesToTrack(tracks[i]);
 	
 	vector<node>::iterator n_it = remove_if(nodes.begin(), nodes.end(), nodeSuperfluous);
 	nodes.erase(n_it, nodes.end());
@@ -702,6 +733,8 @@ void objectManager::splitBlip(blip & b, ofVec2f t_point){
 
 segment objectManager::splitSegment(segment & s, ofVec2f s_point, float splitRadius){
 
+	//to do add a method to handle when node intersect
+	
 	//the old segment
 	ofVec2f o_ep = s_point - s.getDirection();
 	ofVec2f o_vec = o_ep - s.getStartPos();
@@ -738,6 +771,7 @@ void objectManager::resizeInsertion(float size){
 	float diff = size - insertSize;
 	world_dims += insertDir * diff * 2;
 	insertSize = size;
+	
 	float testInsert = insertPoint.x * insertDir.x + insertPoint.y * insertDir.y;
 	
 	for(int i = 0; i < nodes.size();i++){
@@ -759,7 +793,14 @@ void objectManager::resizeInsertion(float size){
 		if(tracks[i].getDirection() == insertDir){
 			
 			ofVec2f testPoint(tracks[i].getStartPos() * ofVec2f(insertDir.y,insertDir.x) + insertDir * insertPoint);
-			if(tracks[i].getInside(testPoint)){
+			
+			//test with a spread of points so as no chance of creating gaps on bridged tracks
+			//leads to overlaps but seems ok
+			
+			if(tracks[i].getInside(testPoint)|| 
+			   tracks[i].getInside(testPoint + insertDir * 1) ||
+			   tracks[i].getInside(testPoint - insertDir * 1))
+			{
 				float length = tracks[i].getLength() + diff * 2;
 				tracks[i].setLength(length);
 				
@@ -816,12 +857,17 @@ bool objectManager::findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<of
 				
 				ofVec2f t_pos(origin * ofVec2f(t_dir.y,t_dir.x) + tracks[i].getStartPos() * t_dir);
 				
-				if(tracks[i].getInside(t_pos)){
+				
+				if(tracks[i].getInside(t_pos) 
+				   || tracks[i].getInside(t_pos + tracks[i].getDirection() * (float)kTestSize/4 * WORLD_UNIT) 
+				   || tracks[i].getInside(t_pos - tracks[i].getDirection() * (float)kTestSize/4 * WORLD_UNIT)
+				   ){
 					
 					if(&s == &DSEG || s.getInside(t_pos)){
 						if(&t_points != &DPOINTS){
 							t_points.push_back(t_pos);
 							isIntersect = true;
+							
 						}else{
 							return true;
 						}
@@ -929,19 +975,27 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points, 
 		
 		if(!nodes[i].getIsSelected()){
 			
-			if(s.getInside(nodes[i].getPos())){
+			ofVec2f n_pos(nodes[i].getPos());
+			ofVec2f f_pos(flipBoundaryPoint(nodes[i].getPos()));
+			ofVec2f t_pos(s.getInside(n_pos)? n_pos : f_pos);
+						  
+			if(s.getInside(t_pos)){
 				
 				if(&t_points != &DPOINTS){
 					
 					if(includeTestArea){
 						
-						ofVec2f tmp(nodes[i].getPos() +  s.getDirection() * rad);
+						ofVec2f tmp(t_pos +  s.getDirection() * rad);
 						if(s.getInside(tmp))t_points.push_back(tmp);
-						tmp.set(nodes[i].getPos() -  s.getDirection() * rad);
+						tmp.set(t_pos -  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+						tmp.set(f_pos +  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+						tmp.set(f_pos -  s.getDirection() * rad);
 						if(s.getInside(tmp))t_points.push_back(tmp);
 						
 					}else{
-					   t_points.push_back(nodes[i].getPos());
+					   t_points.push_back(t_pos);
 					}
 					isIntersect = true;
 				}else{
@@ -949,17 +1003,19 @@ bool objectManager::findNodeIntersects(segment & s, vector<ofVec2f> & t_points, 
 					
 				}
 				
-			}else if( s.getStartPos().distance(nodes[i].getPos()) < rad ||
-					  s.getEndPos().distance(nodes[i].getPos()) < rad
-					 ){
+			}else if(checkNode(nodes[i], s.getStartPos(), rad) || checkNode(nodes[i], s.getEndPos(), rad)){
 				
 				if(&t_points != &DPOINTS){
 					isIntersect = true;
 					
 					if(includeTestArea){
-						ofVec2f tmp(nodes[i].getPos() +  s.getDirection() * rad);
+						ofVec2f tmp(n_pos +  s.getDirection() * rad);
 						if(s.getInside(tmp))t_points.push_back(tmp);
-						tmp.set(nodes[i].getPos() -  s.getDirection() * rad);
+						tmp.set(n_pos -  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+						tmp.set(f_pos +  s.getDirection() * rad);
+						if(s.getInside(tmp))t_points.push_back(tmp);
+						tmp.set(f_pos -  s.getDirection() * rad);
 						if(s.getInside(tmp))t_points.push_back(tmp);
 					}
 				}else{
@@ -1001,7 +1057,7 @@ node * objectManager::selectNode(ofVec2f t_pos, int rad){
 	
 	for(int i = 0; i < nodes.size(); i++){
 		
-		if( t_pos.distance(nodes[i].getPos()) < rad * (float)WORLD_UNIT/2){
+		if(checkNode(nodes[i], t_pos, rad)){
 			n = &nodes[i];
 			nodes[i].setSelected(true);
 			break;
@@ -1011,15 +1067,33 @@ node * objectManager::selectNode(ofVec2f t_pos, int rad){
 	return n;
 }
 
+bool objectManager::checkNode(node & n, ofVec2f t_pos, int rad){
+
+	ofVec2f f_pos(flipBoundaryPoint(t_pos));
+	if( t_pos.distance(n.getPos()) < rad * (float)WORLD_UNIT ||
+	   f_pos.distance(n.getPos()) < rad * (float)WORLD_UNIT 
+	   ){
+		return true;
+	}
+	
+	return false;
+}
+
 segment * objectManager::selectTrackPoint(ofVec2f t_pos){
 	
 	segment * t = NULL;
+	ofVec2f f_pos(flipBoundaryPoint(t_pos));
 	
 	for(int i = 0; i < tracks.size(); i++){
 		if(tracks[i].getInside(t_pos)){
 			t = &tracks[i];
 			t->setSelected(true, t_pos);
-			break;}
+			break;
+		}else if(tracks[i].getInside(f_pos)){
+			t = &tracks[i];
+			t->setSelected(true, f_pos);
+			break;
+		}
 	}
 	
 	return t;

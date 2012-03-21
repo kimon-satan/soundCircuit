@@ -37,6 +37,7 @@ public:
 	
 	//getters and setters
 	
+	int getNumSockets();
 	ofVec2f getPos();
 	void setPos(ofVec2f p);
 	void setSelected(bool t);

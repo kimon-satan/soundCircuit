@@ -95,7 +95,7 @@ e_objectType layer::selectSomething(ofVec2f w_pos, bool isReader, bool isBlip, b
 	//}
 	
 	if(isNode){
-		if(selectNode(w_pos, kTestSize))return OT_NODE;
+		if(selectNode(w_pos, kTestSize/2))return OT_NODE;
 	}
 	
 	if(isTrack){
@@ -166,8 +166,11 @@ void layer::destroyReader(reader * r_ptr){
 
 void layer::beginInsertSpace(ofVec2f t_pos, ofVec2f t_dir){
 	
-	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].beginInsertion(t_pos, t_dir);
-	objectManager::beginInsertSpace(t_pos, t_dir);
+	float initSpace = kTestSize/2;
+	
+	objectManager::beginInsertSpace(t_pos, t_dir, initSpace);
+	for(int i = 0; i < mReaders.size(); i ++){mReaders[i].beginInsertion(t_pos, t_dir, initSpace);}
+	
 	for(int i = 0; i < mReaders.size(); i ++)if(!selectTrackPoint(mReaders[i].getPos()))destroyReader(&mReaders[i]);
 	deselectAll();
 	
@@ -175,7 +178,7 @@ void layer::beginInsertSpace(ofVec2f t_pos, ofVec2f t_dir){
 
 void layer::beginInsertion(ofVec2f t_pos, ofVec2f t_dir){
 
-	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].beginInsertion(t_pos, t_dir);
+	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].beginInsertion(t_pos, t_dir,0);
 	objectManager::beginInsertion(t_pos, t_dir);
 	
 }

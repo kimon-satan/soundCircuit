@@ -266,7 +266,7 @@ void objectUtils::updateTestAreas(segment & t){
 			ofVec2f right_i(world_dims.x/2, wsp.y);
 			
 			dims.set((right_i - wsp).length() + WORLD_UNIT,WORLD_UNIT * kTestSize);
-			w_dims.set((wp - left_i).length() ,WORLD_UNIT * kTestSize);
+			w_dims.set((wp - left_i).length(),WORLD_UNIT * kTestSize);
 			tlc.set(wsp.x + WORLD_UNIT, wsp.y -WORLD_UNIT * kTestSize/2);
 			w_tlc.set(left_i.x - WORLD_UNIT,left_i.y -WORLD_UNIT * kTestSize/2);
 			
@@ -284,7 +284,7 @@ void objectUtils::updateTestAreas(segment & t){
 			ofVec2f top_i(t.getStartPos().x, -world_dims.y/2);
 			ofVec2f bottom_i(t.getStartPos().x, world_dims.y/2);
 			
-			dims.set(WORLD_UNIT * kTestSize,(bottom_i - wsp).length()+WORLD_UNIT);
+			dims.set(WORLD_UNIT * kTestSize,(bottom_i - wsp).length() +WORLD_UNIT);
 			w_dims.set(WORLD_UNIT * kTestSize,(wp - top_i).length());
 			
 			tlc.set(wsp.x - WORLD_UNIT * kTestSize/2, wsp.y + WORLD_UNIT);

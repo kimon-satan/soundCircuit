@@ -9,7 +9,7 @@ ofxGrabCam::ofxGrabCam() : initialised(true),kLagFrames(120),kMinIncr(1){
 	//set up camera
 	
 	setPosition(0, 0, 800);
-	setFarClip(2000);
+	setFarClip(4000);
 	setNearClip(200);
 	
 	ofVec3f c(0,0,0);
@@ -205,7 +205,9 @@ void ofxGrabCam::zoom(float amount){
 	z_dir *= amount;
 	t_pos += z_dir;
 	if(t_pos.z > -600)return;
-	if(t_pos.z < -worldDims.length()/2)return;
+	float min_z = max(-worldDims.x, -worldDims.y);
+	min_z *= 0.75;
+	if(t_pos.z < min_z)return;
 	setPosition(t_pos);
 
 }

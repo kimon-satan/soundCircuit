@@ -110,6 +110,7 @@ void reader::handleBlips(){
 
 		if(it == t_blips->end()){
 			blipOff(currentBlipIndex); //the blip no longer exists
+			currentBlipIndex = -99;
 		}else{
 			if(!it->getInside(ofVec2f(body.x,body.y)) && !testBody.inside(it->getStartPos()))blipOff(it);
 		}
@@ -273,10 +274,11 @@ void reader::draw(){
 
 
 
-void reader::beginInsertion(ofVec2f t_point, ofVec2f t_dir){
+void reader::beginInsertion(ofVec2f t_point, ofVec2f t_dir, float t_size){
 	
 	insertPoint.set(t_point);
 	insertDir.set(t_dir);
+	//resizeInsertion(t_size);
 	insertSize = 0;
 	
 }

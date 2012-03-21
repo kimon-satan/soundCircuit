@@ -300,8 +300,7 @@ void testApp::update(){
 	//coordinate picking
 	
 	cam.begin(viewPort);
-	mouseP_prev.set(mouseP);
-	mouseP.set(mouseX, mouseY);
+
 	mousePick = cam.getZPlaneProjection(mouseP, viewPort);
 	for(int i = 0; i < VP_coords.size(); i++){
 		VPW_coords[i] = cam.getZPlaneProjection(VP_coords[i],viewPort);
@@ -527,9 +526,11 @@ void testApp::continueAction(){
 	ofVec2f w_dir(mousePick - mousePick_down);
 	
 	if(currentAction == ACTION_DRAG){
-	//	if(mouseP != mouseP_prev){ //for some reason doesn't work when loads of blips ?
+		if(mouseP != mouseP_prev){ //for some reason doesn't work when loads of blips ?
 			cam.drag(mouseP_prev, mouseP, mouseW);
-	//	}
+		}else{
+			cout << mouseP << " :: "<< mouseP_prev << endl;
+		}
 		
 	}else if(currentAction == ACTION_ADD_SHORT_TRACK){
 		
@@ -574,6 +575,8 @@ void testApp::continueAction(){
 
 void testApp::endAction(){
 	
+	
+	
 	if(currentAction == ACTION_DRAG){
 		
 		
@@ -587,7 +590,7 @@ void testApp::endAction(){
 		isPreview = false;
 		world.endBlip();
 		
-	}else if(currentAction == ACTION_INSERT_SPACE || ACTION_STRETCH_SPACE){
+	}else if(currentAction == ACTION_INSERT_SPACE || currentAction == ACTION_STRETCH_SPACE){
 		
 		world.endInsertion();
 		
@@ -601,12 +604,14 @@ void testApp::endAction(){
 		
 	}else if(currentAction == ACTION_ADJUST_READER){
 		
-		if(currentReader)currentReader->endAdjust();
+		if(currentReader){
+			currentReader->endAdjust();
+		}
 		
 	}else if(currentAction == ACTION_ADD_READER){
 		
-		if(currentReader->getIsAdjusting()){
-			currentReader->endAdjust();
+		if(currentReader){
+			if(currentReader->getIsAdjusting())currentReader->endAdjust();
 		}else if(oldReader){
 			currentReader = oldReader;
 			cam.calcFollowPoint(currentReader, viewPort);
@@ -680,7 +685,8 @@ void testApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ){
-	
+	mouseP_prev.set(mouseP);
+	mouseP.set(x, y);
 	
 }
 
@@ -752,7 +758,8 @@ void testApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-	
+	mouseP_prev.set(mouseP);
+	mouseP.set(x, y);
 	continueAction();
 
 }
@@ -765,9 +772,7 @@ void testApp::mouseReleased(int x, int y, int button){
 	
 	isMouseDown = false;
 	currentAction = ACTION_NONE;
-	
 	mouseP_down.set(0,0);
-	mouseP.set(0,0);
 }
 
 

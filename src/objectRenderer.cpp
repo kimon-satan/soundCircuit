@@ -256,10 +256,10 @@ void objectRenderer::drawNodes(){
 			ofCircle(pos, kTestSize * WORLD_UNIT/2);
 			ofDrawBitmapString(ofToString(it->getIndex()), pos - WORLD_UNIT *3);
 			
-			ofSetColor(0);
+			ofSetColor(0,0,255);
 			ofFill();
 			vector<bool> sockets = it->getAllSockets();
-			float innerRad = kCircleRadius * 3 - (WORLD_UNIT * 3);
+			float innerRad = kCircleRadius * 0.75;
 			glPushMatrix();
 			glTranslatef(pos.x, pos.y, -WORLD_UNIT);
 			for(int i = 0; i < 4; i ++){

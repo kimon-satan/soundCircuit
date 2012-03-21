@@ -26,7 +26,7 @@ class reader{
 	void update();
 	void draw();
 
-	void beginInsertion(ofVec2f t_point, ofVec2f t_dir);
+	void beginInsertion(ofVec2f t_point, ofVec2f t_dir, float t_size);
 	void resizeInsertion(float size);
 	
 	void beginAdjust();

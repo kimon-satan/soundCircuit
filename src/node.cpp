@@ -118,6 +118,7 @@ bool node::getSuperfluous(){
 
 //getters and setters
 
+int node::getNumSockets(){return numSockets;}
 ofVec2f node::getPos(){return pos;}
 void node::setPos(ofVec2f p){pos = p;}
 
