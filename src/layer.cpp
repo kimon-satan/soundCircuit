@@ -168,6 +168,8 @@ void layer::beginInsertSpace(ofVec2f t_pos, ofVec2f t_dir){
 	
 	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].beginInsertion(t_pos, t_dir);
 	objectManager::beginInsertSpace(t_pos, t_dir);
+	for(int i = 0; i < mReaders.size(); i ++)if(!selectTrackPoint(mReaders[i].getPos()))destroyReader(&mReaders[i]);
+	deselectAll();
 	
 }
 

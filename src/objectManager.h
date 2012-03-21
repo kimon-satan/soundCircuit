@@ -43,7 +43,13 @@ public:
 	virtual void endInsertion();
 	
 	void beginInsertSpace(ofVec2f t_point, ofVec2f t_dir);
-	void splitSegment(segment &s, ofVec2f s_point, float splitRadius);
+	segment splitSegment(segment &s, ofVec2f s_point, float splitRadius);
+	void splitBlip(blip & b, ofVec2f t_point);
+	void splitTrack(segment & s, ofVec2f t_point);
+	
+	void destroyBlip(blip & tb);
+	void destroyTrack(segment & ts);
+
 	
 	//getters and setters
 
@@ -52,7 +58,9 @@ public:
 	void deselectTracks();
 	node * selectNode(ofVec2f t_pos, int rad = 10);
 	segment * selectTrackPoint(ofVec2f t_pos);
-	segment * selectBlip(ofVec2f t_pos, int bZone = 0);
+	blip * selectBlip(ofVec2f t_pos, int bZone = 0);
+	
+
 	
 	
 protected:
@@ -61,6 +69,8 @@ protected:
 	
 	void calcTrack_0(ofVec2f w_pos, ofVec2f dir);
 	void calcTrack_1(ofVec2f w_pos, ofVec2f dir);
+	
+	void addNodesToTrack(segment & s);
 	
 	void constrainFromMidPoint(ofVec2f origin, segment & s, bool isTracks = false, bool isNodes = true, bool isBlips = false);
 	void constrainEndPoint(ofVec2f origin, segment & s, bool isTracks = true, bool isNodes = false, bool isBlips = false);
@@ -72,6 +82,11 @@ protected:
 	bool findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<ofVec2f> & t_points = DPOINTS, segment & s = DSEG, bool isTracks = true , bool isBlips = false);
 	bool findParalellIntersects(segment & s = DSEG, vector<ofVec2f> & t_points = DPOINTS, bool isTracks = true , bool isBlips = false);
 	bool findNodeIntersects(segment & s, vector<ofVec2f> & t_points = DPOINTS, bool includeTestArea = false);
+	
+	
+	//helpers
+	
+	void updateBlipDraw(blip & tb);
 	
 	
 	//member variables

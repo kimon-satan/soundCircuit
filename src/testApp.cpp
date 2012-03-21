@@ -466,6 +466,11 @@ void testApp::startAction(){
 		//world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
 		world.beginInsertSpace(ofVec2f(mouseW.x,mouseW.y), orientation);
 	
+	}else if(currentAction == ACTION_STRETCH_SPACE){
+		
+		ofVec2f orientation = (cam.getRotation(2) > 0)? ofVec2f(0,1):ofVec2f(1,0);
+		world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
+		
 	}else if(currentAction == ACTION_ADJUST_NODE){
 		
 		world.beginNode(ofVec2f(mouseW.x,mouseW.y), buttonMode);
@@ -545,7 +550,7 @@ void testApp::continueAction(){
 			//store the current user vals in the preset
 		}
 		
-	}else if(currentAction == ACTION_INSERT_SPACE){
+	}else if(currentAction == ACTION_INSERT_SPACE || currentAction == ACTION_STRETCH_SPACE){
 		
 		world.resizeInsertion(w_dir.length());
 														 
@@ -582,7 +587,7 @@ void testApp::endAction(){
 		isPreview = false;
 		world.endBlip();
 		
-	}else if(currentAction == ACTION_INSERT_SPACE){
+	}else if(currentAction == ACTION_INSERT_SPACE || ACTION_STRETCH_SPACE){
 		
 		world.endInsertion();
 		
@@ -705,7 +710,7 @@ void testApp::mousePressed(int x, int y, int button){
 				}else if(currentSelection == OT_NODE){
 					currentAction = ACTION_ADJUST_NODE;
 				}else if(currentSelection == OT_WORLD){
-					currentAction = (buttonMode == 0) ? ACTION_DRAG : ACTION_INSERT_SPACE;
+					currentAction = (buttonMode == 0) ? ACTION_DRAG : (isOptionKey)? ACTION_INSERT_SPACE :ACTION_STRETCH_SPACE;
 				}
 			}
 			break;
@@ -720,7 +725,7 @@ void testApp::mousePressed(int x, int y, int button){
 				}else if(currentSelection == OT_BLIP){
 					currentAction = ACTION_ADJUST_BLIP;
 				}else if(currentSelection == OT_WORLD){
-					currentAction = ACTION_DRAG;
+					currentAction = (buttonMode == 0) ? ACTION_DRAG : (isOptionKey)? ACTION_INSERT_SPACE :ACTION_STRETCH_SPACE;
 				}
 			}
 			
@@ -732,7 +737,7 @@ void testApp::mousePressed(int x, int y, int button){
 				if(currentSelection == OT_BLIP){
 					currentAction = ACTION_DESTROY_BLIP;
 				}else if(currentSelection == OT_WORLD){
-					currentAction = ACTION_DRAG;
+					currentAction = (buttonMode == 0) ? ACTION_DRAG : (isOptionKey)? ACTION_INSERT_SPACE :ACTION_STRETCH_SPACE;
 				}
 			}
 			

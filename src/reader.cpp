@@ -52,9 +52,9 @@ void reader::move(){
 	mIncrement = mSpeed * WORLD_UNIT/ofGetFrameRate();
 	
 	if(!isStuck){
-	body.x += direction.x * mIncrement;
-	body.y += direction.y * mIncrement;
-	moduloPosition();
+		body.x += direction.x * mIncrement;
+		body.y += direction.y * mIncrement;
+		moduloPosition();
 	}
 	
 	vector<node> * t_nodes = currentLayer->getNodesRef(); 
@@ -92,7 +92,10 @@ void reader::move(){
 		}
 	}
 	
-	if(!nodeFound)currentNodeIndex = -99;
+	if(!nodeFound){
+		currentNodeIndex = -99;
+		isStuck = false;
+	}
 	
 	
 		
@@ -104,7 +107,12 @@ void reader::handleBlips(){
 	
 	if(currentBlipIndex != -99){ //first kill old blip if reader not inside
 		vector<blip>::iterator it = find_if(t_blips->begin(), t_blips->end(),bind2nd(blipIndex(),currentBlipIndex));
-		if(!it->getInside(ofVec2f(body.x,body.y)) && !testBody.inside(it->getStartPos()))blipOff(it);
+
+		if(it == t_blips->end()){
+			blipOff(currentBlipIndex); //the blip no longer exists
+		}else{
+			if(!it->getInside(ofVec2f(body.x,body.y)) && !testBody.inside(it->getStartPos()))blipOff(it);
+		}
 	}
 	
 	for(vector<blip>::iterator it = t_blips->begin(); it != t_blips->end(); it++){
@@ -147,7 +155,14 @@ void reader::blipOff(int tIndex){
 	
 	vector<blip> * t_blips = currentLayer->getBlipsRef();
 	vector<blip>::iterator it = find_if(t_blips->begin(), t_blips->end(),bind2nd(blipIndex(), tIndex));
-	if(it == t_blips->end())return;
+	if(it == t_blips->end()){
+		ofxOscMessage m;
+		m.setAddress("/blipOff");
+		m.addIntArg(index);
+		m.addIntArg(it->getIndex());
+		sender->sendMessage(m);
+		return;
+	}
 	blipOff(it);
 	
 }

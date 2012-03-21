@@ -16,14 +16,7 @@
 
 class layer;
 
-//search predicate for blip
-struct blipIndex:public binary_function<blip, int, bool> {
-	
-	bool operator()(const blip &t_blip, const int &t_index)const{
-		return t_blip.getIndex() == t_index;
-	}
-	
-};
+
 
 class reader{
 	

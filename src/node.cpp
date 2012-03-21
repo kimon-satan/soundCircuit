@@ -103,6 +103,8 @@ void node::removeSocket(ofVec2f t_dir){
 
 bool node::getSuperfluous(){
 	
+	if(numSockets < 1)return true;
+	
 	for(int i = 0; i< 2; i ++){
 		if(allSockets[i] == true && allSockets[i+2] == true){
 			if(allSockets[i+1] == false && allSockets[(i+3)%4] == false){

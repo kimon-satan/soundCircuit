@@ -10,6 +10,8 @@
 #include "objectManager.h"
 
 bool nodeSuperfluous(node n){return n.getSuperfluous();} //used in endTrack
+bool trackIsInvalid(segment s){return !s.getIsValid();} //use in insertSpace
+
 segment objectManager::DSEG = segment();
 vector<ofVec2f> objectManager::DPOINTS = vector<ofVec2f>();
 
@@ -68,38 +70,7 @@ void objectManager::endTrack(){
 		
 		tracks.push_back(previewTracks[j]);
 		tracks.back().aquireIndex();
-		
-		for(int i = 0; i < 2; i ++){
-			
-			ofVec2f pos = (i == 0)? previewTracks[j].getStartPos():previewTracks[j].getEndPos();
-			int mul = (i == 0) ? 1 : -1;
-			
-			//first check if node is already created
-			node * n = selectNode(pos, 7);
-			
-			if(!n){
-				node t(pos);
-				t.addSocket(previewTracks[j].getDirection() * mul);
-				t.openSocket(previewTracks[j].getDirection() * mul);
-				nodes.push_back(t);
-				n = &nodes.back();
-				
-			}else{
-				n->addSocket(previewTracks[j].getDirection() * mul);
-				n->openSocket(previewTracks[j].getDirection() * mul);
-			}
-			
-			//in case new node lies on an existing track
-			segment * s = selectTrackPoint(n->getPos());
-			if(s){
-				n->addSocket(s->getDirection()); //potential risk of reader skipping off track ? 
-				n->openSocket(s->getDirection());
-				n->addSocket(-s->getDirection());
-				n->openSocket(-s->getDirection());
-			}
-			
-		}
-		
+		addNodesToTrack(previewTracks[j]);
 		previewTracks[j].setIsValid(false);
 		
 	}
@@ -115,6 +86,9 @@ void objectManager::endTrack(){
 	
 	
 }
+
+
+
 
 void objectManager::beginBlip(ofVec2f w_pos, blipPreset bp){
 	
@@ -533,6 +507,52 @@ void objectManager::calcTrack_1(ofVec2f w_pos, ofVec2f t_dir){
 }
 
 
+void objectManager::addNodesToTrack(segment & s){
+	
+	for(int i = 0; i < 2; i ++){
+		
+		ofVec2f pos = (i == 0)? s.getStartPos():s.getEndPos();
+		int mul = (i == 0) ? 1 : -1;
+		
+		//first check if node is already created
+		node * n = selectNode(pos, 7);
+		
+		if(!n){
+			node t(pos);
+			t.addSocket(s.getDirection() * mul);
+			t.openSocket(s.getDirection() * mul);
+			nodes.push_back(t);
+			n = &nodes.back();
+			
+		}else{
+			n->addSocket(s.getDirection() * mul);
+			n->openSocket(s.getDirection() * mul);
+		}
+		
+		//in case new node lies on an existing track
+		segment * ts = selectTrackPoint(n->getPos());
+		if(ts){
+			if(ts->getIndex() != s.getIndex()){
+				n->addSocket(ts->getDirection()); //potential risk of reader skipping off track ? 
+				n->openSocket(ts->getDirection());
+				n->addSocket(-ts->getDirection());
+				n->openSocket(-ts->getDirection());
+			}
+		}
+		
+		//in case new node is on a bridge point
+		ofVec2f t_pos(pos - s.getDirection() *  WORLD_UNIT * 5 * mul); // point slightly outside the track
+		ts = selectTrackPoint(t_pos);
+		if(ts){
+			n->addSocket(-ts->getDirection() * mul);
+			n->openSocket(-ts->getDirection() * mul);
+		}
+
+		
+	}
+	
+}
+
 void objectManager::constrainEndPoint(ofVec2f origin, segment & s, bool isTracks, bool isNodes, bool isBlips){
 	
 	vector<ofVec2f> points;
@@ -591,8 +611,8 @@ void objectManager::repositionFromMidPoint(ofVec2f origin, segment & s, bool isT
 void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir){
 
 	beginInsertion(t_point, t_dir);
-	resizeInsertion(kTestSize); // insert a minimum amount of space
-	insertSize -= kTestSize; //compensates for the extra space inserted
+	
+	vector<segment> newTracks;
 	
 	for(int i = 0; i < tracks.size(); i++){
 		
@@ -602,42 +622,103 @@ void objectManager::beginInsertSpace(ofVec2f t_point, ofVec2f t_dir){
 			
 			if(tracks[i].getInside(testPoint)){
 				
-				splitSegment(tracks[i], testPoint, kTestSize);
+				blip * tb = selectBlip(testPoint, kTestSize/2);
+				if(tb)splitBlip(*tb, testPoint);
+				segment n_seg = splitSegment(tracks[i], testPoint, 1);
+				if(n_seg.getLength() > MIN_TRACK * WORLD_UNIT){
+					n_seg.aquireIndex();
+					n_seg.setIsValid(true);
+					newTracks.push_back(n_seg);
+				}else{
+					node * n = selectNode(n_seg.getEndPos(), kTestSize/2);
+					if(n)n->removeSocket(-n_seg.getDirection());
+				}
+				
+				if(tracks[i].getLength() > MIN_TRACK * WORLD_UNIT){
+					newTracks.push_back(tracks[i]);
+				}else{
+					node * n = selectNode(tracks[i].getStartPos(), kTestSize/2);
+					if(n)n->removeSocket(tracks[i].getDirection());
+				}
+				
+				tracks[i].setIsValid(false);
+				
 				
 			}
 		}
 	}
+	
+	
+	//remove all the unsused tracks
+	
+	vector<segment>::iterator it = remove_if(tracks.begin(), tracks.end(), trackIsInvalid);
+	tracks.erase(it, tracks.end());
+	
+	int i = tracks.size(); // the last of the old tracks
+	for(vector<segment>::iterator it2 = newTracks.begin(); it2 != newTracks.end(); it2++)tracks.push_back(*it2);
+	
+	resizeInsertion(kTestSize/2);
+
+	for(i; i < tracks.size(); i ++)addNodesToTrack(tracks[i]);
+	
+	vector<node>::iterator n_it = remove_if(nodes.begin(), nodes.end(), nodeSuperfluous);
+	nodes.erase(n_it, nodes.end());
 
 }
 
 
-void objectManager::splitSegment(segment & s, ofVec2f s_point, float splitRadius){
-		
-		//select blip here
-		//if there is a blip move split point to ep + splitRadius
 	
-		//get new data for old segment
-		ofVec2f o_ep = s_point - s.getDirection() * splitRadius;
-		ofVec2f o_vec = o_ep - s.getStartPos();
-		if(o_vec.x + o_vec.y < 0){o_vec += world_dims * s.getDirection();} //wrap correction
-		float t_length = s.getLength();
-		s.setLength(o_vec.length());
-		updateTestAreas(s);
+
+void objectManager::splitBlip(blip & b, ofVec2f t_point){
 		
-		//the new segment
-		segment n_seg = s;
-		float n_length = t_length - (o_vec.length() + splitRadius * 2); //the remainder is the new length
-		n_seg.setLength(n_length);
-		ofVec2f n_sp = s_point + s.getDirection() * splitRadius;
-		n_seg.setStartPos(n_sp);
-		updateTestAreas(n_seg);
+	segment t_seg = splitSegment(b, t_point, kTestSize/2);
+	blipPreset bp = b.getPreset();
+	float min_len = bp.getLength()->min_val;
+	
+	if(b.getLength() > min_len){
+		updateBlipDraw(b);
+	}else{
+		destroyBlip(b);
+	}
+	
+	if(t_seg.getLength() > min_len){
+		blip n_b;
+		n_b.setPreset(bp);
 		
-		tracks.push_back(n_seg);
-		tracks.back().aquireIndex();
+		//add update from segment into blip
+		n_b.setStartPos(t_seg.getStartPos());
+		n_b.setLength(t_seg.getLength());
+		n_b.setDirection(t_seg.getDirection());
+		//--------------------------------
 		
-		//add extra nodes here
+		updateTestAreas(n_b);
+		blips.push_back(n_b);
+		blips.back().aquireIndex();
+		blips.back().createDrawer(world_dims);
+	}
 		
-		//
+	
+}
+
+segment objectManager::splitSegment(segment & s, ofVec2f s_point, float splitRadius){
+
+	//the old segment
+	ofVec2f o_ep = s_point - s.getDirection();
+	ofVec2f o_vec = o_ep - s.getStartPos();
+	if(o_vec.x + o_vec.y < 0){o_vec += world_dims * s.getDirection();} //wrap correction
+	float t_length = s.getLength();
+	s.setLength(o_vec.length()- splitRadius);
+	updateTestAreas(s);
+	
+	//the new segment
+	segment n_seg = s;
+	float n_length = t_length - (o_vec.length()); //the remainder is the new length
+	n_seg.setLength(n_length - splitRadius);
+	ofVec2f n_sp = s_point + s.getDirection() * splitRadius;
+	n_seg.setStartPos(n_sp);
+	updateTestAreas(n_seg);
+	
+	return n_seg;
 	
 
 }
@@ -697,18 +778,22 @@ void objectManager::resizeInsertion(float size){
 		float testPos = t_pos.x * insertDir.x + t_pos.y * insertDir.y;
 		t_pos += (testPos > testInsert)? diff * insertDir: -diff * insertDir;
 		blips[i].setStartPos(t_pos);
-		
-		//to reset the drawer
-		updateTestAreas(blips[i]);
-		blips[i].updateDrawer();
-		blips[i].updateDrawerPosition(world_dims);
-		blips[i].updateDrawer();
+		updateBlipDraw(blips[i]);
 		
 	}
 	
 
 }
 
+void objectManager::updateBlipDraw(blip & tb){
+
+	//to reset the drawer
+	updateTestAreas(tb);
+	tb.updateDrawer();
+	tb.updateDrawerPosition(world_dims);
+	tb.updateDrawer();
+
+}
 
 void objectManager::endInsertion(){
 
@@ -940,9 +1025,9 @@ segment * objectManager::selectTrackPoint(ofVec2f t_pos){
 	return t;
 }
 
-segment * objectManager::selectBlip(ofVec2f t_pos, int bZone){
+blip * objectManager::selectBlip(ofVec2f t_pos, int bZone){
 	
-	segment * t = NULL;
+	blip * t = NULL;
 	
 	for(int i = 0; i < blips.size(); i++){
 		if(blips[i].getInside(t_pos, bZone)){
@@ -952,6 +1037,21 @@ segment * objectManager::selectBlip(ofVec2f t_pos, int bZone){
 	}
 	
 	return t;
+}
+
+void objectManager::destroyBlip(blip & tb){
+
+	vector<blip>::iterator it = remove_if(blips.begin(), blips.end(), bind2nd(blipIndex(), tb.getIndex()));
+	blips.erase(it, blips.end());
+	
+}
+
+void objectManager::destroyTrack(segment & ts){
+
+	vector<segment>::iterator it = remove_if(tracks.begin(), tracks.end(), bind2nd(segmentIndex(), ts.getIndex()));
+	//potentially erase blips on the track depending on use
+	tracks.erase(it, tracks.end());
+
 }
 
 

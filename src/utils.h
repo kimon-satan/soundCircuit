@@ -16,6 +16,23 @@
 
 #include "ofMain.h"
 
+class blip;
+class segment;
+
+//search predicate for blip
+struct blipIndex:public binary_function<blip, int, bool> {
+	
+	bool operator()(const blip &t_blip, const int &t_index)const;
+	
+};
+
+//search predicate for segment
+struct segmentIndex:public binary_function<segment, int, bool> {
+	
+	bool operator()(const segment &t_segment, const int &t_index)const;
+	
+};
+
 class utils{
 
 public:

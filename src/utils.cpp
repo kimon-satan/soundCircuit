@@ -9,6 +9,15 @@
 
 
 #include "utils.h"
+#include "blip.h"
+
+bool blipIndex::operator()(const blip &t_blip, const int &t_index)const{
+	return t_blip.getIndex() == t_index;
+}
+
+bool segmentIndex::operator()(const segment &t_segment, const int &t_index)const{
+	return t_segment.getIndex() == t_index;
+}
 
 ofVec2f utils::moduloPoint(ofVec2f t_point, ofVec2f t_dims){
 	

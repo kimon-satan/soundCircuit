@@ -255,6 +255,34 @@ void objectRenderer::drawNodes(){
 			ofSetColor(0, 0, 255);
 			ofCircle(pos, kTestSize * WORLD_UNIT/2);
 			ofDrawBitmapString(ofToString(it->getIndex()), pos - WORLD_UNIT *3);
+			
+			ofSetColor(0);
+			ofFill();
+			vector<bool> sockets = it->getAllSockets();
+			float innerRad = kCircleRadius * 3 - (WORLD_UNIT * 3);
+			glPushMatrix();
+			glTranslatef(pos.x, pos.y, -WORLD_UNIT);
+			for(int i = 0; i < 4; i ++){
+				if(!sockets[i]){
+					
+					ofBeginShape();
+					ofVertex(0,0);
+					ofVec2f o_pos(-innerRad, -innerRad);
+					o_pos.rotate(90 * i);
+					ofVertex(o_pos.x, o_pos.y);
+					
+					for(int i = 0; i < 30; i ++){
+						o_pos.rotate(3);
+						ofVertex(o_pos.x, o_pos.y);
+					}
+					
+					ofVertex(0,0);
+					ofEndShape(true);
+					
+				}
+			}
+			glPopMatrix();
+			
 			glDepthFunc(GL_LESS);
 		}
 		
