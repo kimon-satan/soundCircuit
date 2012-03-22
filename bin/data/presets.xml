@@ -74,12 +74,7 @@
         <BLIP>
             <NAME>basicSoft</NAME><SYNTH>basic</SYNTH><DRAW>bean1</DRAW><ENV>0</ENV>
             
-            <LENGTH>
-            <SET_TYPE>1</SET_TYPE>
-            <ALT><SET_TYPE>1</SET_TYPE></ALT>
-            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>20</ABS_VAL></ALT>
-            <ALT><SET_TYPE>1</SET_TYPE></ALT>
-            </LENGTH>
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
             
             <ATTACK><PROP><ABS_VAL>0.995</ABS_VAL></PROP></ATTACK>
             
@@ -87,8 +82,13 @@
             
             <POST_DECAY><SET_TYPE>4</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>3</MAX_VAL></POST_DECAY>
             
-            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0.25</MIN_VAL><MAX_VAL>0.6</MAX_VAL></SOUND>
-            <SOUND><NAME>amp</NAME>
+            <SOUND><NAME>freq</NAME>
+            <SET_TYPE>2</SET_TYPE><MIN_VAL>0.38</MIN_VAL><MAX_VAL>0.435</MAX_VAL>
+            
+            </SOUND>
+           
+            
+              <SOUND><NAME>amp</NAME>
                 <ABS_VAL>0.8</ABS_VAL>
                 <ALT><ABS_VAL>0.25</ABS_VAL></ALT> 
                 <ALT><SET_TYPE>1</SET_TYPE></ALT>  
@@ -98,7 +98,7 @@
             <VISUAL><NAME>numV</NAME><ABS_VAL>4</ABS_VAL></VISUAL>
             <VISUAL><NAME>displace_l</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             <VISUAL><NAME>displace_r</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
-            <VISUAL><NAME>height</NAME><ABS_VAL>25</ABS_VAL></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>30</MAX_VAL></VISUAL>
             <VISUAL><NAME>a_add</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
             <VISUAL><NAME>b_add</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             <VISUAL><NAME>o_swell</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>0.5</MIN_VAL><MAX_VAL>1.5</MAX_VAL></VISUAL>
@@ -316,4 +316,26 @@
        
         
     </BLIP_PRESETS>
+    
+    
+    <BLIP_BANKS>
+    
+    <BANK>
+    <NAME>glitchTexture</NAME>
+    <PRESET>needleGlitch</PRESET>
+    <PRESET>elec</PRESET>
+    <PRESET>swellTooth</PRESET>
+    <PRESET>basicSoft</PRESET>
+    <PRESET>basicHard</PRESET>
+    </BANK>
+    
+    <BANK>
+    <NAME>softMelody</NAME>
+    <PRESET>basicSoft</PRESET>
+    </BANK>
+    
+    
+    
+    </BLIP_BANKS>
+    
 </SOUND_CIRCUIT>

@@ -4,10 +4,13 @@
 #include "layer.h"
 #include "ofxOsc.h"
 #include "ofxGrabCam.h"
-
+#include "bank.h"
 
 #define HOST "localhost"
 #define PORT 57120
+
+
+
 
 //--------------------------------------------------------
 class testApp : public ofBaseApp{
@@ -32,9 +35,11 @@ public:
 	
 private:
 	
-	void loadPresets();
+	void loadPresets(ofxXmlSettings XML);
+	void loadBanks(ofxXmlSettings XML);
 	void loadParamAttribute(ofxXmlSettings XML, paramAttributes * p);
 	void loadTimeAttributes(ofxXmlSettings XML, blipPreset & bp);
+	
 	
 	void startAction();
 	void continueAction();
@@ -82,9 +87,10 @@ private:
 	ofRectangle roi;
 	vector<ofColor> testCols;
 	
-	vector<vector<blipPreset> > presets;
+	vector<bank> banks;
 	
-	int selectedPreset[2];
+	int currentBank;
+	
 	
 	ofxOscSender sender;
 	reader * currentReader;
