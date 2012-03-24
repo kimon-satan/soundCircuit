@@ -6,8 +6,64 @@
             
             <LENGTH>
             <SET_TYPE>1</SET_TYPE>
+            </LENGTH>
+            
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>0.01</ABS_VAL></DECAY>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0</MIN_VAL><MAX_VAL>1</MAX_VAL></SOUND>
+            
+            <SOUND>
+            <NAME>amp</NAME>
+            <ABS_VAL>0.5</ABS_VAL>
+            <ALT><ABS_VAL>0.25</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
+            <ALT><ABS_VAL>0.1</ABS_VAL></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
+            
+            <VISUAL><NAME>hue</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO></VISUAL>
+            <VISUAL><NAME>h_swell</NAME><ABS_VAL>255</ABS_VAL></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO></VISUAL>
+            <VISUAL><NAME>trackOffset</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>1</MIN_VAL><MAX_VAL>-1</MAX_VAL></VISUAL>
+        </BLIP>
+        
+        <BLIP>
+            <NAME>hardShort</NAME><SYNTH>basic</SYNTH><DRAW>flipper</DRAW><ENV>0</ENV>
+            
+            <LENGTH>
+            <SET_TYPE>0</SET_TYPE><ABS_VAL>13</ABS_VAL>
+            </LENGTH>
+            
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>0.01</ABS_VAL></DECAY>
+            
+            <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0.3</MIN_VAL><MAX_VAL>0.8</MAX_VAL></SOUND>
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
+            <SOUND>
+            <NAME>amp</NAME>
+            <SET_TYPE>0</SET_TYPE><ABS_VAL>0.3</ABS_VAL>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>0.4</ABS_VAL></ALT>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>0.6</ABS_VAL></ALT>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>0.8</ABS_VAL></ALT>
+            </SOUND>
+            
+            <VISUAL><NAME>hue</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO></VISUAL>
+            <VISUAL><NAME>h_swell</NAME><ABS_VAL>255</ABS_VAL></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO></VISUAL>
+            <VISUAL><NAME>trackOffset</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>0.8</MIN_VAL><MAX_VAL>-0.6</MAX_VAL></VISUAL>
+        </BLIP>
+        
+        <BLIP>
+            <NAME>hardMappedRandom</NAME><SYNTH>basic</SYNTH><DRAW>flipper</DRAW><ENV>0</ENV>
+            
+            <LENGTH>
+            <SET_TYPE>0</SET_TYPE><ABS_VAL>12</ABS_VAL>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>12</ABS_VAL></ALT>
             <ALT><SET_TYPE>1</SET_TYPE></ALT>
-            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>30</ABS_VAL></ALT>
             <ALT><SET_TYPE>1</SET_TYPE></ALT>
             </LENGTH>
             
@@ -16,25 +72,25 @@
             <DECAY><ABS_VAL>0.01</ABS_VAL></DECAY>
             
             <SOUND><NAME>freq</NAME>
-            <SET_TYPE>2</SET_TYPE>
-            <ALT><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></ALT>
-            <ALT><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></ALT>
-            <ALT><NAME>freq</NAME><SET_TYPE>4</SET_TYPE></ALT>
+            <SET_TYPE>3</SET_TYPE><MIN_VAL>0.3</MIN_VAL><MAX_VAL>0.8</MAX_VAL>
+            <ALT><SET_TYPE>4</SET_TYPE></ALT>
+            <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>0.3</MIN_VAL><MAX_VAL>0.8</MAX_VAL></ALT>
+            <ALT><SET_TYPE>4</SET_TYPE></ALT>
             </SOUND>
             
             <SOUND>
             <NAME>amp</NAME>
-            <ABS_VAL>0.5</ABS_VAL>
-            <ALT><ABS_VAL>0.25</ABS_VAL></ALT>
-            <ALT><SET_TYPE>1</SET_TYPE><MIN_VAL>0.1</MIN_VAL><MAX_VAL>0.8</MAX_VAL></ALT>
-            <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>0.1</MIN_VAL><MAX_VAL>0.8</MAX_VAL></ALT>
+            <SET_TYPE>2</SET_TYPE>
             </SOUND>
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             
             <VISUAL><NAME>hue</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO></VISUAL>
             <VISUAL><NAME>h_swell</NAME><ABS_VAL>255</ABS_VAL></VISUAL>
             <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO></VISUAL>
-            <VISUAL><NAME>trackOffset</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>1</MIN_VAL><MAX_VAL>-1</MAX_VAL></VISUAL>
+            <VISUAL><NAME>trackOffset</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>0.8</MIN_VAL><MAX_VAL>-0.4</MAX_VAL></VISUAL>
         </BLIP>
+        
+
         
         
         <BLIP>
@@ -56,6 +112,7 @@
             </POST_DECAY>
             
             <SOUND><NAME>freq</NAME><SET_TYPE>2</SET_TYPE></SOUND>
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             
             <SOUND><NAME>amp</NAME>
             <ABS_VAL>0.5</ABS_VAL>
@@ -83,16 +140,16 @@
             <POST_DECAY><SET_TYPE>4</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>3</MAX_VAL></POST_DECAY>
             
             <SOUND><NAME>freq</NAME>
-            <SET_TYPE>2</SET_TYPE><MIN_VAL>0.38</MIN_VAL><MAX_VAL>0.435</MAX_VAL>
+            <SET_TYPE>2</SET_TYPE><MIN_VAL>0.1</MIN_VAL><MAX_VAL>0.9</MAX_VAL>
             
             </SOUND>
-           
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             
-              <SOUND><NAME>amp</NAME>
+            <SOUND><NAME>amp</NAME>
                 <ABS_VAL>0.8</ABS_VAL>
-                <ALT><ABS_VAL>0.25</ABS_VAL></ALT> 
-                <ALT><SET_TYPE>1</SET_TYPE></ALT>  
-                <ALT><SET_TYPE>4</SET_TYPE><MIN_VAL>0.2</MIN_VAL><MAX_VAL>0.8</MAX_VAL></ALT> 
+                <ALT><ABS_VAL>0.2</ABS_VAL></ALT> 
+                <ALT><ABS_VAL>0.6</ABS_VAL></ALT>  
+                <ALT><ABS_VAL>0.4</ABS_VAL></ALT> 
             </SOUND>
             
             <VISUAL><NAME>numV</NAME><ABS_VAL>4</ABS_VAL></VISUAL>
@@ -106,8 +163,52 @@
             <VISUAL><NAME>a_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             <VISUAL><NAME>v_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             <VISUAL><NAME>blankTrack</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
-            <VISUAL><NAME>trackOffset</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>1</MIN_VAL><MAX_VAL>-1</MAX_VAL></VISUAL>
+            <VISUAL><NAME>trackOffset</NAME>
+            <SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>0.8</MIN_VAL><MAX_VAL>-0.8</MAX_VAL>
+     
+            </VISUAL>
         </BLIP>
+        
+        <BLIP>
+            <NAME>fineSoft1</NAME><SYNTH>basic</SYNTH><DRAW>bean1</DRAW><ENV>0</ENV>
+            
+            <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
+            
+            <ATTACK><PROP><ABS_VAL>0.995</ABS_VAL></PROP></ATTACK>
+            
+            <DECAY><ABS_VAL>0.005</ABS_VAL></DECAY>
+            
+            <POST_DECAY><SET_TYPE>4</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>3</MAX_VAL></POST_DECAY>
+            
+            <SOUND><NAME>freq</NAME>
+            <SET_TYPE>2</SET_TYPE><MIN_VAL>0.38</MIN_VAL><MAX_VAL>0.44</MAX_VAL>
+            <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>0.32</MIN_VAL><MAX_VAL>0.38</MAX_VAL></ALT>
+            <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>0.44</MIN_VAL><MAX_VAL>0.5</MAX_VAL></ALT>
+            <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>0.26</MIN_VAL><MAX_VAL>0.32</MAX_VAL></ALT>
+            </SOUND>
+           
+            <SOUND><NAME>pan</NAME><SET_TYPE>3</SET_TYPE></SOUND>
+            <SOUND><NAME>amp</NAME><ABS_VAL>0.6</ABS_VAL></SOUND>
+            
+            <VISUAL><NAME>numV</NAME><ABS_VAL>4</ABS_VAL></VISUAL>
+            <VISUAL><NAME>displace_l</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>displace_r</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>30</MAX_VAL></VISUAL>
+            <VISUAL><NAME>a_add</NAME><ABS_VAL>-1</ABS_VAL></VISUAL>
+            <VISUAL><NAME>b_add</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>o_swell</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>0.5</MIN_VAL><MAX_VAL>1.5</MAX_VAL></VISUAL>
+            <VISUAL><NAME>b_swell</NAME><ABS_VAL>-0.25</ABS_VAL></VISUAL>
+            <VISUAL><NAME>a_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>v_swell</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>blankTrack</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            <VISUAL><NAME>trackOffset</NAME><SET_TYPE>5</SET_TYPE>
+            <SLAVE_TO>freq</SLAVE_TO><MIN_VAL>0.24</MIN_VAL><MAX_VAL>0.12</MAX_VAL>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>0.36</MIN_VAL><MAX_VAL>0.24</MAX_VAL></ALT>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>0.12</MIN_VAL><MAX_VAL>0</MAX_VAL></ALT>
+            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>0.48</MIN_VAL><MAX_VAL>0.36</MAX_VAL></ALT>
+            </VISUAL>
+        </BLIP>
+        
         
         <BLIP>
             <NAME>elec</NAME><SYNTH>elec</SYNTH><DRAW>elecCurrent</DRAW><ENV>0</ENV>
@@ -129,7 +230,7 @@
             <ALT><SET_TYPE>2</SET_TYPE></ALT>
             <ALT><SET_TYPE>3</SET_TYPE></ALT>
             </SOUND>
-            
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             <SOUND><NAME>filFreq</NAME><SET_TYPE>2</SET_TYPE>
             <ALT><SET_TYPE>2</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL></ALT>
                     <ALT><SET_TYPE>3</SET_TYPE></ALT>
@@ -187,14 +288,11 @@
             <ALT><SET_TYPE>2</SET_TYPE></ALT>
             </SOUND>
             
-            
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             <VISUAL><NAME>rotation</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
             
             <VISUAL><NAME>thickness</NAME>
-            <ABS_VAL>4</ABS_VAL>
-            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreqH</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>1</MAX_VAL></ALT>
-            <ABS_VAL>4</ABS_VAL>
-            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreqH</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>1</MAX_VAL></ALT>
+            <SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreqH</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>1</MAX_VAL>
             </VISUAL>
             
             <VISUAL><NAME>pivot</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>50</MIN_VAL><MAX_VAL>10</MAX_VAL></VISUAL>
@@ -202,12 +300,70 @@
             
             <VISUAL><NAME>grayCol</NAME>
             <SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreqL</SLAVE_TO><MIN_VAL>0</MIN_VAL><MAX_VAL>150</MAX_VAL>
-            <ALT><ABS_VAL>0</ABS_VAL></ALT>
-            <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreqL</SLAVE_TO><MIN_VAL>0</MIN_VAL><MAX_VAL>150</MAX_VAL></ALT>
-            <ALT><ABS_VAL>0</ABS_VAL></ALT>
             </VISUAL>
             
         </BLIP>
+        
+        <BLIP>
+            <NAME>needleMapDecay</NAME><SYNTH>clip</SYNTH><DRAW>straw</DRAW><ENV>1</ENV>
+            
+            <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>10</ABS_VAL></LENGTH>
+            
+            <ATTACK><ABS_VAL>0.01</ABS_VAL></ATTACK>
+            
+            <DECAY><ABS_VAL>1</ABS_VAL></DECAY>
+            
+            <POST_DECAY><ABS_VAL>1</ABS_VAL></POST_DECAY>
+            
+            <SOUND><NAME>amp</NAME>
+            <SET_TYPE>3</SET_TYPE><MIN_VAL>0.25</MIN_VAL><MAX_VAL>1</MAX_VAL>
+            <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0.25</MAX_VAL></ALT>
+             <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>0.25</MIN_VAL><MAX_VAL>1</MAX_VAL></ALT>
+            <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0.25</MAX_VAL></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>freq</NAME>
+            <SET_TYPE>3</SET_TYPE><MIN_VAL>0.25</MIN_VAL><MAX_VAL>1</MAX_VAL>
+            <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0.25</MAX_VAL></ALT>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>0.3</ABS_VAL></ALT>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>0.3</ABS_VAL></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>filFreqL</NAME>
+            <SET_TYPE>3</SET_TYPE><MIN_VAL>0.25</MIN_VAL><MAX_VAL>1</MAX_VAL>
+            <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0.25</MAX_VAL></ALT>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>1</ABS_VAL></ALT>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>1</ABS_VAL></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>filFreqH</NAME>
+            <SET_TYPE>0</SET_TYPE><ABS_VAL>0</ABS_VAL>
+            <ALT><SET_TYPE>0</SET_TYPE><ABS_VAL>0</ABS_VAL></ALT>
+            <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>0.25</MIN_VAL><MAX_VAL>1</MAX_VAL></ALT>
+            <ALT><SET_TYPE>3</SET_TYPE><MIN_VAL>1</MIN_VAL><MAX_VAL>0.25</MAX_VAL></ALT>
+            </SOUND>
+            
+            <SOUND><NAME>pan</NAME><SET_TYPE>3</SET_TYPE>
+            <ALT><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL></ALT>
+            <ALT><MIN_VAL>0</MIN_VAL><MAX_VAL>1</MAX_VAL></ALT>
+             <ALT><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL></ALT>
+            </SOUND>
+            
+            <VISUAL><NAME>rotation</NAME><ABS_VAL>0</ABS_VAL></VISUAL>
+            
+            <VISUAL><NAME>thickness</NAME>
+            <SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreqH</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>1</MAX_VAL>
+            </VISUAL>
+            
+            <VISUAL><NAME>pivot</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>50</MIN_VAL><MAX_VAL>10</MAX_VAL></VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO></VISUAL>
+            
+            <VISUAL><NAME>grayCol</NAME>
+            <SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreqL</SLAVE_TO><MIN_VAL>0</MIN_VAL><MAX_VAL>150</MAX_VAL>            
+            </VISUAL>
+            
+        </BLIP>
+        
         
         <BLIP>
             <NAME>needleGlitch</NAME><SYNTH>brownGlitch</SYNTH><DRAW>straw</DRAW><ENV>1</ENV>
@@ -225,6 +381,8 @@
             <ALT><ABS_VAL>0</ABS_VAL></ALT>
             <ALT><ABS_VAL>1</ABS_VAL></ALT>
             </SOUND>
+            
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             
             <SOUND><NAME>filFreq</NAME>
                 <ABS_VAL>0.4</ABS_VAL>
@@ -265,6 +423,8 @@
             <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>length</SLAVE_TO><MIN_VAL>1</MIN_VAL><MAX_VAL>0</MAX_VAL></ALT>
             <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>length</SLAVE_TO></ALT>
             </SOUND>
+            
+             <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             
             <SOUND><NAME>amp</NAME><SET_TYPE>2</SET_TYPE></SOUND>
             
@@ -321,7 +481,7 @@
     <BLIP_BANKS>
     
     <BANK>
-    <NAME>glitchTexture</NAME>
+    <NAME>glitch</NAME>
     <PRESET>needleGlitch</PRESET>
     <PRESET>elec</PRESET>
     <PRESET>swellTooth</PRESET>
@@ -331,9 +491,36 @@
     
     <BANK>
     <NAME>softMelody</NAME>
-    <PRESET>basicSoft</PRESET>
+    <PRESET>fineSoft1</PRESET>
     </BANK>
     
+    <BANK>
+    <NAME>pacMan1</NAME>
+    <PRESET>basicHard</PRESET>
+    <PRESET>hardShort</PRESET>
+    <PRESET>hardMappedRandom</PRESET>
+    </BANK>
+    
+    <BANK>
+    <NAME>pacMan2</NAME>
+    <PRESET>elec</PRESET>
+    <PRESET>needleDecay</PRESET>
+    <PRESET>swellTooth</PRESET>
+    </BANK>
+    
+    
+    <BANK>
+    <NAME>bells</NAME>
+    <PRESET>basicRing</PRESET>
+    </BANK>
+    
+        
+    <BANK>
+    <NAME>finale</NAME>
+    <PRESET>needleDecay</PRESET>
+    <PRESET>needleMapDecay</PRESET>
+    <PRESET>swellTooth</PRESET>
+    </BANK>
     
     
     </BLIP_BANKS>

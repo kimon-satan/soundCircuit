@@ -402,6 +402,9 @@ void testApp::update(){
 		
 		
 		
+	}else{
+	
+		mouseDownCount += 1;
 	}
 
 	
@@ -745,6 +748,7 @@ void testApp::mousePressed(int x, int y, int button){
 	isMouseDown = true;
 	mouseP_down.set(mouseP);
 	mousePick_down.set(mousePick);
+	mouseDownCount = 0;
 	
 	switch (button) {
 		case 0:buttonMode = 0;break;
@@ -765,7 +769,7 @@ void testApp::mousePressed(int x, int y, int button){
 				}else if(currentSelection == OT_NODE){
 					currentAction = ACTION_ADJUST_NODE;
 				}else if(currentSelection == OT_WORLD){
-					currentAction = (buttonMode == 0) ? ACTION_DRAG : (isOptionKey)? ACTION_INSERT_SPACE :ACTION_STRETCH_SPACE;
+					currentAction = (buttonMode == 0) ? ACTION_DRAG : ACTION_STRETCH_SPACE;
 				}
 			}
 			break;
@@ -780,7 +784,7 @@ void testApp::mousePressed(int x, int y, int button){
 				}else if(currentSelection == OT_BLIP){
 					currentAction = ACTION_ADJUST_BLIP;
 				}else if(currentSelection == OT_WORLD){
-					currentAction = (buttonMode == 0) ? ACTION_DRAG : (isOptionKey)? ACTION_INSERT_SPACE :ACTION_STRETCH_SPACE;
+					currentAction = (buttonMode == 0) ? ACTION_DRAG : ACTION_STRETCH_SPACE;
 				}
 			}
 			
@@ -792,7 +796,7 @@ void testApp::mousePressed(int x, int y, int button){
 				if(currentSelection == OT_BLIP){
 					currentAction = ACTION_DESTROY_BLIP;
 				}else if(currentSelection == OT_WORLD){
-					currentAction = (buttonMode == 0) ? ACTION_DRAG : (isOptionKey)? ACTION_INSERT_SPACE :ACTION_STRETCH_SPACE;
+					currentAction = (buttonMode == 0) ? ACTION_DRAG : ACTION_STRETCH_SPACE;
 				}
 			}
 			
@@ -809,7 +813,8 @@ void testApp::mousePressed(int x, int y, int button){
 void testApp::mouseDragged(int x, int y, int button){
 	mouseP_prev.set(mouseP);
 	mouseP.set(x, y);
-	continueAction();
+	
+	if(mouseDownCount > 20 || mouseP.distance(mouseP_down) > 20)continueAction();
 
 }
 

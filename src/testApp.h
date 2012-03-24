@@ -81,6 +81,7 @@ private:
 	ofVec2f mouseP, mouseP_prev, mouseP_down;
 	ofVec3f mouseW;
 	ofVec3f mousePick, mousePick_down;
+	int mouseDownCount;
 	
 	vector<ofVec3f> VPW_coords;
 	vector<ofVec2f> VP_coords;

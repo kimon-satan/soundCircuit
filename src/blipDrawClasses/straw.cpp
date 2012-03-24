@@ -27,14 +27,22 @@ void straw::update(){
 		pivot += ofRandom(-swing, swing);
 	}
 	
-	setWrapData(ofVec2f(0,p_dim), pivot + angle);
+	
+	vector<ofVec2f> points;
+	points.push_back(ofVec2f(-params[3]/2,-p_dim - (p_dim * params[5])));
+	points.push_back(ofVec2f(params[3]/2,p_dim - (p_dim * params[5])));
+	
+	for(int i = 0; i < 2; i++)points[i].rotate(pivot);
+	
+	setBoundingRect(points, centre, angle);
+	
 
 	
 }
 
 void straw::draw(int t_wrap){
 	
-		
+	
 	glPushMatrix();
 	
 	glTranslatef(centre.x, centre.y, 0);

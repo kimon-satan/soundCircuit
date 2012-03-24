@@ -47,12 +47,13 @@ void elecCurrent::update(){
 
 	peaks.push_back(ofVec2f(length/2 - WORLD_UNIT * 2, 0));
 	setWrapData(ofVec2f(length/2,max_waveHeight),angle);
+
 	
 }
 
 void elecCurrent::draw(int t_wrap){
 	
-	
+
 	glPushMatrix();
 	
 		glTranslatef(centre.x, centre.y, 0);

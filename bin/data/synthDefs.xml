@@ -5,6 +5,7 @@
             <PARAM><T>freq</T></PARAM>
             <PARAM><T>clip</T></PARAM>
             <PARAM><T>amp</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
         </DEF>
         <DEF>
             <NAME>clip</NAME>
@@ -12,6 +13,7 @@
             <PARAM><T>filFreqL</T></PARAM>
             <PARAM><T>filFreqH</T></PARAM>
             <PARAM><T>amp</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
         </DEF>
         <DEF>
             <NAME>elec</NAME>
@@ -20,6 +22,7 @@
             <PARAM><T>speed</T></PARAM>
             <PARAM><T>separate</T></PARAM>
             <PARAM><T>amp</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
         </DEF>
         <DEF>
             <NAME>brownGlitch</NAME>
@@ -27,6 +30,7 @@
             <PARAM><T>filFreq</T></PARAM>
             <PARAM><T>attack</T></PARAM>
             <PARAM><T>amp</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
         </DEF>
         <DEF>
             <NAME>swell</NAME>
@@ -36,6 +40,7 @@
             <PARAM><T>sm2</T></PARAM>
             <PARAM><T>sm3</T></PARAM>
             <PARAM><T>width</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
         </DEF>
     </SYNTH_DEFS>
 </SOUND_CIRCUIT>

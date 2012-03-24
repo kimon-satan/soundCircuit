@@ -19,7 +19,22 @@ flipper::flipper():baseBlipDraw(){
 void flipper::update(){	
 	
 	testRect.setFromCenter(0, 0, length, params[1]);	
-	setWrapData(ofVec2f(length/2,params[0]),angle);
+	//setWrapData(ofVec2f(length/2,params[0]),angle);
+	vector<ofVec2f> points;
+	points.push_back(ofVec2f(testRect.x, -params[0]/2));
+	points.push_back(ofVec2f(testRect.x + testRect.width, testRect.y + params[0]/2));
+	
+	for(int i = 0; i < 2; i ++){
+		points[i].y += params[1] * params[0]/2;
+		points[i].rotate(pivot[2]); //z_rot
+		//3d rotations are too tricky for now!
+		//just enlarge the testArea
+		if(pivot[0] > 0 ){
+			points.push_back(ofVec2f(points[i].x * 2,-points[i].y));
+		}
+	}
+	
+	setBoundingRect(points, centre, angle);
 	
 	float swing = (postVal > 0) ? decayRatio * envVal + (1-decayRatio) * postVal: envVal;
 	
@@ -55,6 +70,8 @@ void flipper::update(){
 }
 
 void flipper::draw(int t_wrap){
+	
+
 	
 	
 	glPushMatrix();
@@ -117,7 +134,7 @@ vector<paramAttributes> flipper::getParamDefs(){
 	x_speed.name = "x_speed"; x_speed.min_val = 0; x_speed.max_val = 10; x_speed.abs_value = 0;
 	y_speed.name = "y_speed"; y_speed.min_val = 0; y_speed.max_val = 10; y_speed.abs_value = 0;
 	z_speed.name = "z_speed"; z_speed.min_val = 0; z_speed.max_val = 10; z_speed.abs_value = 0;
-	hue.name = "hue"; hue.min_val = 0; hue.max_val = 255; hue.abs_value = 100;
+	hue.name = "hue"; hue.min_val = 15; hue.max_val = 240; hue.abs_value = 100;
 	h_swell.name = "h_swell"; h_swell.min_val = 0; h_swell.max_val = 255; h_swell.abs_value = 100;
 	
 	def.push_back(height);

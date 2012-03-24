@@ -13,6 +13,7 @@
 #include "ofMain.h"
 #include "paramAttributes.h"
 #include "utils.h"
+#include "ofxRotRect.h"
 
 class baseBlipDraw{
 
@@ -28,6 +29,7 @@ public:
 	
 	void setCorners(vector<ofVec2f> & t_corners, ofVec2f t_centre, ofVec2f t_dims, float t_angle);
 	void setWrapData(ofVec2f t_dims, float t_angle);
+	void setBoundingRect(vector<ofVec2f> const & points, ofVec2f t_centre, float t_angle);
 	
 	//getters and setters
 	void setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l);

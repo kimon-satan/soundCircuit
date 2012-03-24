@@ -59,6 +59,28 @@ void baseBlipDraw::setWrapData(ofVec2f t_dims, float t_angle){
 
 }
 
+void baseBlipDraw::setBoundingRect(vector<ofVec2f> const & points, ofVec2f t_centre, float t_angle){
+	
+	for(int i = 0; i < 2; i++)corners[i].set(points[0]);
+
+	for(int i= 1; i < points.size(); i++){
+		
+		if(points[i].x < corners[0].x)corners[0].x = points[i].x;
+		if(points[i].y < corners[0].y)corners[0].y = points[i].y;
+		if(points[i].x > corners[1].x)corners[1].x = points[i].x;
+		if(points[i].y > corners[1].y)corners[1].y = points[i].y;
+	
+	}
+	
+	for(int i = 0; i < 2; i++){
+		corners[i] += t_centre;
+		corners[i].rotate(t_angle, t_centre);
+	}
+	
+
+}
+
+
 
 void baseBlipDraw::setTimeParams(bool  t_active, float  t_envVal, float  t_postVal){
 

@@ -289,13 +289,21 @@ void objectManager::beginNode(ofVec2f w_pos ,int mode){
 	deselectNodes();
 	deselectTracks();
 	s_nodes[0] = selectNode(w_pos, kTestSize/2);
-	if(s_nodes[0])s_nodes[0]->setIsAdjusting(true);
-	for(int i = 0; i < 4; i++)nodeSet[i]=false;
-	
-	if(s_nodes[0]){ //open the node entirely
-		if(mode != 0){
-			for(int i = 0; i < 4; i++)s_nodes[0]->openSocket(i);
-		}	
+	if(s_nodes[0]){
+		
+		if(!s_nodes[0]->getIsShown()){
+			s_nodes[0] = NULL;
+			return; //don't adjust corner nodes;
+		}
+		
+		s_nodes[0]->setIsAdjusting(true);
+		for(int i = 0; i < 4; i++)nodeSet[i]=false;
+		
+		if(s_nodes[0]){ //open the node entirely
+			if(mode != 0){
+				for(int i = 0; i < 4; i++)s_nodes[0]->openSocket(i);
+			}	
+		}
 	}
 	
 }
@@ -859,8 +867,8 @@ bool objectManager::findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<of
 				
 				
 				if(tracks[i].getInside(t_pos) 
-				   || tracks[i].getInside(t_pos + tracks[i].getDirection() * (float)kTestSize/4 * WORLD_UNIT) 
-				   || tracks[i].getInside(t_pos - tracks[i].getDirection() * (float)kTestSize/4 * WORLD_UNIT)
+				   || tracks[i].getInside(t_pos + tracks[i].getDirection() * (float)kTestSize/2 * WORLD_UNIT) 
+				   || tracks[i].getInside(t_pos - tracks[i].getDirection() * (float)kTestSize/2 * WORLD_UNIT)
 				   ){
 					
 					if(&s == &DSEG || s.getInside(t_pos)){

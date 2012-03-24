@@ -105,7 +105,9 @@ void bean1::update(){
 		
 	}
 	
-	setWrapData(ofVec2f(width, height), angle);
+	
+	setBoundingRect(vertices, centre, angle);
+
 	
 }
 
@@ -113,6 +115,8 @@ void bean1::update(){
 void bean1::draw(int t_wrap){
 	
 	//figure out craziness on preview draw
+	
+
 	
 	glPushMatrix();
 
