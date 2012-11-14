@@ -686,7 +686,9 @@ void testApp::keyPressed  (int key){
 		}
 	}
 	
-	if(key == ' ')cam.toggleFollow();
+	if(key == ' '){
+		if(!isMouseDown)cam.toggleFollow();
+	}
 	
 	if(key == 9)isOptionKey = true;
 	

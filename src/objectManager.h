@@ -12,7 +12,6 @@
 
 #include "objectUtils.h"
 #include "node.h"
-#include "blip.h"
 #include "reader.h"
 
 class objectManager : public objectUtils{

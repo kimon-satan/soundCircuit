@@ -122,8 +122,9 @@ int node::getNumSockets(){return numSockets;}
 ofVec2f node::getPos(){return pos;}
 void node::setPos(ofVec2f p){pos = p;}
 
+//not needed
 
-void node::addReader(reader * r){readerPtrs.push_back(r);}
+/*void node::addReader(reader * r){readerPtrs.push_back(r);}
 
 bool node::getReaderPresent(reader * r){
 	for(int i = 0; i < readerPtrs.size(); i++)if(readerPtrs[i] == r)return true;
@@ -135,7 +136,7 @@ void node::removeReader(reader * r){
 	vector<reader*>::iterator it;
 	it = remove(readerPtrs.begin(), readerPtrs.end(), r);
 	readerPtrs.erase(it, readerPtrs.end());
-}
+}*/
 
 void node::setSelected(bool t){isSelected = t;}
 int node::getIndex(){return index;}
