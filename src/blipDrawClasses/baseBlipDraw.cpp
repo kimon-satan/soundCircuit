@@ -113,3 +113,16 @@ void baseBlipDraw::setDecayRatio(float decay, float postdecay){
 	decayRatio = decay/(decay+postdecay);
 	
 }
+
+float baseBlipDraw::getParam(string t_name){
+
+    for(int i = 0; i < pDefs.size(); i++){
+        
+        if(pDefs[i].name ==  t_name){
+            return params[i];
+        }
+    }
+    
+    return 0;
+
+}

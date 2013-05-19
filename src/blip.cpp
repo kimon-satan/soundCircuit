@@ -163,6 +163,8 @@ void blip::selectDrawer(){
 	if(preset.getDrawType() == BT_BELCH){drawer = new belch();}
 	if(preset.getDrawType() == BT_BEAN1){drawer = new bean1();}
 	if(preset.getDrawType() == BT_FLIPPER){drawer = new flipper();}
+    if(preset.getDrawType() == BT_SLIDER){drawer = new slider();}
+    if(preset.getDrawType() == BT_MATERIALISER){drawer = new materialiser();}
 
 }
 

@@ -42,5 +42,12 @@
             <PARAM><T>width</T></PARAM>
             <PARAM><T>pan</T></PARAM>
         </DEF>
+        <DEF>
+            <NAME>buzz</NAME>
+            <PARAM><T>freq</T></PARAM>
+            <PARAM><T>amp</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
+        </DEF>
+        
     </SYNTH_DEFS>
 </SOUND_CIRCUIT>

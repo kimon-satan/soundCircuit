@@ -31,6 +31,8 @@ public:
 	void setWrapData(ofVec2f t_dims, float t_angle);
 	void setBoundingRect(vector<ofVec2f> const & points, ofVec2f t_centre, float t_angle);
 	
+    float getParam(string t_name);
+    
 	//getters and setters
 	void setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l);
 	void setDecayRatio(float decay, float postdecay);
@@ -44,7 +46,7 @@ public:
 	ofVec2f getEndPos();
 	float getLength();
 	
-	
+	 
 	
 protected:
 	
@@ -55,6 +57,7 @@ protected:
 	vector<float> params;
 	float envVal, postVal, decayRatio;
 	bool isActive;
+    vector<paramAttributes> pDefs;
 
 };
 

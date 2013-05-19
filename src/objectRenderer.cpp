@@ -19,7 +19,19 @@ objectRenderer::objectRenderer():objectManager(){
 
 }
 
-void objectRenderer::render(ofVec2f t_pos, ofRectangle roi){
+void objectRenderer::updateSelected(){
+
+    selected.clear();
+    
+    for(int i = 0; i < tracks.size(); i ++){
+		
+		segment * t = &tracks.at(i);
+        if(t->getIsSelected())selected.push_back(t->getSelectPos());
+	}
+    
+}
+
+void objectRenderer::pushRender(ofVec2f t_pos, ofRectangle roi){
 	
 	viewPort = roi;
 	center.set(t_pos);
@@ -28,12 +40,20 @@ void objectRenderer::render(ofVec2f t_pos, ofRectangle roi){
 	viewPort.x -= center.x;
 	viewPort.y -= center.y;
 	
-	drawTracks();
+    glPushMatrix();
+    glTranslatef(t_pos.x, t_pos.y, 0);
+    
+	/*drawTracks();
 	drawNodes();
 	drawBlips();
-	drawSelected();
+	drawSelected();*/
 	
 	
+}
+
+void objectRenderer::popRender(){
+    
+    glPopMatrix();
 }
 
 
@@ -142,7 +162,6 @@ void objectRenderer::drawTrack(segment * t){
 		
 	}
 		
-	if(t->getIsSelected())selected.push_back(t->getSelectPos());
 
 	
 	if(isTrackData){
@@ -178,7 +197,7 @@ void objectRenderer::drawSelected(){
 
 	}
 	
-	selected.clear();
+	
 
 }
 

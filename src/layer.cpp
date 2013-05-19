@@ -40,44 +40,37 @@ void layer::update(){
 	
 	for(vector<reader>::iterator it = mReaders.begin(); it != mReaders.end(); it++)it->update();
 	for(vector<blip>::iterator it = blips.begin(); it != blips.end(); it++)it->update();
-	
+    updateSelected();
 	
 }
 
-void layer::draw(ofVec2f pos, ofRectangle roi, ofColor col){
+void layer::drawDebug(ofColor col, ofVec2f mouse){
 	
-	
-	glPushMatrix();
-	ofNoFill();
-
-	glTranslatef(pos.x,pos.y,0); //centred coordinates
-	
-	//draw background for coordinate picking
-	
-	if(isScreenData){
-		ofPushMatrix();
-		ofTranslate(0, 0, 0);
-		ofSetColor(col);
-		ofFill();
-		ofSetRectMode(OF_RECTMODE_CENTER);
-		ofRect(0,0,world_dims.x, world_dims.y);
-		ofSetRectMode(OF_RECTMODE_CORNER);
-		ofNoFill();
-		ofSetColor(0);
-		ofPopMatrix();
-	}
-
-	
-	//calculate area that will be viewed
-	
-	render(pos, roi);
-	
-	for(int i = 0; i < mReaders.size(); i ++)mReaders[i].draw();
-	
-	glPopMatrix();
+    
+    
+    if(isScreenData){
+        ofSetColor(col);
+        ofFill();
+        ofSetRectMode(OF_RECTMODE_CENTER);
+        ofRect(0,0,world_dims.x, world_dims.y);
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        ofNoFill();
+        ofSetColor(0);
+ 
+         glDepthFunc(GL_ALWAYS);
+         ofSetColor(0);
+         ofNoFill();
+         ofCircle(mouse.x, mouse.y, 5);
+         ofDrawBitmapString(ofToString(mouse.x,1) + ", " + ofToString(mouse.y,1), mouse.x, mouse.y);
+         glDepthFunc(GL_LESS);
+ 
+     }
+    
 	
 
 }
+
+void layer::drawReaders(){for(int i = 0; i < mReaders.size(); i ++)mReaders[i].draw();}
 
 
 e_objectType layer::selectSomething(ofVec2f w_pos, bool isReader, bool isBlip, bool isNode, bool isTrack){

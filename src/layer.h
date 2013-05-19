@@ -43,7 +43,8 @@ public:
 	
 	void setup();
 	void update();
-	void draw(ofVec2f pos, ofRectangle roi, ofColor col);
+	void drawDebug( ofColor col, ofVec2f mouse);
+    void drawReaders();
 	
 	e_objectType selectSomething(ofVec2f w_pos, bool isReader = true, bool isBlip = true, bool isNode = true, bool isTrack = true);
 	void deselectAll();

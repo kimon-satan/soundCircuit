@@ -18,8 +18,10 @@ public:
 	
 	objectRenderer();
 	
-	void render(ofVec2f t_pos, ofRectangle roi);
-
+	void pushRender(ofVec2f t_pos, ofRectangle roi);
+    void popRender();
+    void updateSelected();
+    
 	void drawTracks();
 	void drawBlips();
 	void drawNodes();

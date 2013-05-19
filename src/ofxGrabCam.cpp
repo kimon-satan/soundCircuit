@@ -15,7 +15,7 @@ ofxGrabCam::ofxGrabCam() : initialised(true),kLagFrames(120),kMinIncr(1){
 	ofVec3f c(0,0,0);
 	orbit(180,0, getPosition().z, c);
 	roll(180);
-	cacheMatrices(true);
+	
 	
 	isFixed = false;
 	isPaused = false;

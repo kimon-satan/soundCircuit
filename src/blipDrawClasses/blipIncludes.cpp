@@ -21,6 +21,8 @@ vector<paramAttributes> drawDictionary::getDefinition(blipDrawType drawDef){
 		case BT_BELCH:return belch::getParamDefs();break;
 		case BT_BEAN1:return bean1::getParamDefs();break;
 		case BT_FLIPPER:return flipper::getParamDefs();break;
+        case BT_SLIDER:return slider::getParamDefs();break;
+        case BT_MATERIALISER:return materialiser::getParamDefs();break;
 	}
 
 	return blank;
@@ -34,6 +36,8 @@ blipDrawType drawDictionary::getTypeFromString(string s){
 	if(s == "belch"){return BT_BELCH;}
 	if(s == "bean1"){return BT_BEAN1;}
 	if(s == "flipper"){return BT_FLIPPER;}
+    if(s == "slider"){return BT_SLIDER;}
+    if(s == "materialiser"){return BT_MATERIALISER;}
 	
 	return BT_TESTBLIP;
 	

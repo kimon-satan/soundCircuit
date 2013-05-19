@@ -8,6 +8,7 @@ void testApp::setup(){
 	
 	//basics
 	
+	
 	sender.setup( HOST, PORT );
 	ofxOscMessage m;
 	m.setAddress("/init");
@@ -416,35 +417,39 @@ void testApp::draw(){
 	
 	ofBackground(255);
 	
+
+	
 	cam.begin(viewPort);
 	
 	ofSetColor(255, 0, 0);
 	
 	ofVec2f world_dims = world.getWorldDims();
-	for(int i = 0; i < 3; i ++){
-		for(int j = 0; j < 3; j++){
-			
-			ofVec2f p(-world_dims.x + world_dims.x * i,
-					  -world_dims.y + world_dims.y * j);
-				   
-			
-			world.draw(p, roi, testCols[i * 3 + j]);
-			
-			if(drawData){
-				glPushMatrix();
-				glTranslated(p.x, p.y, 0);
-				glDepthFunc(GL_ALWAYS);
-				ofSetColor(0);
-				ofNoFill();
-				ofCircle(mouseW.x, mouseW.y, 5);
-				ofDrawBitmapString(ofToString(mouseW.x,1) + ", " + ofToString(mouseW.y,1), mouseW.x, mouseW.y);
-				glDepthFunc(GL_LESS);
-				glPopMatrix();
-			}
-			
-			
-		}
-	}
+    
+    for(int m =0; m < 6; m++){
+        for(int i = 0; i < 3; i ++){
+            for(int j = 0; j < 3; j++){
+                
+                ofVec2f p(-world_dims.x + world_dims.x * i,
+                          -world_dims.y + world_dims.y * j);
+                       
+                world.pushRender(p, roi);
+                
+                switch(m){
+                    case 0: world.drawDebug(testCols[i * 3 + j], mousePick);
+                    case 1: world.drawTracks();break;
+                    case 2: world.drawBlips();break;
+                    case 3: world.drawNodes();break;
+                    case 4: world.drawSelected();break; //(cf with mousePick)
+                    case 5: world.drawReaders();break;
+                        
+                }
+                
+                world.popRender();
+                
+            }
+        }
+    }
+  
 	
 	cam.end();
 		
