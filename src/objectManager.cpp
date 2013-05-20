@@ -166,7 +166,9 @@ void objectManager::calcBlip(ofVec2f w_pos, ofVec2f t_dir, float s_angle){
 	setParam(p.getDecaySecs(),userA, userB, m_val);
 	setParam(p.getPostDecaySecs(),userA, userB, m_val);
 	for(int i = 0; i < p.getSoundParams()->size(); i++)setParam(p.getSoundParam(i), userA, userB, m_val);
-	for(int i = 0; i < p.getVisualParams()->size(); i++)setParam(p.getVisualParam(i), userA, userB, m_val);
+	for(int i = 0; i < p.getVisualParams()->size(); i++){
+        setParam(p.getVisualParam(i), userA, userB, m_val);
+    }
 	
 	
 	if(s_tracks[0] && !selectBlip(s_pos[0],3)){

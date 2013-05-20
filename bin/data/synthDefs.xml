@@ -46,6 +46,17 @@
             <NAME>buzz</NAME>
             <PARAM><T>freq</T></PARAM>
             <PARAM><T>amp</T></PARAM>
+            <PARAM><T>grainMul</T></PARAM>
+            <PARAM><T>grainFreq</T></PARAM>
+            <PARAM><T>noiseAmp</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
+        </DEF>
+        <DEF>
+            <NAME>servo</NAME>
+             <PARAM><T>amp</T></PARAM>
+            <PARAM><T>base</T></PARAM>
+            <PARAM><T>range</T></PARAM>
+           <PARAM><T>filFreq</T></PARAM>       
             <PARAM><T>pan</T></PARAM>
         </DEF>
         

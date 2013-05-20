@@ -13,7 +13,7 @@
 vector<paramAttributes> drawDictionary::getDefinition(blipDrawType drawDef){
 	
 	vector<paramAttributes> blank;
-	
+    
 	switch (drawDef) {
 		case BT_TESTBLIP:return testBlip::getParamDefs();break;
 		case BT_ELEC_CURRENT:return elecCurrent::getParamDefs();break;
@@ -23,6 +23,7 @@ vector<paramAttributes> drawDictionary::getDefinition(blipDrawType drawDef){
 		case BT_FLIPPER:return flipper::getParamDefs();break;
         case BT_SLIDER:return slider::getParamDefs();break;
         case BT_MATERIALISER:return materialiser::getParamDefs();break;
+        case BT_SPROCKET: return materialiser::getParamDefs();break;
 	}
 
 	return blank;
@@ -38,6 +39,7 @@ blipDrawType drawDictionary::getTypeFromString(string s){
 	if(s == "flipper"){return BT_FLIPPER;}
     if(s == "slider"){return BT_SLIDER;}
     if(s == "materialiser"){return BT_MATERIALISER;}
+    if(s == "sprocket"){return BT_SPROCKET;}
 	
 	return BT_TESTBLIP;
 	

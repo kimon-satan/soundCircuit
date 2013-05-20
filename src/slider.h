@@ -22,12 +22,8 @@ public:
 	
 private:
 	
-	float alpha;
 	float slide;
-    float wobble;
-    float hor_wob;
-    float ver_wob;
-    bool strobe;
+
 	ofColor c;
 	ofRectangle testRect;
 	bool isDecay;

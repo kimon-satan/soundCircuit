@@ -153,6 +153,10 @@
                  <ALT><ABS_VAL>1</ABS_VAL></ALT>
             </SOUND>
             
+            <SOUND><NAME>grainMul</NAME><SET_TYPE>1</SET_TYPE></SOUND>
+            <SOUND><NAME>grainFreq</NAME><SET_TYPE>1</SET_TYPE></SOUND>
+            <SOUND><NAME>noiseAmp</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></SOUND>
+            
             <VISUAL><NAME>hue</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO></VISUAL>
             <VISUAL><NAME>pSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>1</MAX_VAL></VISUAL>
             <VISUAL><NAME>numPs</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>50</MIN_VAL><MAX_VAL>500</MAX_VAL></VISUAL>
@@ -162,6 +166,73 @@
             </VISUAL>
             
         </BLIP>
+        
+        
+         <BLIP>
+            <NAME>protoslide</NAME><SYNTH>servo</SYNTH><DRAW>slider</DRAW><ENV>1</ENV>
+            
+            <LENGTH><SET_TYPE>0</SET_TYPE></LENGTH>
+            
+            <ATTACK><SET_TYPE>0</SET_TYPE><ABS_VAL>0.25</ABS_VAL></ATTACK>
+            
+            <DECAY>
+                <SET_TYPE>1</SET_TYPE>
+            </DECAY>
+            
+            <POST_DECAY>
+                <SET_TYPE>0</SET_TYPE><ABS_VAL>0.1</ABS_VAL>
+            </POST_DECAY>
+            
+            <SOUND><NAME>range</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0</MIN_VAL><MAX_VAL>1.0</MAX_VAL></SOUND>
+            <SOUND><NAME>base</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>1.0</MIN_VAL><MAX_VAL>0</MAX_VAL></SOUND>
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
+            
+            <SOUND><NAME>amp</NAME>
+                <ABS_VAL>0.5</ABS_VAL>
+                <ALT><ABS_VAL>0.25</ABS_VAL></ALT>
+                <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
+                 <ALT><ABS_VAL>1</ABS_VAL></ALT>
+            </SOUND>
+            
+        	<VISUAL><NAME>orient</NAME>
+        	<ABS_VAL>0</ABS_VAL>
+        	<ALT><ABS_VAL>1</ABS_VAL></ALT>
+        	</VISUAL>
+            <VISUAL><NAME>height</NAME><SET_TYPE>1</SET_TYPE></VISUAL>
+            <VISUAL><NAME>slSize</NAME>
+            <SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>0.5</MAX_VAL>
+            </VISUAL>
+            
+        </BLIP>
+        
+        <BLIP>
+            <NAME>protosprocket</NAME><SYNTH>servo</SYNTH><DRAW>sprocket</DRAW><ENV>1</ENV>
+            
+            <LENGTH><SET_TYPE>0</SET_TYPE><ABS_VAL>40</ABS_VAL></LENGTH>
+            
+            <ATTACK><SET_TYPE>0</SET_TYPE><ABS_VAL>0.25</ABS_VAL></ATTACK>
+            
+            <DECAY>
+                <SET_TYPE>1</SET_TYPE>
+            </DECAY>
+            
+            <POST_DECAY>
+                <SET_TYPE>0</SET_TYPE><ABS_VAL>0.1</ABS_VAL>
+            </POST_DECAY>
+            
+            <SOUND><NAME>range</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0</MIN_VAL><MAX_VAL>1.0</MAX_VAL></SOUND>
+            <SOUND><NAME>base</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>1.0</MIN_VAL><MAX_VAL>0</MAX_VAL></SOUND>
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
+            
+            <SOUND><NAME>amp</NAME>
+                <ABS_VAL>0.5</ABS_VAL>
+                <ALT><ABS_VAL>0.25</ABS_VAL></ALT>
+                <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
+                 <ALT><ABS_VAL>1</ABS_VAL></ALT>
+            </SOUND>
+            
+        </BLIP>
+        
         
         <BLIP>
             <NAME>basicSoft</NAME><SYNTH>basic</SYNTH><DRAW>bean1</DRAW><ENV>0</ENV>

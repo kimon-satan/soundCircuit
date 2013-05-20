@@ -18,13 +18,11 @@ materialiser::materialiser():baseBlipDraw(){
 
 void materialiser::update(){
 	
-	testRect.setFromCenter(0, 0, length, params[1]);
-	//setWrapData(ofVec2f(length/2,params[0]),angle);
+	testRect.setFromCenter(0, getParam("height")/2 * getParam("trackOffset"), length,getParam("height"));
 	vector<ofVec2f> points;
-	points.push_back(ofVec2f(testRect.x, -params[0]/2));
-	points.push_back(ofVec2f(testRect.x + testRect.width, testRect.y + params[0]/2));
+	points.push_back(ofVec2f(testRect.x, testRect.y));
+	points.push_back(ofVec2f(testRect.x + testRect.width, testRect.y + testRect.height));
 	
-	setBoundingRect(points, centre, angle);
 	
 	float swing = (postVal > 0) ? decayRatio * envVal + (1-decayRatio) * postVal: envVal;
     
@@ -35,12 +33,22 @@ void materialiser::update(){
         wobble.set(swing * ofRandom(-getParam("hWob"), getParam("hWob")),swing * ofRandom(-getParam("vWob"),getParam("vWob")));
         rock = ofRandom(-getParam("rock") * grow, getParam("rock") * grow);
         
+        for(int i = 0; i < points.size(); i++){
+            points[i] += wobble;
+            points[i].rotate(rock, wobble + ofVec2f(0,getParam("height")/2 * getParam("trackOffset")));
+            
+        }
+        
+       
+        
 	}else{
 		
 		isDecay = false;
         wobble.set(0,0);
         rock = 0;
 	}
+    
+     setBoundingRect(points, centre, angle);
 	
 	
 }
@@ -50,6 +58,7 @@ void materialiser::draw(int t_wrap){
 	ofPushMatrix();
 	
 	ofTranslate(centre.x, centre.y, 0);
+    ofRotate(angle, 0, 0, 1);
 
 	ofTranslate(0, getParam("height")/2 * getParam("trackOffset"), 0);
 	
