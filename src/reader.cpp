@@ -125,7 +125,7 @@ void reader::handleBlips(){
 				currentBlipIndex = it->getIndex();
 				
 				it->addOccupant(); 
-				it->react(mIncrement);
+				
 				
 				blipPreset p = it->getPreset();
 				
@@ -142,8 +142,10 @@ void reader::handleBlips(){
 				for(int i = 0; i < p.getSoundParams()->size(); i++){
 					m.addFloatArg(p.getSoundParam(i)->abs_value);
 				}
+                
 				
 				sender->sendMessage(m);
+                it->react(mIncrement);
 				
 			}
 		}

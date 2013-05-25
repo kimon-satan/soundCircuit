@@ -220,8 +220,17 @@
                 <SET_TYPE>0</SET_TYPE><ABS_VAL>0.1</ABS_VAL>
             </POST_DECAY>
             
-            <SOUND><NAME>range</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0</MIN_VAL><MAX_VAL>1.0</MAX_VAL></SOUND>
-            <SOUND><NAME>base</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>1.0</MIN_VAL><MAX_VAL>0</MAX_VAL></SOUND>
+            <SOUND><NAME>range</NAME>
+            	<SET_TYPE>2</SET_TYPE>
+            	<MIN_VAL>0.5</MIN_VAL>
+            	<MAX_VAL>0.75</MAX_VAL>
+            	<ABS_VAL>0.5</ABS_VAL>
+            	<MOD_FROM>0.5</MOD_FROM>
+            	<MOD_TO>0.75</MOD_TO>
+            	<INTERVALS>4</INTERVALS>
+            </SOUND>
+            
+            <SOUND><NAME>base</NAME><SET_TYPE>0</SET_TYPE><MIN_VAL>0.25</MIN_VAL><MAX_VAL>1.0</MAX_VAL></SOUND>
             <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             
             <SOUND><NAME>amp</NAME>
@@ -231,6 +240,10 @@
                  <ALT><ABS_VAL>1</ABS_VAL></ALT>
             </SOUND>
             
+             <VISUAL><NAME>state</NAME>
+        	    <SET_TYPE>5</SET_TYPE><SLAVE_TO>range</SLAVE_TO><INTERVALS>4</INTERVALS>
+            </VISUAL>  
+                    
         </BLIP>
         
         

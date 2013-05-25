@@ -17,7 +17,7 @@ enum e_setType{
 	PSET_USERB,
 	PSET_MAP,
 	PSET_RANDOM,
-	PSET_SLAVE
+	PSET_SLAVE,
 	
 };
 
@@ -26,17 +26,25 @@ class paramAttributes{
 	public:
 	
 	paramAttributes(){
-		name = "emptyAttribute";
+        reset();
+	};
+	
+    void reset(){
+        name = "emptyAttribute";
 		abs_value = 0;
 		min_val = 0;
 		max_val = 1;
 		setType = PSET_FIXED;
 		slaveTo = "";
-		
-	};
-	
+		modTo = 0;
+        modFrom = 0;
+        intervals = 0;
+    }
+    
 	string name, slaveTo;
 	float abs_value, min_val, max_val;
+    float modTo, modFrom;
+    int intervals;
 	e_setType setType;
 };
 

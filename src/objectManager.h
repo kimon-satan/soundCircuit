@@ -75,7 +75,9 @@ protected:
 	void constrainEndPoint(ofVec2f origin, segment & s, bool isTracks = true, bool isNodes = false, bool isBlips = false);
 	void repositionFromMidPoint(ofVec2f origin, segment & s, bool isTracks = false, bool isNodes = true, bool isBlips = false);
 	
-	
+	void snapVal(paramAttributes * p);
+    
+    
 	//searches
 	
 	bool findCrossIntersects(ofVec2f origin, ofVec2f t_dir, vector<ofVec2f> & t_points = DPOINTS, segment & s = DSEG, bool isTracks = true , bool isBlips = false);

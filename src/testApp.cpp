@@ -327,6 +327,9 @@ void testApp::loadParamAttribute(ofxXmlSettings XML, paramAttributes * p){
 	if(XML.tagExists("MIN_VAL", 0))p->min_val = XML.getValue("MIN_VAL", 0.0f);
 	if(XML.tagExists("MAX_VAL", 0))p->max_val = XML.getValue("MAX_VAL", 1.0f);
 	if(XML.tagExists("SLAVE_TO",0))p->slaveTo = XML.getValue("SLAVE_TO", "");
+    if(XML.tagExists("MOD_FROM",0))p->modFrom = XML.getValue("MOD_FROM", 0.0f);
+    if(XML.tagExists("MOD_TO",0))p->modTo = XML.getValue("MOD_TO", 1.0f);
+    if(XML.tagExists("INTERVALS",0))p->intervals = XML.getValue("INTERVALS", 1.0f);
 	
 }
 

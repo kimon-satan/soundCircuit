@@ -46,3 +46,8 @@ ofVec3f utils::moduloPoint(ofVec3f t_point, ofVec2f t_dims){
 	
 	return point;
 }
+
+int utils::round(float x)
+{
+    return static_cast<int>(floor(x + 0.5f));
+}

@@ -23,6 +23,7 @@ blip::blip(){
 	envVal = 0;
 	postVal = 0;
 	numOccupants = 0;
+    nTriggered = 0;
 	
 	drawer = NULL;
 
@@ -42,7 +43,9 @@ void blip::update(){
 			if(attackCount > 0){
 				attackCount -= 1;
 				envVal = 1 - (float)attackCount/(float)totalAttack;
-			}else{envVal =1;}
+			}else{
+                envVal =1;
+            }
 			
 		}else{
 			
@@ -114,7 +117,9 @@ void blip::draw(int t_wrap){
 }
 
 bool blip::react(float incr){
-	
+
+    
+    updateModParams();
 	isActive = true;
 	paramAttributes * p = preset.getAttackProp();
 	if(p)preset.getAttackSecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
@@ -177,18 +182,22 @@ void blip::updateDrawerPosition(ofVec2f t_dims){
 
 void blip::updateDrawerParams(){
 
-	vector<float> t_params;
-	for(int i =0; i < preset.getVisualParams()->size(); i++)t_params.push_back(preset.getVisualParam(i)->abs_value);
-	drawer->setPresetParams(t_params);
+    vector<float> t_params;
+    for(int i =0; i < preset.getVisualParams()->size(); i++){
+        
+        t_params.push_back(preset.getVisualParam(i)->abs_value);
+        
+    }
+    
+    drawer->setPresetParams(t_params);
 
 }
 
 void blip::updateDrawer(){
 
 	if(drawer){
-		
 		drawer->setBlipParams(direction, startPos, endPos,length);
-		updateDrawerParams();
+		if(index == -99)updateDrawerParams();
 		drawer->setTimeParams(isActive, envVal, postVal);
 		drawer->update();
 	
@@ -197,6 +206,39 @@ void blip::updateDrawer(){
 
 }
 
+void blip::updateModParams(){
+
+    for(int i = 0; i < preset.getSoundParams()->size(); i ++){
+        
+        paramAttributes * p = preset.getSoundParam(i);
+        
+        if(p->modTo > 0)modParam(p);
+    
+    }
+    
+    for(int i = 0; i < preset.getVisualParams()->size(); i ++){
+        
+        paramAttributes * p = preset.getVisualParam(i);
+        
+        if(p->modTo > 0)modParam(p);
+        
+    }
+    
+    updateDrawerParams();
+
+
+}
+
+
+void blip::modParam(paramAttributes *p){
+
+    float r = p->modTo - p->modFrom;
+    float add = r/(p->intervals - 1);
+    float nv =  p->abs_value - p->modFrom + add;
+    nv = fmod(nv, add * p->intervals) + p->modFrom;
+    p->abs_value = nv;
+    
+}
 
 void blip::destroyDrawer(){
 	
@@ -256,3 +298,5 @@ blipPreset & blip::getPresetRef(){return preset;}
 blipPreset blip::getPreset(){return preset;}
 
 baseBlipDraw * blip::getDrawer(){return drawer;}
+
+int blip::getNTriggered(){return nTriggered;}

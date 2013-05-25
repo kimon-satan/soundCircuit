@@ -23,7 +23,7 @@ vector<paramAttributes> drawDictionary::getDefinition(blipDrawType drawDef){
 		case BT_FLIPPER:return flipper::getParamDefs();break;
         case BT_SLIDER:return slider::getParamDefs();break;
         case BT_MATERIALISER:return materialiser::getParamDefs();break;
-        case BT_SPROCKET: return materialiser::getParamDefs();break;
+        case BT_SPROCKET: return sprocket::getParamDefs();break;
 	}
 
 	return blank;

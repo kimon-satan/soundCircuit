@@ -31,6 +31,7 @@ public:
 	void updateDrawerPosition(ofVec2f t_dims);
 	void destroyDrawer();
 	void updateDrawer();
+    void updateModParams();
 	
 	bool getInside(ofVec2f t_pos, int bufferZone = 0);
 	
@@ -46,6 +47,8 @@ public:
 	blipPreset getPreset();
 	baseBlipDraw * getDrawer();
 	
+    int getNTriggered();
+    
 	void aquireIndex();
 	
 	static int bCounter;
@@ -54,6 +57,7 @@ private:
 	
 	void selectDrawer();
 	void updateDrawerParams();
+    void modParam(paramAttributes * p);
 	
 	blipPreset preset;
 	baseBlipDraw * drawer;
@@ -64,6 +68,7 @@ private:
 	int attackCount, decayCount, postDecayCount;
 	int totalAttack, totalDecay, totalPostDecay;
 	float envVal, postVal, duration;
+    int nTriggered;
 	
 
 

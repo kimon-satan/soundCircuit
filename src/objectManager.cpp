@@ -219,11 +219,16 @@ void objectManager::setParam(paramAttributes * p, float userA, float userB, floa
 
 	if(p->setType == PSET_USERA){
 		
-		p->abs_value = ofMap(userA, 0, m_val, p->min_val, p->max_val);
+        p->abs_value = ofMap(userA, 0, m_val, p->min_val, p->max_val);
+        
+        if(p->intervals > 0)snapVal(p);
+        
 		
 	}else if(p->setType == PSET_USERB){
 		
 		p->abs_value = ofMap(userB, 0, 180, p->min_val, p->max_val);
+        
+        if(p->intervals > 0)snapVal(p);
 		
 	}else if(p->setType == PSET_MAP){
 		
@@ -238,11 +243,13 @@ void objectManager::setParam(paramAttributes * p, float userA, float userB, floa
 		}
 		
 		p->abs_value = mapValue;
+        if(p->intervals > 0)snapVal(p);
 		
 	}else if(p->setType == PSET_RANDOM){
 		
 		if(!previewBlip.getPreset().getIsRandSet()){
 			p->abs_value = ofRandom(p->min_val, p->max_val);
+            if(p->intervals > 0)snapVal(p);
 		}
 		//potentially throw in some other distributions PSET_NORMAL, PSET_SKEW // an extra attribute required 
 	
@@ -265,6 +272,8 @@ void objectManager::setParam(paramAttributes * p, float userA, float userB, floa
 				}
 				
 			}
+            
+            if(p->intervals > 0)snapVal(p);
 
 		}
 		
@@ -1172,6 +1181,16 @@ vector<string> objectManager::getPreviewParams(){
 	return paramString;
 }
 
+
+
+void objectManager::snapVal(paramAttributes * p){
+    
+    float r = p->max_val - p->min_val;
+    float inc = r/(p->intervals -1);
+    int n = utils::round((p->abs_value - p->min_val)/inc);
+    p->abs_value = p->min_val + inc * n;
+
+}
 
 //getters and setters
 

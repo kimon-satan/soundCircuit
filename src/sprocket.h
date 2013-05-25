@@ -25,10 +25,14 @@ private:
     void drawSprocket(float w, float h , float r);
     
 	float alpha;
+   
     ofColor c;
  
 	ofRectangle testRect;
-	bool isDecay;
+    
+    bool isRot;
+    float c_rot;
+    int state;
     
     
 	

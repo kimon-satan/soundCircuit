@@ -39,6 +39,7 @@ public:
 	
 	static ofVec2f moduloPoint(ofVec2f t_point, ofVec2f t_dims);
 	static ofVec3f moduloPoint(ofVec3f t_point, ofVec2f t_dims);
+    static int round(float x);
 	
 
 };

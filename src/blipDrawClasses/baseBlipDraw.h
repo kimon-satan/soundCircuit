@@ -15,6 +15,8 @@
 #include "utils.h"
 #include "ofxRotRect.h"
 
+class blipPreset;
+
 class baseBlipDraw{
 
 public:
@@ -31,13 +33,16 @@ public:
 	void setWrapData(ofVec2f t_dims, float t_angle);
 	void setBoundingRect(vector<ofVec2f> const & points, ofVec2f t_centre, float t_angle);
 	
-    float getParam(string t_name);
+    
     
 	//getters and setters
 	void setBlipParams(ofVec2f & t_dir, ofVec2f & t_sp, ofVec2f & t_ep, float & t_l);
 	void setDecayRatio(float decay, float postdecay);
 	void setPresetParams(vector<float> t_params);
 	void setTimeParams(bool  t_active, float  t_envVal, float  t_postVal);
+    
+    float getParam(string t_name);
+    
 	
 	vector<ofVec2f>getCorners();
 
