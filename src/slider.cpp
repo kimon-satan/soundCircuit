@@ -25,11 +25,25 @@ void slider::update(){
 	
 	float swing = (postVal > 0) ? decayRatio * envVal + (1-decayRatio) * postVal: envVal;
     
-    
+   
 
 	if(isActive){
         
-        slide = getParam("height") * (1 - pow(swing,2));
+        
+        if(!isDecay && envVal > 0.99)isDecay = true;
+        
+        if(postVal == 0){
+        
+            if(isDecay){
+                slide = 0;
+            }else{
+                slide = getParam("height") * (1.0-envVal);
+            }
+            
+        }else{
+        
+            slide = getParam("height") * (1.0-postVal);
+        }
         
 	}else{
         
@@ -79,6 +93,8 @@ vector<paramAttributes> slider::getParamDefs(){
     
 
 	t_att.name = "height"; t_att.min_val = 30 * WORLD_UNIT; t_att.max_val = 300 * WORLD_UNIT; t_att.abs_value = 200 * WORLD_UNIT;
+    def.push_back(t_att);
+    t_att.name = "sus"; t_att.min_val = 0; t_att.max_val = 1; t_att.abs_value = 1;
     def.push_back(t_att);
     t_att.name = "thickness"; t_att.min_val = 1; t_att.max_val = 5; t_att.abs_value = 1;
     def.push_back(t_att);

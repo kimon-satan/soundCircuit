@@ -116,17 +116,24 @@ void blip::draw(int t_wrap){
 
 }
 
-bool blip::react(float incr){
+void blip::prereact(float incr){
 
-    
-    updateModParams();
-	isActive = true;
-	paramAttributes * p = preset.getAttackProp();
+    //set for proportional attacks and decays
+    paramAttributes * p = preset.getAttackProp();
 	if(p)preset.getAttackSecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
 	p = preset.getDecayProp();
 	if(p)preset.getDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
 	p = preset.getPostDecayProp();
 	if(p)preset.getPostDecaySecs()->abs_value = (p->abs_value * length)/(incr * ofGetFrameRate());
+    
+}
+
+
+bool blip::react(){
+
+    
+    updateModParams(); //for persistent attributes 
+	isActive = true;
 	
 	attackCount = preset.getAttackSecs()->abs_value * ofGetFrameRate();
 	decayCount = preset.getDecaySecs()->abs_value * ofGetFrameRate();
@@ -135,8 +142,7 @@ bool blip::react(float incr){
 	totalDecay = decayCount;
 	totalAttack = attackCount;
 	return true;
-	
-	
+
 
 }
 

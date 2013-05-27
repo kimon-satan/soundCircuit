@@ -53,10 +53,13 @@
         </DEF>
         <DEF>
             <NAME>servo</NAME>
+            <PARAM><T>sus</T></PARAM>
              <PARAM><T>amp</T></PARAM>
-            <PARAM><T>base</T></PARAM>
-            <PARAM><T>range</T></PARAM>
-           <PARAM><T>filFreq</T></PARAM>       
+            <PARAM><T>start</T></PARAM>
+            <PARAM><T>top</T></PARAM>
+             <PARAM><T>end</T></PARAM>
+           <PARAM><T>filFreq</T></PARAM>
+             <PARAM><T>detune</T></PARAM>
             <PARAM><T>pan</T></PARAM>
         </DEF>
         

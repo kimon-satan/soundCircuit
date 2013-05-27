@@ -28,7 +28,7 @@ void elecCurrent::update(){
 	
 	density = params[1];
 	
-	blankRect.setFromCenter(0, 0, length, WORLD_UNIT * 2);
+	blankRect.setFromCenter(0, 0, length, WORLD_UNIT * 10);
 	
 	int numPeaks = (float)length  * density;
 	numPeaks = max(1, numPeaks);

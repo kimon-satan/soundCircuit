@@ -23,7 +23,8 @@ public:
 	void update();
 	void draw(int t_wrap = 0);
 	
-	bool react(float incr);
+    void prereact(float incr);
+	bool react();
 	
 	void createDrawer(ofVec2f t_dims);
 	void createDrawer(ofVec2f t_dims, baseBlipDraw * t_d);
