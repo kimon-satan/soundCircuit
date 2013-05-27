@@ -241,8 +241,16 @@ void testApp::loadPresets(ofxXmlSettings XML){
 					if(XML.pushTag("VISUAL", j)){
 						
 						for(int k = 0; k < 4; k++){
-							paramAttributes * p = t_blip[k].getVisualParam(XML.getValue("NAME", "")); 
+                            
+                            string n = XML.getValue("NAME", "");
+							paramAttributes * p = t_blip[k].getVisualParam(n);
 							
+                            if(!p){
+                            
+                                cout << n << " not found" << endl;
+                            
+                            }
+                            
 							int numAlt = XML.getNumTags("ALT");
 							
 							if(k > 0 && k <= numAlt){

@@ -19,6 +19,7 @@
 #include "slider.h"
 #include "materialiser.h"
 #include "sprocket.h"
+#include "ratchet.h"
 
 enum blipDrawType{
 
@@ -30,7 +31,8 @@ enum blipDrawType{
 	BT_FLIPPER,
     BT_SLIDER,
     BT_MATERIALISER,
-    BT_SPROCKET
+    BT_SPROCKET,
+    BT_RATCHET
 
 };
 

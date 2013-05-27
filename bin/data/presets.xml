@@ -166,10 +166,48 @@
             </VISUAL>
             
         </BLIP>
-        
-        
+      
         <BLIP>
             <NAME>protoslide</NAME><SYNTH>servo</SYNTH><DRAW>slider</DRAW><ENV>1</ENV>
+            
+            <LENGTH><SET_TYPE>0</SET_TYPE></LENGTH>
+            
+            <ATTACK><SET_TYPE>0</SET_TYPE><ABS_VAL>0.2</ABS_VAL></ATTACK>
+            
+            <DECAY><SET_TYPE>0</SET_TYPE><ABS_VAL>1.0</ABS_VAL></DECAY>
+            
+            <POST_DECAY><SET_TYPE>0</SET_TYPE><ABS_VAL>0</ABS_VAL></POST_DECAY>
+            
+            <SOUND><NAME>sus</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.8</ABS_VAL></SOUND>
+            
+            <SOUND><NAME>start</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.2</ABS_VAL></SOUND>
+            <SOUND><NAME>top</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0.6</MIN_VAL><MAX_VAL>0.8</MAX_VAL></SOUND>
+            <SOUND><NAME>end</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></SOUND>
+            
+            <SOUND><NAME>detune</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.02</ABS_VAL></SOUND>
+            <SOUND><NAME>filFreq</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></SOUND>
+            
+            
+            <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
+            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            
+            
+            
+        	<VISUAL><NAME>orient</NAME>
+                <ABS_VAL>1</ABS_VAL>
+                <ALT><ABS_VAL>0</ABS_VAL></ALT>
+        	</VISUAL>
+        	
+            <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>top</SLAVE_TO></VISUAL>
+            <VISUAL><NAME>sus</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.8</ABS_VAL></VISUAL>
+            <!-- <VISUAL><NAME>slSize</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>3.0</ABS_VAL></VISUAL>-->
+            
+        </BLIP>
+        
+
+            
+        <BLIP>
+            <NAME>protoRatchet</NAME><SYNTH>servo</SYNTH><DRAW>ratchet</DRAW><ENV>1</ENV>
             
             <LENGTH><SET_TYPE>0</SET_TYPE></LENGTH>
             
@@ -180,28 +218,28 @@
             <POST_DECAY><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></POST_DECAY>
             
             <SOUND><NAME>sus</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.8</ABS_VAL></SOUND>
-             
-              <SOUND><NAME>start</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.2</ABS_VAL></SOUND>
-            <SOUND><NAME>top</NAME><SET_TYPE>1</SET_TYPE><MIN_VAL>0.6</MIN_VAL><MAX_VAL>0.8</MAX_VAL></SOUND>
-             <SOUND><NAME>end</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></SOUND>
             
-             <SOUND><NAME>detune</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.02</ABS_VAL></SOUND>
-             <SOUND><NAME>filFreq</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></SOUND>
-      
-        
+            <SOUND><NAME>start</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.2</ABS_VAL></SOUND>
+            <SOUND><NAME>top</NAME><SET_TYPE>2</SET_TYPE><MIN_VAL>0.6</MIN_VAL><MAX_VAL>0.8</MAX_VAL></SOUND>
+            <SOUND><NAME>end</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></SOUND>
+            
+            <SOUND><NAME>detune</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.02</ABS_VAL></SOUND>
+            <SOUND><NAME>filFreq</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.5</ABS_VAL></SOUND>
+            
+            
             <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
             
-             
-             
+            
+            
         	<VISUAL><NAME>orient</NAME>
-        	<ABS_VAL>1</ABS_VAL>
-        	<ALT><ABS_VAL>0</ABS_VAL></ALT>
+                <ABS_VAL>1</ABS_VAL>
+                <ALT><ABS_VAL>0</ABS_VAL></ALT>
         	</VISUAL>
         	
             <VISUAL><NAME>height</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>top</SLAVE_TO></VISUAL>
             <VISUAL><NAME>sus</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>0.8</ABS_VAL></VISUAL>
-            <VISUAL><NAME>slSize</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>3.0</ABS_VAL></VISUAL>
+            <!-- <VISUAL><NAME>slSize</NAME><SET_TYPE>0</SET_TYPE><ABS_VAL>3.0</ABS_VAL></VISUAL>-->
             
         </BLIP>
         

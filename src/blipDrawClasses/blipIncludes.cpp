@@ -24,6 +24,7 @@ vector<paramAttributes> drawDictionary::getDefinition(blipDrawType drawDef){
         case BT_SLIDER:return slider::getParamDefs();break;
         case BT_MATERIALISER:return materialiser::getParamDefs();break;
         case BT_SPROCKET: return sprocket::getParamDefs();break;
+        case BT_RATCHET: return ratchet::getParamDefs();break;
 	}
 
 	return blank;
@@ -40,6 +41,7 @@ blipDrawType drawDictionary::getTypeFromString(string s){
     if(s == "slider"){return BT_SLIDER;}
     if(s == "materialiser"){return BT_MATERIALISER;}
     if(s == "sprocket"){return BT_SPROCKET;}
+    if(s == "ratchet"){return BT_RATCHET;}
 	
 	return BT_TESTBLIP;
 	
