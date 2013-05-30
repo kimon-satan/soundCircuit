@@ -34,7 +34,7 @@ protected:
 	
 	void makeSegment(ofVec2f w_pos, ofVec2f dir, segment & s);
 	void updateTestAreas(segment & t);
-	void quantizeDirection(ofVec2f & t_dir);
+	int quantizeDirection(ofVec2f & t_dir);
 	
 	ofVec2f world_dims;
 	

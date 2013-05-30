@@ -13,6 +13,37 @@
 #include "ofMain.h"
 //class reader;
 
+struct socket{
+
+    int index;
+    bool left;
+    bool right;
+    bool straight;
+    ofVec2f dir;
+    bool available;
+    
+    socket(int i, ofVec2f d, bool a, bool l, bool s, bool r){
+        
+        index = i;
+        left = l;
+        straight = s;
+        right = r;
+        dir = d;
+        
+    }
+    
+
+};
+
+enum e_sockMode{
+  
+    SM_ALL,
+    SM_LEFT,
+    SM_RIGHT,
+    SM_STRAIGHT
+
+};
+
 
 class node{
 
@@ -22,10 +53,10 @@ public:
 	
 	void addSocket(ofVec2f t_dir);
 	void removeSocket(ofVec2f t_dir);
-	void openSocket(ofVec2f t_dir);
-	void closeSocket(ofVec2f t_dir);
-	void openSocket(int t);
-	void closeSocket(int t);
+	void openSocket(ofVec2f t_dir, int mode = 0);
+	void closeSocket(ofVec2f t_dir, int mode = 0);
+	void openSocket(int t, int mode = 0);
+	void closeSocket(int t, int mode = 0);
 	
 	static int getSocketIndex(ofVec2f t_dir);
 	static ofVec2f getSocketDirection(int i);
@@ -43,13 +74,16 @@ public:
 	void setSelected(bool t);
 	bool getIsSelected();
 	
-	/*void addReader(reader * r);
-	bool getReaderPresent(reader * r);
-	void removeReader(reader * r);*/
 	
 	vector<bool> getNowSockets();
 	bool getNowSocket(ofVec2f t_dir);
 	bool getNowSocket(int i);
+    
+    vector<socket> getNowSockets_n();
+	socket getNowSocket_n(ofVec2f t_dir);
+	socket getNowSocket_n(int i);
+    
+    
 	vector<bool> getAllSockets();
 	bool getAllSocket(ofVec2f t_dir);
 	bool getIsShown();
@@ -62,14 +96,14 @@ private:
 	vector<bool> nowSockets;
 	static ofVec2f socketDirections[4];
 	vector<bool> allSockets;
+    
+    vector<socket> nowSockets_n;
+    
 	bool isSelected, isShown, isAdjusting;
 	int numSockets, numOpen;
-	//vector<reader*> readerPtrs;
 	
 	int index;
 	static int tCounter;
-
-	
 	
 	
 };

@@ -534,10 +534,14 @@ void testApp::startAction(){
 		
 		ofVec2f orientation = (cam.getRotation(2) > 0)? ofVec2f(0,1):ofVec2f(1,0);
 		world.beginInsertion(ofVec2f(mouseW.x,mouseW.y), orientation);
-		
-	}else if(currentAction == ACTION_ADJUST_NODE){
-		
-		world.beginNode(ofVec2f(mouseW.x,mouseW.y), buttonMode);
+    
+    }else if(currentAction >= ACTION_ADJUST_NODE_0 && currentAction <= ACTION_ADJUST_NODE_2){
+            
+        world.beginNode(ofVec2f(mouseW.x,mouseW.y), 0);
+        
+    }else if(currentAction == ACTION_ADJUST_NODE_3){
+        
+        world.beginNode(ofVec2f(mouseW.x,mouseW.y), 1);
 		
 	}else if(currentAction == ACTION_ADD_READER){
 		
@@ -620,9 +624,9 @@ void testApp::continueAction(){
 		
 		world.resizeInsertion(w_dir.length());
 														 
-	}else if(currentAction == ACTION_ADJUST_NODE){
+	}else if(currentAction >= ACTION_ADJUST_NODE_0 && currentAction <= ACTION_ADJUST_NODE_3){
 	
-		world.calcNode(ofVec2f(mouseW.x,mouseW.y));
+		world.calcNode(ofVec2f(mouseW.x,mouseW.y), currentAction- ACTION_ADJUST_NODE_0);
 		
 	}else if(currentAction == ACTION_ADJUST_READER){
 	
@@ -659,7 +663,7 @@ void testApp::endAction(){
 		
 		world.endInsertion();
 		
-	}else if(currentAction == ACTION_ADJUST_NODE){
+	}else if(currentAction == ACTION_ADJUST_NODE_0 || currentAction == ACTION_ADJUST_NODE_1 || currentAction == ACTION_ADJUST_NODE_2 || currentAction == ACTION_ADJUST_NODE_3 ){
 	
 		world.endNode();
 		
@@ -725,7 +729,7 @@ void testApp::keyPressed  (int key){
 
 	
 	//debug keys
-	if(key == 'f')ofToggleFullscreen();
+	if(key == 'F')ofToggleFullscreen();
 
 	if(key == 'D'){
 		world.toggleNodeData();
@@ -785,7 +789,13 @@ void testApp::mousePressed(int x, int y, int button){
 				if(currentSelection == OT_TRACK){
 					currentAction = ACTION_ADD_BLIP;
 				}else if(currentSelection == OT_NODE){
-					currentAction = ACTION_ADJUST_NODE;
+                    
+					if(!isOptionKey){
+                        currentAction = (button == 0) ? ACTION_ADJUST_NODE_0 : ACTION_ADJUST_NODE_1;
+                    }else{
+                        currentAction = (button == 0) ? ACTION_ADJUST_NODE_2 : ACTION_ADJUST_NODE_3;
+                    }
+                    
 				}else if(currentSelection == OT_WORLD){
 					currentAction = (buttonMode == 0) ? ACTION_DRAG : ACTION_STRETCH_SPACE;
 				}
@@ -798,7 +808,7 @@ void testApp::mousePressed(int x, int y, int button){
 				currentAction = (buttonMode == 0)? ACTION_ADJUST_READER : ACTION_FOLLOW_READER;
 			}else{
 				if(currentSelection == OT_NODE){
-					currentAction = ACTION_ADJUST_NODE;
+					currentAction = ACTION_ADJUST_NODE_0;
 				}else if(currentSelection == OT_BLIP){
 					currentAction = ACTION_ADJUST_BLIP;
 				}else if(currentSelection == OT_WORLD){

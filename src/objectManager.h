@@ -31,7 +31,7 @@ public:
 	void endBlip();
 	
 	void beginNode(ofVec2f w_pos, int mode);
-	void calcNode(ofVec2f w_pos);
+	void calcNode(ofVec2f w_pos, int mode = 0);
 	void endNode();
 	
 	void setParam(paramAttributes * p, float userA, float userB, float m_val);
@@ -107,7 +107,7 @@ protected:
 	node * s_nodes[2];
 	segment * s_tracks[2];
 	ofVec2f s_pos[2];
-	bool nodeSet[4];
+	bool nodeSet[8];
 	
 	ofVec2f insertPoint;
 	ofVec2f insertDir;

@@ -303,7 +303,7 @@ void objectUtils::updateTestAreas(segment & t){
 	
 }
 
-void objectUtils::quantizeDirection(ofVec2f & t_dir){
+int objectUtils::quantizeDirection(ofVec2f & t_dir){
 	
 	t_dir.normalize();
 	int angle = t_dir.angle(ofVec2f(0,-1));
@@ -315,6 +315,8 @@ void objectUtils::quantizeDirection(ofVec2f & t_dir){
 		case -1:case -2:t_dir.set(1,0);break;
 		case 3:case -3:t_dir.set(0,1);break;
 	}
+    
+    return angle;
 	
 }
 

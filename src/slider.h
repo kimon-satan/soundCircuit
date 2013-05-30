@@ -23,7 +23,10 @@ public:
 private:
 	
 	float slide;
+    float c_pos;
+    float wobble;
 
+    ofVec2f wobblePos;
 	ofColor c;
 	ofRectangle testRect;
 	bool isDecay;

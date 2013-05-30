@@ -71,7 +71,7 @@ void reader::move(){
 			
 			if(currentNodeIndex != it->getIndex()){
 				
-				ofVec2f t_dir(nextDirection(direction, it->getNowSockets()));
+				ofVec2f t_dir(nextDirection(direction, it->getNowSockets_n())); //change here
 				
 				if(t_dir != ofVec2f(0,0)){
 		
@@ -194,14 +194,29 @@ void reader::blipOff(vector<blip>::iterator it){
 	}
 }
 
-ofVec2f reader::nextDirection(ofVec2f c_dir, vector<bool> t_bools){
+ofVec2f reader::nextDirection(ofVec2f c_dir, vector<socket> t_sockets){
 	
 	
 	vector<ofVec2f> available;
 	
 	for(int i = 0; i < 4 ; i++){
-		if(i != node::getSocketIndex(-c_dir) && t_bools[i] != false){
-			available.push_back(node::getSocketDirection(i));
+		if(i != node::getSocketIndex(-c_dir)){
+            
+            ofVec2f sd = node::getSocketDirection(i);
+            
+            ofVec2f t = c_dir - sd;
+            bool a = false;
+            
+            if(t.x == 0 && t.y == 0){
+                a = t_sockets[i].straight;
+            }else if(t.x + t.y == 0){
+                a = (abs(c_dir.y) == 0) ? t_sockets[i].right : t_sockets[i].left;
+            }else{
+                a = (abs(c_dir.y) == 0) ? t_sockets[i].left : t_sockets[i].right;
+            }
+           
+            if(a)available.push_back(sd);
+            
 		}
 	}
 	

@@ -62,6 +62,26 @@
              <PARAM><T>detune</T></PARAM>
             <PARAM><T>pan</T></PARAM>
         </DEF>
+        <DEF>
+            <NAME>tri</NAME>
+            <PARAM><T>amp</T></PARAM>
+            <PARAM><T>a_prop</T></PARAM>
+            <PARAM><T>sus</T></PARAM>
+            <PARAM><T>av1</T></PARAM>
+            <PARAM><T>av2</T></PARAM>
+            <PARAM><T>sv</T></PARAM>
+            <PARAM><T>dv</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
+        </DEF>
+        <DEF>
+            <NAME>shaper</NAME>
+            <PARAM><T>sus</T></PARAM>
+            <PARAM><T>freq</T></PARAM>
+            <PARAM><T>c_freq</T></PARAM>
+            <PARAM><T>detune</T></PARAM>
+            <PARAM><T>amp</T></PARAM>
+            <PARAM><T>pan</T></PARAM>
+        </DEF>
         
     </SYNTH_DEFS>
 </SOUND_CIRCUIT>

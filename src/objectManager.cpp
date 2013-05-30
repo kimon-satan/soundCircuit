@@ -308,11 +308,11 @@ void objectManager::beginNode(ofVec2f w_pos ,int mode){
 		}
 		
 		s_nodes[0]->setIsAdjusting(true);
-		for(int i = 0; i < 4; i++)nodeSet[i]=false;
+		for(int i = 0; i < 8; i++)nodeSet[i]=false;
 		
 		if(s_nodes[0]){ //open the node entirely
 			if(mode != 0){
-				for(int i = 0; i < 4; i++)s_nodes[0]->openSocket(i);
+				for(int i = 0; i < 4; i++)s_nodes[0]->openSocket(i, 0); //changes here / perhaps extra functions
 			}	
 		}
 	}
@@ -320,8 +320,10 @@ void objectManager::beginNode(ofVec2f w_pos ,int mode){
 }
 
 
-void objectManager::calcNode(ofVec2f w_pos){
+void objectManager::calcNode(ofVec2f w_pos , int mode){
 	
+    //for changing node settings
+    
 	if(!s_nodes[0])return;
 	
 	float dist = w_pos.distance(s_nodes[0]->getPos());
@@ -333,28 +335,70 @@ void objectManager::calcNode(ofVec2f w_pos){
 		
 	}
 	
+    
 	if(dist < kTestSize * (float)WORLD_UNIT * 0.75f && 
 	   dist > kTestSize * (float)WORLD_UNIT * 0.25f
 	   ){
 		
 		ofVec2f w_dir(w_pos - s_nodes[0]->getPos());
-		quantizeDirection(w_dir);
+       
+        int seg  = (w_dir.angle(ofVec2f(0,1)) + 180)/45;
+        seg =  (8 - seg)%8;
+        quantizeDirection(w_dir);
+       
+        
 		int i = node::getSocketIndex(w_dir);
+        int sockMode;
 		
-		if(s_nodes[0] && !nodeSet[i]){
+		if(s_nodes[0] && !nodeSet[seg]){
+            
+            for(int j = 0; j < 8; j++)nodeSet[j]=false; //set all to false
+            
+            bool b = false;
+            
+            switch (mode) {
+                
+                case 0:
+                    if(seg%2 == 0){
+                       b = s_nodes[0]->getNowSocket_n(i).left;
+                        sockMode = SM_LEFT;
+                    }else{
+                       b = s_nodes[0]->getNowSocket_n(i).right;
+                        sockMode = SM_RIGHT;
+                    }
+                     nodeSet[seg] = true;
+                    break;
+                    
+                case 1:
+                    b = s_nodes[0]->getNowSocket_n(i).straight;
+                    sockMode = SM_STRAIGHT;
+                    nodeSet[i*2] = true; //both segs are altered with these methods
+                    nodeSet[i*2+1] = true;
+                    break;
+    
+                case 2:
+                    b = s_nodes[0]->getNowSocket_n(i).left + s_nodes[0]->getNowSocket_n(i).straight + s_nodes[0]->getNowSocket_n(i).right;
+                    sockMode = SM_ALL;
+                    nodeSet[i*2] = true;
+                    nodeSet[i*2+1] = true;
+                    break;
+                    
+            }
 			
-			if(s_nodes[0]->getNowSocket(i)){
-				s_nodes[0]->closeSocket(i);
+			if(b){ //change here
+				s_nodes[0]->closeSocket(i,sockMode);
 			}else {
-				s_nodes[0]->openSocket(i);
+				s_nodes[0]->openSocket(i, sockMode);
 			}
 			
-			nodeSet[i] = true;
-			for(int j = i + 1; j < i + 4; j++)nodeSet[j%4]=false; //set all the others to false
+            
+			
+			
 		}
+        
 	}else{
 		
-		for(int i = 0; i < 4; i++)nodeSet[i]=false;
+		for(int i = 0; i < 8; i++)nodeSet[i]=false;
 	
 	}
 	

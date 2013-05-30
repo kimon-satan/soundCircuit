@@ -29,6 +29,8 @@ node::node(ofVec2f t_pos) : pos(t_pos){
 	for(int i = 0; i < 4; i ++){
 		nowSockets.push_back(false);
 		allSockets.push_back(false);
+        
+        nowSockets_n.push_back(socket(i,getSocketDirection(i),false,false,false,false));
 	}
 	
 	isSelected = false;
@@ -50,27 +52,78 @@ void node::aquireIndex(){
 }
 
 
-void node::openSocket(ofVec2f t_dir){
+void node::openSocket(ofVec2f t_dir, int mode){
 	
-	openSocket(getSocketIndex(t_dir));
+	openSocket(getSocketIndex(t_dir),mode);
 
 }
 
-void node::closeSocket(ofVec2f t_dir){
+void node::closeSocket(ofVec2f t_dir, int mode){
 
-	closeSocket(getSocketIndex(t_dir));
+	closeSocket(getSocketIndex(t_dir), mode);
 	
 }
 
-void node::openSocket(int t){
+void node::openSocket(int t, int mode){
 	
-	if(allSockets[t])nowSockets[t] = true;
+    if(nowSockets_n[t].available){
+        
+        switch(mode){
+                
+            case SM_ALL:
+                nowSockets_n[t].left = true;
+                nowSockets_n[t].straight = true;
+                nowSockets_n[t].right = true;
+            break;
+                
+            case SM_LEFT:
+                nowSockets_n[t].left = true;
+            break;
+                
+            case SM_STRAIGHT:
+                nowSockets_n[t].straight = true;
+            break;
+                
+            case SM_RIGHT:
+                nowSockets_n[t].right = true;
+            break;
+                
+                
+        }
+        
+    }
 	
 }
 
-void node::closeSocket(int t){
+void node::closeSocket(int t, int mode){
 	
-	if(allSockets[t])nowSockets[t] = false;
+    if(nowSockets_n[t].available){
+        
+        switch(mode){
+                
+            case SM_ALL:
+                nowSockets_n[t].left = false;
+                nowSockets_n[t].straight = false;
+                nowSockets_n[t].right = false;
+                break;
+                
+            case SM_LEFT:
+                nowSockets_n[t].left = false;
+                break;
+                
+            case SM_STRAIGHT:
+                nowSockets_n[t].straight = false;
+                break;
+                
+            case SM_RIGHT:
+                nowSockets_n[t].right = false;
+                break;
+                
+                
+        }
+        
+    }
+
 	
 }
 
@@ -78,8 +131,8 @@ void node::addSocket(ofVec2f t_dir){
 	
 	int i = getSocketIndex(t_dir);
 			
-	if(!allSockets[i]){
-		allSockets[i] = true;
+	if(!nowSockets_n[i].available){
+		nowSockets_n[i].available = true;
 		numSockets += 1;
 	}
 	
@@ -91,9 +144,14 @@ void node::removeSocket(ofVec2f t_dir){
 	
 	int i = getSocketIndex(t_dir);
 		
-	if(allSockets[i]){
-		allSockets[i] = false;
+	if(nowSockets_n[i].available){
+		nowSockets_n[i].available = false;
 		nowSockets[i] = false;
+        
+        nowSockets_n[i].left = false;
+        nowSockets_n[i].straight = false;
+        nowSockets_n[i].right = false;
+        
 		numSockets -= 1;
 	}
 	
@@ -106,8 +164,8 @@ bool node::getSuperfluous(){
 	if(numSockets < 1)return true;
 	
 	for(int i = 0; i< 2; i ++){
-		if(allSockets[i] == true && allSockets[i+2] == true){
-			if(allSockets[i+1] == false && allSockets[(i+3)%4] == false){
+		if(nowSockets_n[i].available == true && nowSockets_n[i+2].available == true){
+			if(nowSockets_n[i+1].available == false && nowSockets_n[(i+3)%4].available == false){
 				return true;
 			}
 		}
@@ -122,22 +180,6 @@ int node::getNumSockets(){return numSockets;}
 ofVec2f node::getPos(){return pos;}
 void node::setPos(ofVec2f p){pos = p;}
 
-//not needed
-
-/*void node::addReader(reader * r){readerPtrs.push_back(r);}
-
-bool node::getReaderPresent(reader * r){
-	for(int i = 0; i < readerPtrs.size(); i++)if(readerPtrs[i] == r)return true;
-	return false;
-}
-
-void node::removeReader(reader * r){
-
-	vector<reader*>::iterator it;
-	it = remove(readerPtrs.begin(), readerPtrs.end(), r);
-	readerPtrs.erase(it, readerPtrs.end());
-}*/
-
 void node::setSelected(bool t){isSelected = t;}
 int node::getIndex(){return index;}
 bool node::getIsSelected(){return isSelected;}
@@ -146,6 +188,17 @@ vector<bool> node::getNowSockets(){return nowSockets;}
 
 bool node::getNowSocket(ofVec2f t_dir){return nowSockets[getSocketIndex(t_dir)];}
 bool node::getNowSocket(int i){return nowSockets[i];}
+
+
+vector<socket> node::getNowSockets_n(){
+    return nowSockets_n;
+}
+socket node::getNowSocket_n(ofVec2f t_dir){
+    return nowSockets_n[getSocketIndex(t_dir)];
+}
+socket node::getNowSocket_n(int i){
+    return nowSockets_n[i];
+}
 
 vector<bool> node::getAllSockets(){return allSockets;}
 bool node::getAllSocket(ofVec2f t_dir){return allSockets[getSocketIndex(t_dir)];}

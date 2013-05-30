@@ -13,6 +13,7 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "blip.h"
+#include "node.h"
 
 class layer;
 
@@ -59,7 +60,7 @@ class reader{
 	void move();
 	void moduloPosition();
 	
-	ofVec2f nextDirection(ofVec2f t_dir, vector<bool> t_bools);
+	ofVec2f nextDirection(ofVec2f t_dir, vector<socket> t_sockets);
 	void handleBlips();
 	void blipOff(vector<blip>::iterator it);
 	void blipOff(int tIndex);

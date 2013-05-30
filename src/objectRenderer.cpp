@@ -212,7 +212,7 @@ void objectRenderer::drawNodes(){
 			
 			if(it->getIsShown()){
 				
-				float radius = kCircleRadius;
+				float radius = kCircleRadius * 1.25;
 				
 				glPushMatrix();
 				glTranslatef(pos.x, pos.y, -WORLD_UNIT);
@@ -224,32 +224,69 @@ void objectRenderer::drawNodes(){
 				
 				ofEnableSmoothing();
 				
-				ofSetColor(180);
-				vector<bool> sockets = it->getNowSockets();
+				ofSetColor(120);
+				vector<socket> sockets = it->getNowSockets_n(); //change here
 				float innerRad = radius - (WORLD_UNIT * 3);
 				
 				for(int i = 0; i < 4; i ++){
-					if(!sockets[i]){
-						
-						ofBeginShape();
-						ofVertex(0,0);
-						ofVec2f o_pos(-innerRad, -innerRad);
-						o_pos.rotate(90 * i);
-						ofVertex(o_pos.x, o_pos.y);
-						
-						for(int i = 0; i < 30; i ++){
-							o_pos.rotate(3);
-							ofVertex(o_pos.x, o_pos.y);
-						}
-						
-						ofVertex(0,0);
-						ofEndShape(true);
-						
-					}
+			
+                        
+                        if(!sockets[i].left){
+                        
+                            ofBeginShape();
+                            ofVertex(0,0);
+                            ofVec2f o_pos(-innerRad, -innerRad);
+                            o_pos.rotate(90 * i);
+                            ofVertex(o_pos.x, o_pos.y);
+                            
+                            for(int i = 0; i < 15; i ++){
+                                o_pos.rotate(3);
+                                ofVertex(o_pos.x, o_pos.y);
+                            }
+                            
+                            ofVertex(0,0);
+                            ofEndShape(true);
+                            
+                            
+                        }
+                        
+                        if(!sockets[i].right){
+                            
+                            
+                            ofBeginShape();
+                            ofVertex(0,0);
+                            ofVec2f o_pos(innerRad, -innerRad);
+                            o_pos.rotate(90 * i);
+                            ofVertex(o_pos.x, o_pos.y);
+                            
+                            for(int i = 0; i < 15; i ++){
+                                o_pos.rotate(-3);
+                                ofVertex(o_pos.x, o_pos.y);
+                            }
+                            
+                            ofVertex(0,0);
+                            ofEndShape(true);
+                        
+                            
+                        }
+                        
+                        if(!sockets[i].straight){
+                            
+                            ofPushMatrix();
+                            ofRotate(90 * i , 0, 0, 1);
+                            ofPushStyle();
+                            ofSetRectMode(OF_RECTMODE_CENTER);
+                            ofRect(0,-radius - 2, 6, 3);
+                            ofPopStyle();
+                            ofPopMatrix();
+                        }
+                    
+                    
+                    
 				}
 			
 				
-				ofSetColor(100);
+				ofSetColor(180);
 				ofNoFill();
 				ofCircle(0,0, radius);
 				ofLine( - innerRad,  - innerRad, innerRad, innerRad);
