@@ -19,7 +19,9 @@ sprocket::sprocket(){
 void sprocket::update(){
 
     alpha = 255.0f * envVal;
-	c.setHsb(100,255,255, alpha);
+	c.setHsb(getParam("hue"),getParam("sat"),getParam("bri"), alpha);
+
+    
 	testRect.setFromCenter(0, 0, length, length);
     
 	vector<ofVec2f> points;
@@ -30,6 +32,7 @@ void sprocket::update(){
     
 	float swing = (postVal > 0) ? decayRatio * envVal + (1-decayRatio) * postVal: envVal;
     
+
     state = getParam("state");
     
     if(isActive){
@@ -155,6 +158,12 @@ vector<paramAttributes> sprocket::getParamDefs(){
     t_att.name = "state"; t_att.min_val = 0;  t_att.max_val = 3;  t_att.abs_value = 0; t_att.modFrom = 0; t_att.modTo = 3;
     def.push_back(t_att);
     t_att.reset();
+    t_att.name = "hue"; t_att.min_val = 0;  t_att.max_val = 255;  t_att.abs_value = 100;
+    def.push_back(t_att);
+    t_att.name = "sat"; t_att.min_val = 0;  t_att.max_val = 255;  t_att.abs_value = 100;
+    def.push_back(t_att);
+    t_att.name = "bri"; t_att.min_val = 0;  t_att.max_val = 255;  t_att.abs_value = 100;
+    def.push_back(t_att);
 
     
 	

@@ -29,7 +29,7 @@ struct socket{
         straight = s;
         right = r;
         dir = d;
-        
+        available = a;
     }
     
 

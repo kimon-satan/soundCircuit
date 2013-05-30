@@ -204,6 +204,7 @@ void objectRenderer::drawSelected(){
 
 void objectRenderer::drawNodes(){
 	
+    
 	for(vector<node>::iterator it = nodes.begin(); it != nodes.end(); it++){
 		
 		ofVec2f pos(it->getPos());
