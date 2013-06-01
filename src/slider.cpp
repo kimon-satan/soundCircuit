@@ -110,9 +110,9 @@ void slider::draw(int t_wrap){
         
         ofSetColor(0);
         ofNoFill();
-        ofEnableSmoothing();
+       // ofEnableSmoothing();
         ofCircle(0, c_pos, getParam("headSize"));
-        ofDisableSmoothing();
+       // ofDisableSmoothing();
         glDepthFunc(GL_LESS);
     
     

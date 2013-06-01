@@ -116,9 +116,9 @@ void ratchet::draw(int t_wrap){
 
     ofSetColor(0);
     ofNoFill();
-    ofEnableSmoothing();
+    //ofEnableSmoothing();
     ofCircle(0, -getParam("height") * getParam("slSize"), getParam("headSize"));
-    ofDisableSmoothing();
+    //ofDisableSmoothing();
     glDepthFunc(GL_LESS);
     
     

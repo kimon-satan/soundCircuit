@@ -129,7 +129,7 @@
         
         
        <BLIP>
-            <NAME>protobuzz</NAME><SYNTH>buzz</SYNTH><DRAW>materialiser</DRAW><ENV>0</ENV>
+            <NAME>buzzMaterialiser</NAME><SYNTH>buzz</SYNTH><DRAW>materialiser</DRAW><ENV>0</ENV>
             
             <LENGTH><SET_TYPE>1</SET_TYPE></LENGTH>
             
@@ -147,8 +147,8 @@
             <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
             
             <SOUND><NAME>amp</NAME>
-                <ABS_VAL>0.5</ABS_VAL>
-                <ALT><ABS_VAL>0.25</ABS_VAL></ALT>
+                <ABS_VAL>0.25</ABS_VAL>
+                <ALT><ABS_VAL>0.5</ABS_VAL></ALT>
                 <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
                  <ALT><ABS_VAL>1</ABS_VAL></ALT>
             </SOUND>
@@ -168,7 +168,7 @@
         </BLIP>
       
         <BLIP>
-            <NAME>protoSlide1</NAME><SYNTH>servo</SYNTH><DRAW>slider</DRAW><ENV>1</ENV>
+            <NAME>servoSlide</NAME><SYNTH>servo</SYNTH><DRAW>slider</DRAW><ENV>1</ENV>
             
             <LENGTH><SET_TYPE>0</SET_TYPE></LENGTH>
             
@@ -192,7 +192,12 @@
             
             
             <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
-            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>amp</NAME>
+                <ABS_VAL>0.25</ABS_VAL>
+                <ALT><ABS_VAL>0.5</ABS_VAL></ALT>
+                <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
+                <ALT><ABS_VAL>0.1</ABS_VAL></ALT>
+            </SOUND>
             
             
             
@@ -201,7 +206,7 @@
                 <ALT><ABS_VAL>0</ABS_VAL></ALT>
         	</VISUAL>
         	
-            <VISUAL><NAME>slSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>top</SLAVE_TO></VISUAL>
+            <VISUAL><NAME>slSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>top</SLAVE_TO><MAX_VAL>200</MAX_VAL></VISUAL>
             
             <VISUAL><NAME>headSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreq</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>5</MAX_VAL></VISUAL>
             
@@ -214,7 +219,7 @@
         </BLIP>
         
         <BLIP>
-            <NAME>protoSlide2</NAME><SYNTH>tri</SYNTH><DRAW>slider</DRAW><ENV>1</ENV>
+            <NAME>triSlide</NAME><SYNTH>tri</SYNTH><DRAW>slider</DRAW><ENV>1</ENV>
             
             <!-- needs some alt versions changing av2 or dv -->
             
@@ -245,7 +250,7 @@
                 <ALT><ABS_VAL>0</ABS_VAL></ALT>
         	</VISUAL>
         	
-            <VISUAL><NAME>slSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>sv</SLAVE_TO></VISUAL>
+            <VISUAL><NAME>slSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>sv</SLAVE_TO><MAX_VAL>200</MAX_VAL></VISUAL>
             
             <VISUAL><NAME>headSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>sv</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>5</MAX_VAL></VISUAL>
             
@@ -260,7 +265,7 @@
 
             
         <BLIP>
-            <NAME>protoRatchet</NAME><SYNTH>servo</SYNTH><DRAW>ratchet</DRAW><ENV>1</ENV>
+            <NAME>servoRatchet</NAME><SYNTH>servo</SYNTH><DRAW>ratchet</DRAW><ENV>1</ENV>
             
             <LENGTH><SET_TYPE>0</SET_TYPE></LENGTH>
             
@@ -291,7 +296,12 @@
             
             
             <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
-            <SOUND><NAME>amp</NAME><ABS_VAL>0.5</ABS_VAL></SOUND>
+            <SOUND><NAME>amp</NAME>
+                <ABS_VAL>0.5</ABS_VAL>
+                <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
+                <ALT><ABS_VAL>0.5</ABS_VAL></ALT>
+                <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
+            </SOUND>
             
             
             
@@ -309,7 +319,7 @@
             <ALT><SET_TYPE>5</SET_TYPE><SLAVE_TO>top</SLAVE_TO><MIN_VAL>0.75</MIN_VAL><MAX_VAL>0.25</MAX_VAL></ALT>
             </VISUAL>
             <VISUAL><NAME>headSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreq</SLAVE_TO><MIN_VAL>10</MIN_VAL><MAX_VAL>5</MAX_VAL></VISUAL>
-            <VISUAL><NAME>slSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreq</SLAVE_TO><MIN_VAL>300</MIN_VAL><MAX_VAL>100</MAX_VAL></VISUAL>
+            <VISUAL><NAME>slSize</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>amp</SLAVE_TO><MIN_VAL>200</MIN_VAL><MAX_VAL>100</MAX_VAL></VISUAL>
             <VISUAL><NAME>thickness</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreq</SLAVE_TO><MIN_VAL>5</MIN_VAL><MAX_VAL>1</MAX_VAL></VISUAL>
              <VISUAL><NAME>hue</NAME><SET_TYPE>5</SET_TYPE><SLAVE_TO>top</SLAVE_TO></VISUAL>
             
@@ -317,7 +327,7 @@
         </BLIP>
         
        <BLIP>
-            <NAME>protosprocket</NAME><SYNTH>distort</SYNTH><DRAW>sprocket</DRAW><ENV>0</ENV>
+            <NAME>distortSprocket</NAME><SYNTH>distort</SYNTH><DRAW>sprocket</DRAW><ENV>0</ENV>
             
             <LENGTH>><SET_TYPE>1</SET_TYPE><ABS_VAL>40</ABS_VAL></LENGTH>
             
@@ -335,15 +345,15 @@
       
            
            <SOUND><NAME>freq</NAME>
-               <SET_TYPE>2</SET_TYPE>
-           </SOUND>
-           
-           
-           <SOUND><NAME>filFreq</NAME>
                <ABS_VAL>0.6</ABS_VAL>
                <MOD_FROM>0.6</MOD_FROM>
                <MOD_TO>0.7</MOD_TO>
                <INTERVALS>4</INTERVALS>
+           </SOUND>
+           
+           
+           <SOUND><NAME>filFreq</NAME>
+              <SET_TYPE>2</SET_TYPE><MIN_VAL>0.6</MIN_VAL><MAX_VAL>0.7</MAX_VAL>
            </SOUND>
            
              <SOUND><NAME>pan</NAME><SET_TYPE>4</SET_TYPE></SOUND>
@@ -351,14 +361,14 @@
            <SOUND><NAME>distort</NAME><ABS_VAL>0.3</ABS_VAL></SOUND>
            
             <SOUND><NAME>amp</NAME>
-                <ABS_VAL>0.5</ABS_VAL>
-                <ALT><ABS_VAL>0.25</ABS_VAL></ALT>
+                <ABS_VAL>0.25</ABS_VAL>
+                <ALT><ABS_VAL>0.5</ABS_VAL></ALT>
                 <ALT><ABS_VAL>0.75</ABS_VAL></ALT>
                  <ALT><ABS_VAL>1</ABS_VAL></ALT>
             </SOUND>
             
              <VISUAL><NAME>state</NAME>
-        	    <SET_TYPE>5</SET_TYPE><SLAVE_TO>filFreq</SLAVE_TO><INTERVALS>4</INTERVALS>
+        	    <SET_TYPE>5</SET_TYPE><SLAVE_TO>freq</SLAVE_TO><INTERVALS>4</INTERVALS>
             </VISUAL>
            
            <VISUAL><NAME>hue</NAME>
@@ -735,36 +745,37 @@
     <PRESET>swellTooth</PRESET>
     <PRESET>basicSoft</PRESET>
     <PRESET>basicHard</PRESET>
+    <PRESET>servoSlide</PRESET>
     </BANK>
     
     <BANK>
-    <NAME>softMelody</NAME>
-    <PRESET>fineSoft1</PRESET>
-    </BANK>
-    
-    <BANK>
-    <NAME>pacMan1</NAME>
-    <PRESET>basicHard</PRESET>
-    <PRESET>hardShort</PRESET>
-    <PRESET>hardMappedRandom</PRESET>
-    </BANK>
-    
-    <BANK>
-    <NAME>pacMan2</NAME>
-    <PRESET>elec</PRESET>
-    <PRESET>needleDecay</PRESET>
+    <NAME>crossTracks</NAME>
     <PRESET>swellTooth</PRESET>
+    <PRESET>basicSoft</PRESET>
+    <PRESET>elec</PRESET>
     </BANK>
     
     <BANK>
-        <NAME>newTools</NAME>
-        <PRESET>protobuzz</PRESET>
-        <PRESET>protoRatchet</PRESET>
-        <PRESET>protoSlide1</PRESET>
-        <PRESET>protoSlide2</PRESET>
-        <PRESET>protosprocket</PRESET>
+    <NAME>pacManBuzz</NAME>
+    <PRESET>buzzMaterialiser</PRESET>
+    </BANK>
+    
+    <BANK>
+        <NAME>pacManServo</NAME>
+        <PRESET>servoSlide</PRESET>
+        <PRESET>servoRatchet</PRESET>
+        <PRESET>triSlide</PRESET>
     </BANK>
         
+    <BANK>
+    <NAME>pacManBlip</NAME>
+    <PRESET>basicHard</PRESET>
+    <PRESET>hardMappedRandom</PRESET>
+    <PRESET>distortSprocket</PRESET>
+    </BANK>
+        
+
+
     
     <BANK>
     <NAME>bells</NAME>
